@@ -32,8 +32,21 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
       }
     };
 
+    // Check initially
     checkCurrentEpisode();
-  }, [episodes, window.location.pathname]);
+
+    // Set up listener for URL changes using the History API
+    const handleUrlChange = () => {
+      checkCurrentEpisode();
+    };
+
+    window.addEventListener('popstate', handleUrlChange);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, [episodes, episodesPerPage]);
 
   const filteredEpisodes = useMemo(() => {
     if (!searchQuery) return episodes;

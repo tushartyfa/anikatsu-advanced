@@ -411,7 +411,7 @@ function SearchResults() {
           <div className="bg-zinc-900 rounded-lg p-8 text-center">
             <h3 className="text-xl font-medium text-zinc-200 mb-2">No results found</h3>
             <p className="text-zinc-400">
-              We couldn't find any anime matching your search criteria. Please try different filters or a different search term.
+              We couldn&apos;t find any anime matching your search criteria. Please try different filters or a different search term.
             </p>
           </div>
         )}

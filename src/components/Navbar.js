@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
@@ -23,82 +24,6 @@ export default function Navbar() {
   const suggestionRef = useRef(null);
   const searchInputRef = useRef(null);
   const router = useRouter();
-
-  // Enhanced fallback suggestions with popular anime
-  const fallbackSuggestions = [
-    { 
-      id: "naruto", 
-      title: "Naruto", 
-      image: "https://cdn.myanimelist.net/images/anime/13/17405.jpg",
-      type: "TV", 
-      year: 2002, 
-      episodes: 220, 
-      rating: 79
-    },
-    { 
-      id: "one-piece", 
-      title: "One Piece", 
-      image: "https://cdn.myanimelist.net/images/anime/6/73245.jpg",
-      type: "TV", 
-      year: 1999, 
-      episodes: 1000, 
-      rating: 85
-    },
-    { 
-      id: "attack-on-titan", 
-      title: "Attack on Titan", 
-      image: "https://cdn.myanimelist.net/images/anime/10/47347.jpg",
-      type: "TV", 
-      year: 2013, 
-      episodes: 75, 
-      rating: 90
-    },
-    { 
-      id: "demon-slayer", 
-      title: "Demon Slayer", 
-      image: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg",
-      type: "TV", 
-      year: 2019, 
-      episodes: 26, 
-      rating: 86
-    },
-    { 
-      id: "my-hero-academia", 
-      title: "My Hero Academia", 
-      image: "https://cdn.myanimelist.net/images/anime/10/78745.jpg",
-      type: "TV", 
-      year: 2016, 
-      episodes: 113, 
-      rating: 82
-    },
-    { 
-      id: "jujutsu-kaisen", 
-      title: "Jujutsu Kaisen", 
-      image: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg",
-      type: "TV", 
-      year: 2020, 
-      episodes: 24, 
-      rating: 88
-    },
-    { 
-      id: "tokyo-revengers", 
-      title: "Tokyo Revengers", 
-      image: "https://cdn.myanimelist.net/images/anime/1839/122012.jpg",
-      type: "TV", 
-      year: 2021, 
-      episodes: 24, 
-      rating: 80
-    },
-    { 
-      id: "death-note", 
-      title: "Death Note", 
-      image: "https://cdn.myanimelist.net/images/anime/9/9453.jpg",
-      type: "TV", 
-      year: 2006, 
-      episodes: 37, 
-      rating: 90
-    }
-  ];
 
   // Track scroll position
   useEffect(() => {
@@ -131,37 +56,27 @@ export default function Navbar() {
             // Take top 5 results
             setSearchSuggestions(apiSuggestions.slice(0, 5));
           } else {
-            // Use fallback with pattern matching
-            getFilteredFallbackSuggestions(searchQuery);
+            // Create a generic suggestion based on the search query
+            setSearchSuggestions([{
+              id: searchQuery.toLowerCase().replace(/\s+/g, '-'),
+              title: `Search for "${searchQuery}"`,
+              type: "SEARCH"
+            }]);
           }
         } catch (error) {
           console.error('Error in search component:', error);
-          // Use fallback with pattern matching
-          getFilteredFallbackSuggestions(searchQuery);
+          // Create a generic suggestion
+          setSearchSuggestions([{
+            id: searchQuery.toLowerCase().replace(/\s+/g, '-'),
+            title: `Search for "${searchQuery}"`,
+            type: "SEARCH"
+          }]);
         } finally {
           setIsLoading(false);
         }
       } else {
         setSearchSuggestions([]);
         setShowSuggestions(false);
-      }
-    };
-
-    // Helper function to get filtered fallback suggestions
-    const getFilteredFallbackSuggestions = (query) => {
-      const filtered = fallbackSuggestions.filter(anime => 
-        anime.title.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      if (filtered.length > 0) {
-        setSearchSuggestions(filtered.slice(0, 5));
-      } else {
-        // Create a generic suggestion based on the search query
-        setSearchSuggestions([{
-          id: query.toLowerCase().replace(/\s+/g, '-'),
-          title: `Search for "${query}"`,
-          type: "SEARCH"
-        }]);
       }
     };
 
@@ -313,7 +228,7 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex-shrink-0">
           <Link href="/home" className="flex items-center" prefetch={false}>
-            <img src="/Logo.png" alt="JustAnime Logo" className="h-[38px]" />
+            <Image src="/Logo.png" alt="JustAnime Logo" width={80} height={38} className="h-[38px] w-auto" />
           </Link>
         </div>
 
@@ -374,11 +289,15 @@ export default function Navbar() {
                               <div className="flex items-start space-x-3">
                                 <div className="flex-shrink-0 w-10 h-14 bg-gray-800 overflow-hidden rounded">
                                   {suggestion.image ? (
-                                    <img 
-                                      src={suggestion.image} 
-                                      alt={suggestion.title}
-                                      className="w-full h-full object-cover"
-                                    />
+                                    <div className="relative w-full h-full">
+                                      <Image 
+                                        src={suggestion.image} 
+                                        alt={suggestion.title}
+                                        fill
+                                        sizes="40px"
+                                        className="object-cover"
+                                      />
+                                    </div>
                                   ) : (
                                     <div className="w-full h-full bg-gray-700 flex items-center justify-center">
                                       <span className="text-xs text-gray-500">No img</span>
@@ -584,11 +503,15 @@ export default function Navbar() {
                                   <div className="flex items-start space-x-3">
                                     <div className="flex-shrink-0 w-10 h-14 bg-gray-800 overflow-hidden rounded">
                                       {suggestion.image ? (
-                                        <img 
-                                          src={suggestion.image} 
-                                          alt={suggestion.title}
-                                          className="w-full h-full object-cover"
-                                        />
+                                        <div className="relative w-full h-full">
+                                          <Image 
+                                            src={suggestion.image} 
+                                            alt={suggestion.title}
+                                            fill
+                                            sizes="40px"
+                                            className="object-cover"
+                                          />
+                                        </div>
                                       ) : (
                                         <div className="w-full h-full bg-gray-700 flex items-center justify-center">
                                           <span className="text-xs text-gray-500">No img</span>

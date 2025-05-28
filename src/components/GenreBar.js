@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { fetchGenres } from '@/lib/api';
 
 export default function GenreBar() {
@@ -19,12 +19,12 @@ export default function GenreBar() {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
   
-  // Predefined genres exactly as specified
-  const defaultGenres = [
+  // Predefined genres exactly as specified - wrapped in useMemo to prevent recreation on every render
+  const defaultGenres = useMemo(() => [
     "Action", "Adventure", "Comedy", "Drama", "Ecchi", "Fantasy", 
     "Horror", "Mahou Shoujo", "Mecha", "Music", "Mystery", "Psychological",
     "Romance", "Sci-Fi", "Slice of Life", "Sports", "Supernatural", "Thriller"
-  ];
+  ], []);
   
   // Handle long names on mobile
   const getMobileGenreName = (genre) => {
@@ -85,7 +85,7 @@ export default function GenreBar() {
     
     setGenres(defaultGenres);
     setIsLoading(false);
-  }, []);
+  }, [defaultGenres]);
   
   // Check scroll position to determine button visibility
   useEffect(() => {

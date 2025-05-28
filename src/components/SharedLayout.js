@@ -1,6 +1,7 @@
 'use client';
 
 import Navbar from './Navbar';
+import Image from 'next/image';
 
 const Footer = () => {
   return (
@@ -10,7 +11,7 @@ const Footer = () => {
           <div className="flex flex-col items-center md:items-start md:flex-row gap-6 w-full md:w-auto">
             <div className="flex w-full justify-center items-center md:justify-start md:w-auto">
               <div className="flex-1 flex justify-end pr-2">
-                <img src="/Logo.png" alt="JustAnime Logo" className="h-8" />
+                <Image src="/Logo.png" alt="JustAnime Logo" width={96} height={32} className="h-8 w-auto" />
               </div>
               <div className="h-8 w-px bg-gray-700 md:hidden"></div>
               <div className="flex-1 flex items-center pl-2 md:hidden">
