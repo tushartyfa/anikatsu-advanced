@@ -83,8 +83,16 @@ const AnimeContent = async ({ id }) => {
       recommendations: Array.isArray(anime.recommendations) ? anime.recommendations.length : 'Not an array',
       seasons: Array.isArray(anime.seasons) ? anime.seasons.length : 'Not an array',
       mostPopular: Array.isArray(anime.mostPopular) ? anime.mostPopular.length : 'Not an array',
-      promotionalVideos: anime.info?.promotionalVideos ? anime.info.promotionalVideos.length : 'Missing'
+      promotionalVideos: anime.info?.promotionalVideos ? anime.info.promotionalVideos.length : 'Missing',
+      characterVoiceActor: anime.info?.characterVoiceActor ? anime.info.characterVoiceActor.length : 'Missing'
     }, null, 2));
+    
+    // Explicitly log the characterVoiceActor data
+    console.log('[Server] Character Voice Actor data:', 
+      anime.info?.characterVoiceActor 
+        ? JSON.stringify(anime.info.characterVoiceActor.slice(0, 2)) 
+        : 'Not available'
+    );
     
     if (!anime || !anime.info) {
       console.error('[Server] Missing required anime data');

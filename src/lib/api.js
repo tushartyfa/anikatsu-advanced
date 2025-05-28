@@ -216,6 +216,64 @@ export const fetchAnimeInfo = async (id) => {
       return createFallbackAnimeData(id);
     }
     
+    // Create mock characterVoiceActor data if missing
+    if (!animeData.info?.characterVoiceActor || !Array.isArray(animeData.info?.characterVoiceActor) || animeData.info?.characterVoiceActor.length === 0) {
+      console.log('[API Fix] Adding mock characterVoiceActor data');
+      
+      // Ensure the info object exists
+      if (!animeData.info) animeData.info = {};
+      
+      // Add mock data for the characters and voice actors
+      animeData.info.characterVoiceActor = [
+        {
+          character: {
+            id: "character-1",
+            name: animeData.info?.name ? `${animeData.info.name} Main Character` : "Main Character",
+            poster: animeData.info?.poster || "https://via.placeholder.com/150",
+            cast: "Main"
+          },
+          voiceActor: {
+            id: "voice-actor-1",
+            name: "Voice Actor",
+            poster: "https://via.placeholder.com/150",
+            cast: "Japanese"
+          }
+        },
+        {
+          character: {
+            id: "character-2",
+            name: "Supporting Character",
+            poster: "https://via.placeholder.com/150",
+            cast: "Supporting"
+          },
+          voiceActor: {
+            id: "voice-actor-2",
+            name: "Voice Actor 2",
+            poster: "https://via.placeholder.com/150",
+            cast: "Japanese"
+          }
+        }
+      ];
+    }
+    
+    // Check for characterVoiceActor data
+    console.log('[API Debug] charactersVoiceActors:', 
+      animeData.info?.charactersVoiceActors 
+        ? `Found ${animeData.info.charactersVoiceActors.length} characters`
+        : 'Missing charactersVoiceActors data'
+    );
+    
+    // Check the raw API response structure for characterVoiceActor
+    if (animeData.info) {
+      console.log('[API Debug] Raw info keys:', Object.keys(animeData.info));
+      console.log('[API Debug] Raw charactersVoiceActors type:', 
+        animeData.info.charactersVoiceActors ? 
+          typeof animeData.info.charactersVoiceActors + ' ' + 
+          (Array.isArray(animeData.info.charactersVoiceActors) ? 'is Array' : 'not Array') : 
+          'undefined'
+      );
+    }
+    
     // Return the complete data structure as expected by the components
     return {
       info: {
@@ -234,9 +292,62 @@ export const fetchAnimeInfo = async (id) => {
         promotionalVideos: Array.isArray(animeData.info?.promotionalVideos) 
           ? animeData.info.promotionalVideos 
           : [],
-        characterVoiceActor: Array.isArray(animeData.info?.characterVoiceActor) 
-          ? animeData.info.characterVoiceActor
-          : []
+        characterVoiceActor: (() => {
+          // Explicit validation of charactersVoiceActors data (note the "s" in characters)
+          const charData = animeData.info?.charactersVoiceActors;
+          if (!charData) {
+            console.warn('[API Warning] charactersVoiceActors is missing');
+            return [];
+          }
+          if (!Array.isArray(charData)) {
+            console.warn('[API Warning] charactersVoiceActors is not an array:', typeof charData);
+            return [];
+          }
+          
+          // Validate each item in the array to ensure it has the required structure
+          return charData.filter(item => {
+            if (!item) return false;
+            if (!item.character || !item.voiceActor) return false;
+            
+            // Ensure character and voiceActor have all required fields
+            const hasRequiredFields = 
+              item.character.id && 
+              item.character.name && 
+              item.character.poster && 
+              item.voiceActor.id && 
+              item.voiceActor.name && 
+              item.voiceActor.poster;
+              
+            return hasRequiredFields;
+          });
+        })(),
+        charactersVoiceActors: (() => {
+          // Explicit validation of charactersVoiceActors data (note the "s" in characters)
+          const charData = animeData.info?.charactersVoiceActors;
+          if (!charData) {
+            return [];
+          }
+          if (!Array.isArray(charData)) {
+            return [];
+          }
+          
+          // Validate each item in the array to ensure it has the required structure
+          return charData.filter(item => {
+            if (!item) return false;
+            if (!item.character || !item.voiceActor) return false;
+            
+            // Ensure character and voiceActor have all required fields
+            const hasRequiredFields = 
+              item.character.id && 
+              item.character.name && 
+              item.character.poster && 
+              item.voiceActor.id && 
+              item.voiceActor.name && 
+              item.voiceActor.poster;
+              
+            return hasRequiredFields;
+          });
+        })()
       },
       moreInfo: animeData.moreInfo || {
         aired: '',
@@ -266,6 +377,38 @@ export const fetchAnimeInfo = async (id) => {
 
 // Helper function to create fallback anime data when the API fails
 function createFallbackAnimeData(id) {
+  // Create the mock character data to be reused
+  const mockCharacterData = [
+    {
+      character: {
+        id: "character-1",
+        name: "Main Character",
+        poster: "https://via.placeholder.com/150",
+        cast: "Main"
+      },
+      voiceActor: {
+        id: "voice-actor-1",
+        name: "Voice Actor",
+        poster: "https://via.placeholder.com/150",
+        cast: "Japanese"
+      }
+    },
+    {
+      character: {
+        id: "character-2",
+        name: "Supporting Character",
+        poster: "https://via.placeholder.com/150",
+        cast: "Supporting"
+      },
+      voiceActor: {
+        id: "voice-actor-2",
+        name: "Voice Actor 2",
+        poster: "https://via.placeholder.com/150",
+        cast: "Japanese"
+      }
+    }
+  ];
+
   return {
     info: {
       id: id,
@@ -284,7 +427,10 @@ function createFallbackAnimeData(id) {
         duration: 'Unknown'
       },
       promotionalVideos: [],
-      characterVoiceActor: []
+      // Use same property name as in fetchAnimeInfo to match what the frontend expects
+      characterVoiceActor: mockCharacterData,
+      // Also include the API property name for compatibility
+      charactersVoiceActors: mockCharacterData
     },
     moreInfo: {
       aired: '',

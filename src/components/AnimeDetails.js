@@ -370,11 +370,11 @@ export default function AnimeDetails({ anime }) {
                 )}
 
                 {/* Character & Voice Actors */}
-                {info.characterVoiceActor && info.characterVoiceActor.length > 0 && (
+                {(info.characterVoiceActor?.length > 0 || info.charactersVoiceActors?.length > 0) && (
                   <div>
                     <h3 className="text-white font-medium mb-3 text-center md:text-left">Characters & Voice Actors</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {info.characterVoiceActor.map((item, index) => (
+                      {(info.characterVoiceActor || info.charactersVoiceActors || []).map((item, index) => (
                         <div key={index} className="bg-[var(--card)] p-3 rounded-lg flex items-center gap-3">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
