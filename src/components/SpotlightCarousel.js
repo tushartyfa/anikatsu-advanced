@@ -131,7 +131,7 @@ const SpotlightCarousel = ({ items = [] }) => {
                   {/* Buttons - Below title on mobile, right side on desktop */}
                   <div className="flex items-center space-x-2 md:space-x-4 mt-1 md:mt-0 md:absolute md:bottom-8 md:right-8">
                     <Link 
-                      href={`/anime/${anime.id}`}
+                      href={`/watch/${anime.id}?ep=${anime.episodes?.sub || anime.episodes?.dub || 1}`}
                       className="bg-white hover:bg-gray-200 text-[#0a0a0a] font-medium text-xs md:text-base px-3 md:px-6 py-1.5 md:py-2 rounded flex items-center space-x-1.5 md:space-x-2 transition-colors"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 md:h-5 md:w-5" viewBox="0 0 20 20" fill="currentColor">
