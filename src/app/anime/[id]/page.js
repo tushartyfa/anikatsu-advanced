@@ -72,30 +72,14 @@ const NotFoundState = () => (
 // Main anime content component
 const AnimeContent = async ({ id }) => {
   try {
-    console.log('[Server] Fetching info for ID:', id);
+    console.log('[AnimeInfo] Fetching info for ID:', id);
     
     const anime = await fetchAnimeInfo(id);
     
-    console.log('[Server] API Response structure:', JSON.stringify({
-      info: anime.info ? 'Present' : 'Missing',
-      moreInfo: anime.moreInfo ? 'Present' : 'Missing',
-      relatedAnime: Array.isArray(anime.relatedAnime) ? anime.relatedAnime.length : 'Not an array',
-      recommendations: Array.isArray(anime.recommendations) ? anime.recommendations.length : 'Not an array',
-      seasons: Array.isArray(anime.seasons) ? anime.seasons.length : 'Not an array',
-      mostPopular: Array.isArray(anime.mostPopular) ? anime.mostPopular.length : 'Not an array',
-      promotionalVideos: anime.info?.promotionalVideos ? anime.info.promotionalVideos.length : 'Missing',
-      characterVoiceActor: anime.info?.characterVoiceActor ? anime.info.characterVoiceActor.length : 'Missing'
-    }, null, 2));
-    
-    // Explicitly log the characterVoiceActor data
-    console.log('[Server] Character Voice Actor data:', 
-      anime.info?.characterVoiceActor 
-        ? JSON.stringify(anime.info.characterVoiceActor.slice(0, 2)) 
-        : 'Not available'
-    );
+    console.log('[AnimeInfo] API Response received:', anime ? 'success' : 'empty');
     
     if (!anime || !anime.info) {
-      console.error('[Server] Missing required anime data');
+      console.error('[AnimeInfo] Missing required anime data');
       return <NotFoundState />;
     }
     
@@ -105,7 +89,7 @@ const AnimeContent = async ({ id }) => {
       </div>
     );
   } catch (error) {
-    console.error('[Server Error]', error);
+    console.error('[AnimeInfo] Error:', error.message);
     return <ErrorState error={error.message || 'An error occurred while loading the anime.'} />;
   }
 };

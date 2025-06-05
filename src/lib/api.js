@@ -1,4 +1,8 @@
-const API_BASE_URL = process.env.ANIWATCH_API || "https://justaniwatchapi.vercel.app/api/v2/hianime";
+// Use absolute URL for server components and relative URL for client components
+const isServer = typeof window === 'undefined';
+const API_BASE_URL = isServer 
+  ? "https://justaniwatchapi.vercel.app/api/v2/hianime" // Use absolute URL for server-side
+  : "/api/v2/hianime"; // Use relative URL for client-side
 
 // Common headers for all API requests
 const API_HEADERS = {
@@ -484,19 +488,69 @@ export const fetchEpisodeSources = async (episodeId, dub = false) => {
   }
 };
 
-export const searchAnime = async (query, page = 1) => {
+export const searchAnime = async (query, page = 1, filters = {}) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(query)}&page=${page}`);
-    if (!response.ok) throw new Error('Failed to search anime');
+    // Build the URL with query and page parameters
+    let url = `${API_BASE_URL}/search?q=${encodeURIComponent(query)}&page=${page}`;
+    
+    // Add any additional filters to the URL
+    if (filters && Object.keys(filters).length > 0) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) {
+          url += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+        }
+      });
+    }
+    
+    console.log("[API] Searching anime at:", url);
+    
+    // Make the request
+    const response = await fetch(url, {
+      headers: API_HEADERS,
+      next: { revalidate: 60 }, // Cache for 60 seconds
+      cache: 'no-cache' // Don't use browser cache
+    });
+    
+    if (!response.ok) {
+      console.error(`[API] Search error: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to search anime: ${response.status} ${response.statusText}`);
+    }
+    
     const data = await response.json();
+    console.log("[API] Search response:", data);
+    
+    // Check if the response is valid and matches expected format
+    if (!data.data) {
+      console.error('[API] Invalid response format from search API:', data);
+      return { 
+        results: [], 
+        mostPopularResults: [],
+        currentPage: page, 
+        hasNextPage: false,
+        searchQuery: query,
+        searchFilters: filters
+      };
+    }
+    
     return {
       results: data.data.animes || [],
-      currentPage: data.data.currentPage,
-      hasNextPage: data.data.hasNextPage
+      mostPopularResults: data.data.mostPopularAnimes || [],
+      currentPage: data.data.currentPage || page,
+      hasNextPage: data.data.hasNextPage || false,
+      totalPages: data.data.totalPages || 1,
+      searchQuery: data.data.searchQuery || query,
+      searchFilters: data.data.searchFilters || filters
     };
   } catch (error) {
-    console.error('Error searching anime:', error);
-    return { results: [] };
+    console.error('[API] Error searching anime:', error);
+    return { 
+      results: [], 
+      mostPopularResults: [],
+      currentPage: page, 
+      hasNextPage: false,
+      searchQuery: query,
+      searchFilters: filters
+    };
   }
 };
 
@@ -530,12 +584,37 @@ export const fetchGenreAnime = async (genre, page = 1) => {
 
 export const fetchSearchSuggestions = async (query) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/search/suggestion?q=${encodeURIComponent(query)}`);
-    if (!response.ok) throw new Error('Failed to fetch search suggestions');
+    console.log("[API] Fetching search suggestions for:", query);
+    const response = await fetch(`${API_BASE_URL}/search/suggestion?q=${encodeURIComponent(query)}`, {
+      headers: API_HEADERS,
+      next: { revalidate: 60 }, // Cache for 60 seconds
+      cache: 'no-cache' // Don't use browser cache
+    });
+    
+    if (!response.ok) {
+      console.error(`[API] Search suggestions error: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to fetch search suggestions: ${response.status} ${response.statusText}`);
+    }
+    
     const data = await response.json();
-    return data.data.suggestions || [];
+    console.log("[API] Search suggestions response:", data);
+    
+    if (!data.data) {
+      console.error('[API] Invalid response format from search suggestions API:', data);
+      return [];
+    }
+    
+    // Map the suggestions to include required fields
+    return (data.data.suggestions || []).map(suggestion => ({
+      id: suggestion.id,
+      title: suggestion.name || suggestion.title,
+      image: suggestion.poster || suggestion.image,
+      // Include additional fields that might be useful for display
+      type: suggestion.type || 'ANIME', 
+      jname: suggestion.jname || ''
+    }));
   } catch (error) {
-    console.error('Error fetching search suggestions:', error);
+    console.error('[API] Error fetching search suggestions:', error);
     return [];
   }
 };

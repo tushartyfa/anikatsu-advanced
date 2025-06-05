@@ -60,7 +60,8 @@ export default function Navbar() {
             setSearchSuggestions([{
               id: searchQuery.toLowerCase().replace(/\s+/g, '-'),
               title: `Search for "${searchQuery}"`,
-              type: "SEARCH"
+              type: "SEARCH",
+              image: null
             }]);
           }
         } catch (error) {
@@ -69,7 +70,8 @@ export default function Navbar() {
           setSearchSuggestions([{
             id: searchQuery.toLowerCase().replace(/\s+/g, '-'),
             title: `Search for "${searchQuery}"`,
-            type: "SEARCH"
+            type: "SEARCH",
+            image: null
           }]);
         } finally {
           setIsLoading(false);

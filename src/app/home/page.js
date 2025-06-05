@@ -71,6 +71,8 @@ const AnimeGridSection = ({ title, animeList = [], viewMoreLink, isRecent = fals
 
 async function HomePage() {
   try {
+    console.log('[HomePage] Fetching home page data');
+    
     // Fetch all data in parallel
     const [
       spotlightData,
@@ -85,46 +87,48 @@ async function HomePage() {
       trending
     ] = await Promise.all([
       fetchSpotlightAnime().catch(err => {
-        console.error("Error fetching spotlight anime:", err);
+        console.error("[HomePage] Error fetching spotlight anime:", err.message);
         return [];
       }),
       fetchRecentEpisodes().catch(err => {
-        console.error("Error fetching recent episodes:", err);
+        console.error("[HomePage] Error fetching recent episodes:", err.message);
         return { results: [] };
       }),
       fetchMostFavorite().catch(err => {
-        console.error("Error fetching most favorite:", err);
+        console.error("[HomePage] Error fetching most favorite:", err.message);
         return { results: [] };
       }),
       fetchTopToday().catch(err => {
-        console.error("Error fetching top today:", err);
+        console.error("[HomePage] Error fetching top today:", err.message);
         return [];
       }),
       fetchTopWeek().catch(err => {
-        console.error("Error fetching top week:", err);
+        console.error("[HomePage] Error fetching top week:", err.message);
         return [];
       }),
       fetchTopMonth().catch(err => {
-        console.error("Error fetching top month:", err);
+        console.error("[HomePage] Error fetching top month:", err.message);
         return [];
       }),
       fetchTopAiring().catch(err => {
-        console.error("Error fetching top airing anime:", err);
+        console.error("[HomePage] Error fetching top airing anime:", err.message);
         return { results: [] };
       }),
       fetchMostPopular().catch(err => {
-        console.error("Error fetching popular anime:", err);
+        console.error("[HomePage] Error fetching popular anime:", err.message);
         return { results: [] };
       }),
       fetchLatestCompleted().catch(err => {
-        console.error("Error fetching latest completed anime:", err);
+        console.error("[HomePage] Error fetching latest completed anime:", err.message);
         return { results: [] };
       }),
       fetchTrending().catch(err => {
-        console.error("Error fetching trending anime:", err);
+        console.error("[HomePage] Error fetching trending anime:", err.message);
         return { results: [] };
       })
     ]);
+    
+    console.log('[HomePage] Data fetched successfully');
     
     return (
       <div className="py-6 bg-[var(--background)] text-white">
@@ -177,8 +181,21 @@ async function HomePage() {
       </div>
     );
   } catch (error) {
-    console.error('Error in HomePage:', error);
-    return <div>Error loading page</div>;
+    console.error('[HomePage] Error in HomePage:', error.message);
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="max-w-lg w-full bg-[var(--card)] border border-[var(--border)] p-6 rounded-lg text-center">
+          <h2 className="text-xl font-semibold text-white mb-4">Unable to load content</h2>
+          <p className="text-[var(--text-muted)] mb-6">There was an error loading the home page content. Please try refreshing the page.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-2 bg-[var(--primary)] text-white rounded-md hover:opacity-90 transition-opacity"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
   }
 }
 

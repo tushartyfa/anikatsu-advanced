@@ -68,15 +68,14 @@ function SearchResults() {
     if (yearFilter !== 'all') filters.year = yearFilter;
     if (sortOrder !== 'default') filters.sort = sortOrder;
     
-    // Only add these filters if API supports them
-    // Currently, these may need to be handled client-side
-    // if (selectedSeasons.length > 0) filters.seasons = selectedSeasons;
-    // if (selectedTypes.length > 0) filters.types = selectedTypes;
-    // if (selectedStatus.length > 0) filters.status = selectedStatus;
-    // if (selectedLanguages.length > 0) filters.languages = selectedLanguages;
+    // Support all client-side filters in API call when possible
+    if (selectedSeasons.length > 0) filters.season = selectedSeasons.join(',');
+    if (selectedTypes.length > 0) filters.type = selectedTypes.join(',');
+    if (selectedStatus.length > 0) filters.status = selectedStatus.join(',');
+    if (selectedLanguages.length > 0) filters.language = selectedLanguages.join(',');
     
     return filters;
-  }, [selectedGenre, yearFilter, sortOrder]);
+  }, [selectedGenre, yearFilter, sortOrder, selectedSeasons, selectedTypes, selectedStatus, selectedLanguages]);
 
   // Apply client-side filters for things not supported by API
   const applyClientSideFilters = useCallback((animeList) => {
@@ -199,20 +198,32 @@ function SearchResults() {
       
       try {
         const filters = getFiltersForApi();
-        const data = await searchAnime(queryTerm, 1, filters);
-        const processedData = processAnimeData(data);
+        console.log(`[Search] Searching for: "${queryTerm}" with filters:`, filters);
         
+        const data = await searchAnime(queryTerm, 1, filters);
+        
+        // If no results but no error was thrown, show empty state
+        if (!data || (!data.results || data.results.length === 0)) {
+          console.log('[Search] No results found for search term:', queryTerm);
+          setError(`No results found for "${queryTerm}"`);
+          setAnimeList([]);
+          setFilteredList([]);
+          setIsLoading(false);
+          return;
+        }
+        
+        const processedData = processAnimeData(data);
         const results = processedData.results || [];
         setAnimeList(results);
         
-        // Apply client-side filters
+        // Only apply client-side filters for things not supported by API
         const filteredResults = applyClientSideFilters(results);
         setFilteredList(filteredResults);
         
         setHasNextPage(processedData.hasNextPage || false);
       } catch (error) {
-        console.error('Error searching anime:', error);
-        setError('Failed to search anime. Please try again later.');
+        console.error('[Search] Error searching anime:', error);
+        setError('Failed to search anime. Please try again later or check your internet connection.');
         setAnimeList([]);
         setFilteredList([]);
       } finally {
@@ -249,7 +260,7 @@ function SearchResults() {
           
           setHasNextPage(processedData.hasNextPage || false);
         } else {
-          // Load more search results
+          // For search results, include filters
           const filters = getFiltersForApi();
           const data = await searchAnime(queryTerm, currentPage, filters);
           const processedData = processAnimeData(data);
@@ -257,7 +268,7 @@ function SearchResults() {
           const newResults = processedData.results || [];
           setAnimeList(prev => [...prev, ...newResults]);
           
-          // Apply client-side filters to new results
+          // Only apply client-side filters for things not supported by API
           const filteredNewResults = applyClientSideFilters(newResults);
           setFilteredList(prev => [...prev, ...filteredNewResults]);
           
@@ -272,7 +283,7 @@ function SearchResults() {
     };
 
     loadMoreData();
-  }, [currentPage, queryTerm, getFiltersForApi, processAnimeData, applyClientSideFilters, isEmptySearch]);
+  }, [currentPage, queryTerm, isEmptySearch, getFiltersForApi, processAnimeData, applyClientSideFilters]);
 
   // Re-apply client-side filters when filters change but don't need API refetch
   useEffect(() => {
@@ -361,39 +372,39 @@ function SearchResults() {
           </div>
         </div>
 
-        {isLoading && currentPage === 1 ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        {error ? (
+          <div className="text-center py-16">
+            <p className="text-red-400">{error}</p>
           </div>
-        ) : error ? (
-          <div className="bg-zinc-900 rounded-lg p-8 text-center">
-            <h3 className="text-xl font-medium text-zinc-200 mb-2">Error</h3>
-            <p className="text-zinc-400">{error}</p>
+        ) : isLoading && currentPage === 1 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
+            {/* Loading skeleton */}
+            {[...Array(24)].map((_, index) => (
+              <div key={index} className="animate-pulse bg-gray-800 rounded-md h-64"></div>
+            ))}
           </div>
-        ) : !queryTerm && !isEmptySearch ? (
-          <div className="bg-zinc-900 rounded-lg p-8 text-center">
-            <h3 className="text-xl font-medium text-zinc-200 mb-2">Start Searching</h3>
-            <p className="text-zinc-400">Enter a keyword in the search box above to find anime</p>
+        ) : filteredList.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-zinc-400">No anime found matching your filters.</p>
           </div>
-        ) : filteredList.length > 0 ? (
+        ) : (
           <>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 mb-8">
               {filteredList.map((anime) => (
                 <AnimeCard key={anime.id} anime={anime} />
               ))}
             </div>
             
+            {/* Load more button */}
             {hasNextPage && (
-              <div className="mt-8 text-center">
+              <div className="flex justify-center mt-8 mb-4">
                 <button
+                  className="px-6 py-2 bg-[#1a1a1a] text-white rounded-md hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                   onClick={handleLoadMore}
                   disabled={isLoading}
-                  className={`px-6 py-3 bg-zinc-700 text-white rounded-md ${
-                    isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-zinc-600'
-                  }`}
                 >
                   {isLoading ? (
-                    <span className="flex items-center justify-center">
+                    <span className="flex items-center">
                       <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -407,13 +418,6 @@ function SearchResults() {
               </div>
             )}
           </>
-        ) : (
-          <div className="bg-zinc-900 rounded-lg p-8 text-center">
-            <h3 className="text-xl font-medium text-zinc-200 mb-2">No results found</h3>
-            <p className="text-zinc-400">
-              We couldn&apos;t find any anime matching your search criteria. Please try different filters or a different search term.
-            </p>
-          </div>
         )}
       </div>
     </div>
@@ -422,11 +426,7 @@ function SearchResults() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={
-      <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    }>
+    <Suspense fallback={<div>Loading...</div>}>
       <SearchResults />
     </Suspense>
   );
