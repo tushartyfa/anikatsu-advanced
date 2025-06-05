@@ -30,6 +30,7 @@ export default function LandingPage() {
       if (searchQuery.trim().length > 2) {
         try {
           const suggestions = await fetchSearchSuggestions(searchQuery);
+          // Update to use the same format as home page search
           setSearchSuggestions(suggestions || []);
           setShowSuggestions(true);
         } catch (error) {
@@ -70,14 +71,16 @@ export default function LandingPage() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search/${searchQuery}`);
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
       setShowSuggestions(false);
     }
   };
 
-  const handleSuggestionClick = (title) => {
-    router.push(`/search/${title}`);
+  const handleSuggestionClick = (suggestion) => {
+    // Updated to handle object-based suggestions
+    const query = suggestion.title || suggestion;
+    router.push(`/search?q=${encodeURIComponent(query)}`);
     setSearchQuery('');
     setShowSuggestions(false);
   };
@@ -184,10 +187,32 @@ export default function LandingPage() {
                 {searchSuggestions.map((suggestion, index) => (
                   <div 
                     key={index} 
-                    className="px-4 py-3 text-sm text-white hover:bg-[var(--hover)] cursor-pointer transition-colors duration-200"
+                    className="px-4 py-3 text-sm text-white hover:bg-[var(--hover)] cursor-pointer transition-colors duration-200 flex items-center gap-3"
                     onClick={() => handleSuggestionClick(suggestion)}
                   >
-                    {suggestion}
+                    {suggestion.image && (
+                      <div className="w-8 h-12 flex-shrink-0 overflow-hidden rounded-sm">
+                        <Image 
+                          src={suggestion.image} 
+                          alt={suggestion.title || "Anime"} 
+                          width={32} 
+                          height={48}
+                          className="object-cover w-full h-full"
+                          unoptimized
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1 text-left">
+                      <p className="font-medium leading-tight">{suggestion.title || suggestion}</p>
+                      {suggestion.jname && (
+                        <p className="text-xs text-[var(--text-muted)]">{suggestion.jname}</p>
+                      )}
+                    </div>
+                    {suggestion.type && (
+                      <span className="text-[10px] bg-[var(--border)] px-2 py-1 rounded-full text-[var(--text-muted)]">
+                        {suggestion.type}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -259,14 +284,7 @@ export default function LandingPage() {
                 }`}
               >
                 <div className="p-3 sm:p-4 border-t border-[var(--border)]">
-                  <ul className="text-[var(--text-muted)] space-y-2 sm:space-y-3 list-disc pl-5 text-left text-sm sm:text-base">
-                    <li><span className="font-medium text-white">Content library:</span> Our extensive database ensures you can find almost everything here.</li>
-                    <li><span className="font-medium text-white">Streaming experience:</span> We have top of the line streaming servers. You can simply choose one that is fast for you.</li>
-                    <li><span className="font-medium text-white">Quality/Resolution:</span> All our video files are encoded in highest possible resolution. We also have quality setting function that allows every user to enjoy streaming regardless of their internet speed.</li>
-                    <li><span className="font-medium text-white">Updates:</span> Our content is updated hourly, so you will get update as fast as possible.</li>
-                    <li><span className="font-medium text-white">User interface:</span> We focus on the simple and easy to use, so you will feel the life is easier here. We also have almost every feature that other anime streaming sites have, but not the opposite.</li>
-                    <li><span className="font-medium text-white">Device compatibility:</span> JustAnime works fine on both desktop and mobile devices, even with old browsers, so you can enjoy your anime anywhere you want.</li>
-                  </ul>
+                  <p className="text-[var(--text-muted)] text-left text-sm sm:text-base">JustAnime offers the best user experience for anime streaming with fast loading speeds, a beautiful interface, no intrusive ads, large content library, HD quality, and weekly updates. Our clean design and extensive features set us apart from other platforms.</p>
                 </div>
               </div>
             </div>
@@ -277,7 +295,7 @@ export default function LandingPage() {
                 className="w-full flex justify-between items-center p-3 sm:p-4 text-left hover:bg-opacity-90 transition-colors" 
                 onClick={() => toggleFAQ(2)}
               >
-                <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white pr-2">Why should I choose JustAnime?</h3>
+                <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white pr-2">How do I request an anime?</h3>
                 <svg 
                   className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 transform transition-transform duration-300 ease-out ${openFAQ === 2 ? 'rotate-180' : ''}`} 
                   fill="none" 
@@ -294,9 +312,7 @@ export default function LandingPage() {
                 }`}
               >
                 <div className="p-3 sm:p-4 border-t border-[var(--border)]">
-                  <p className="text-[var(--text-muted)] text-left text-sm sm:text-base">
-                    If you want a good and safe place to watch anime online for free, give JustAnime a try, and if you like what we provide, please help us by sharing JustAnime to your friends and do not forget to bookmark our site.
-                  </p>
+                  <p className="text-[var(--text-muted)] text-left text-sm sm:text-base">You can request anime by visiting our Discord community or using the contact form. Our team aims to fulfill requests quickly based on availability.</p>
                 </div>
               </div>
             </div>

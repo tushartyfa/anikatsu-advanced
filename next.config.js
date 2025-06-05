@@ -34,14 +34,19 @@ const nextConfig = {
   },
   serverExternalPackages: ['puppeteer-core'],
   async rewrites() {
+    // Get the API URL from environment variable or use default
+    const apiUrl = process.env.ANIWATCH_API;
+    // Extract the base URL without the /api/v2/hianime path
+    const baseUrl = apiUrl.replace('/api/v2/hianime', '');
+    
     return [
       {
         source: '/api/v2/hianime/:path*',
-        destination: 'https://justaniwatchapi.vercel.app/api/v2/hianime/:path*'
+        destination: `${apiUrl}/:path*`
       },
       {
         source: '/api/anime/:path*',
-        destination: 'https://justaniwatchapi.vercel.app/api/v2/hianime/anime/:path*'
+        destination: `${apiUrl}/anime/:path*`
       }
     ]
   },

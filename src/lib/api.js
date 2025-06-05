@@ -1,7 +1,7 @@
 // Use absolute URL for server components and relative URL for client components
 const isServer = typeof window === 'undefined';
 const API_BASE_URL = isServer 
-  ? "https://justaniwatchapi.vercel.app/api/v2/hianime" // Use absolute URL for server-side
+  ? process.env.ANIWATCH_API // Use environment variable with fallback
   : "/api/v2/hianime"; // Use relative URL for client-side
 
 // Common headers for all API requests
