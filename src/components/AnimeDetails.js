@@ -15,6 +15,14 @@ export default function AnimeDetails({ anime }) {
   
   console.log('AnimeDetails received:', anime);
   
+  // Check if synopsis overflows when component mounts or when content changes
+  useEffect(() => {
+    if (synopsisRef.current) {
+      const element = synopsisRef.current;
+      setSynopsisOverflows(element.scrollHeight > element.clientHeight);
+    }
+  }, [anime?.info?.description, activeTab]);
+  
   if (!anime?.info) {
     console.error('Invalid anime data structure:', anime);
     return null;
@@ -23,14 +31,6 @@ export default function AnimeDetails({ anime }) {
   const { info, moreInfo, relatedAnime, recommendations, seasons } = anime;
   const hasCharacters = info.characterVoiceActor?.length > 0 || info.charactersVoiceActors?.length > 0;
   const hasVideos = info.promotionalVideos && info.promotionalVideos.length > 0;
-
-  // Check if synopsis overflows when component mounts or when content changes
-  useEffect(() => {
-    if (synopsisRef.current) {
-      const element = synopsisRef.current;
-      setSynopsisOverflows(element.scrollHeight > element.clientHeight);
-    }
-  }, [info.description, activeTab]);
 
   // Video modal for promotional videos
   const VideoModal = ({ video, onClose }) => {
