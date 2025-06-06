@@ -14,9 +14,6 @@ export default function LandingPage() {
   const suggestionRef = useRef(null);
   const searchInputRef = useRef(null);
   
-  // Create separate delays for staggered loading of FAQ items
-  const faqDelays = ['0.6s', '0.7s', '0.8s'];
-  
   // For FAQ dropdowns
   const [openFAQ, setOpenFAQ] = useState(null);
   
@@ -143,7 +140,7 @@ export default function LandingPage() {
       {/* Unified Content Section */}
       <section className="relative flex flex-col items-center text-center px-4 py-6 z-10">
         {/* Hero Content */}
-        <div className="w-full max-w-3xl mx-auto fade-in flex flex-col items-center mb-20">
+        <div className="w-full max-w-3xl mx-auto flex flex-col items-center mb-20">
           {/* Logo */}
           <div className="mb-8 pt-16 md:pt-24 lg:pt-32">
             <Image
@@ -228,13 +225,13 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        {/* FAQ Content - with fade-in animation matching the hero section */}
-        <div className="max-w-3xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-6 fade-in" style={{ animationDelay: '0.5s' }}>
+        {/* FAQ Content */}
+        <div className="max-w-3xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-6">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 text-white">Frequently Asked Questions</h2>
           
           <div className="space-y-4">
             {/* FAQ Item 1 */}
-            <div className="border border-[var(--border)] rounded-lg overflow-hidden bg-[var(--card)] fade-in" style={{ animationDelay: faqDelays[0] }}>
+            <div className="border border-[var(--border)] rounded-lg overflow-hidden bg-[var(--card)]">
               <button 
                 className="w-full flex justify-between items-center p-3 sm:p-4 text-left hover:bg-opacity-90 transition-colors" 
                 onClick={() => toggleFAQ(0)}
@@ -262,7 +259,7 @@ export default function LandingPage() {
             </div>
             
             {/* FAQ Item 2 */}
-            <div className="border border-[var(--border)] rounded-lg overflow-hidden bg-[var(--card)] fade-in" style={{ animationDelay: faqDelays[1] }}>
+            <div className="border border-[var(--border)] rounded-lg overflow-hidden bg-[var(--card)]">
               <button 
                 className="w-full flex justify-between items-center p-3 sm:p-4 text-left hover:bg-opacity-90 transition-colors" 
                 onClick={() => toggleFAQ(1)}
@@ -290,7 +287,7 @@ export default function LandingPage() {
             </div>
             
             {/* FAQ Item 3 */}
-            <div className="border border-[var(--border)] rounded-lg overflow-hidden bg-[var(--card)] fade-in" style={{ animationDelay: faqDelays[2] }}>
+            <div className="border border-[var(--border)] rounded-lg overflow-hidden bg-[var(--card)]">
               <button 
                 className="w-full flex justify-between items-center p-3 sm:p-4 text-left hover:bg-opacity-90 transition-colors" 
                 onClick={() => toggleFAQ(2)}
