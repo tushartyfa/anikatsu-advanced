@@ -72,14 +72,9 @@ const NotFoundState = () => (
 // Main anime content component
 const AnimeContent = async ({ id }) => {
   try {
-    console.log('[AnimeInfo] Fetching info for ID:', id);
-    
     const anime = await fetchAnimeInfo(id);
     
-    console.log('[AnimeInfo] API Response received:', anime ? 'success' : 'empty');
-    
     if (!anime || !anime.info) {
-      console.error('[AnimeInfo] Missing required anime data');
       return <NotFoundState />;
     }
     
@@ -89,7 +84,6 @@ const AnimeContent = async ({ id }) => {
       </div>
     );
   } catch (error) {
-    console.error('[AnimeInfo] Error:', error.message);
     return <ErrorState error={error.message || 'An error occurred while loading the anime.'} />;
   }
 };

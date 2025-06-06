@@ -174,13 +174,11 @@ export const fetchTrending = async () => {
 export const fetchAnimeInfo = async (id) => {
   try {
     if (!id) {
-      console.error('Invalid anime ID provided');
       return null;
     }
     
     const encodedId = encodeURIComponent(id);
     const url = `${API_BASE_URL}/anime/${encodedId}`;
-    console.log('[API Call] Fetching anime info from:', url);
     
     // Server-side fetch doesn't need credentials or mode settings
     const requestOptions = {
@@ -192,37 +190,29 @@ export const fetchAnimeInfo = async (id) => {
 
     // Handle failed requests gracefully
     if (!response.ok) {
-      console.error(`[API Error] Status: ${response.status}`);
       return createFallbackAnimeData(id);
     }
     
     // Parse the JSON response
     const data = await response.json();
-    console.log('[API Response]', data);
     
     // Check if the response is successful
     if (!data.success && data.status !== 200) {
-      console.error('[API Error] Invalid response format:', data);
       return createFallbackAnimeData(id);
     }
 
     // The data structure might be nested in different ways depending on the API
     const responseData = data.data || data;
-    
-    // Log the data structure for debugging
-    console.log('[API Data Structure]', JSON.stringify(responseData, null, 2));
 
     // Extract the anime data from the response
     const animeData = responseData.anime;
     
     if (!animeData) {
-      console.error('[API Error] Missing anime data in response:', responseData);
       return createFallbackAnimeData(id);
     }
     
     // Create mock characterVoiceActor data if missing
     if (!animeData.info?.characterVoiceActor || !Array.isArray(animeData.info?.characterVoiceActor) || animeData.info?.characterVoiceActor.length === 0) {
-      console.log('[API Fix] Adding mock characterVoiceActor data');
       
       // Ensure the info object exists
       if (!animeData.info) animeData.info = {};
@@ -269,7 +259,6 @@ export const fetchAnimeInfo = async (id) => {
     
     // Check the raw API response structure for characterVoiceActor
     if (animeData.info) {
-      console.log('[API Debug] Raw info keys:', Object.keys(animeData.info));
       console.log('[API Debug] Raw charactersVoiceActors type:', 
         animeData.info.charactersVoiceActors ? 
           typeof animeData.info.charactersVoiceActors + ' ' + 
@@ -300,11 +289,9 @@ export const fetchAnimeInfo = async (id) => {
           // Explicit validation of charactersVoiceActors data (note the "s" in characters)
           const charData = animeData.info?.charactersVoiceActors;
           if (!charData) {
-            console.warn('[API Warning] charactersVoiceActors is missing');
             return [];
           }
           if (!Array.isArray(charData)) {
-            console.warn('[API Warning] charactersVoiceActors is not an array:', typeof charData);
             return [];
           }
           
@@ -374,7 +361,6 @@ export const fetchAnimeInfo = async (id) => {
         : []
     };
   } catch (error) {
-    console.error('[API Error] Error fetching anime info:', error);
     return createFallbackAnimeData(id);
   }
 };
