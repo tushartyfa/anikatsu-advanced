@@ -570,17 +570,42 @@ export const fetchEpisodeSources = async (episodeId, dub = false, server = 'hd-2
       credentials: 'omit'
     });
     
+    // Log raw response details for debugging
+    console.log('[API Response] Status:', response.status, response.statusText);
+    console.log('[API Response] Headers:', [...response.headers.entries()]);
+    
     if (!response.ok) {
       throw new Error(`Failed to fetch episode sources: ${response.status} ${response.statusText}`);
     }
     
     const data = await response.json();
-    console.log('[API Response] Raw data:', data);
+    console.log('[API Response] Raw data:', JSON.stringify(data, null, 2));
     
-    if (!data || !data.success || !data.data) {
-      console.error('[API Error] Empty response received');
+    if (!data) {
+      console.error('[API Error] No data received - response was null or undefined');
       return { sources: [] };
     }
+    
+    if (!data.success) {
+      console.error('[API Error] Response indicates failure - success flag is false');
+      return { sources: [] };
+    }
+    
+    if (!data.data) {
+      console.error('[API Error] Empty data object in response');
+      return { sources: [] };
+    }
+    
+    if (!data.data.sources || data.data.sources.length === 0) {
+      console.error('[API Error] No sources found in response data');
+      return { sources: [] };
+    }
+    
+    console.log('[API Success] Found sources:', data.data.sources.map(s => ({ 
+      url: s.url.substring(0, 50) + '...',
+      quality: s.quality,
+      isM3U8: s.isM3U8
+    })));
     
     return {
       sources: data.data.sources || [],
