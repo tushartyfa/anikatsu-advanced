@@ -52,27 +52,18 @@ Built using **Next.js** and **React**, JustAnime offers a cutting-edge, minimali
 
 ## Quick Start
 
-### Clone the repository
-
 ```bash
+# Clone the repository & Navigate to projetc directory
 git clone https://github.com/tejaspanchall/JustAnime.git
-```
+cd JustAnime
 
-### Install dependencies
-
-```bash
+# Install dependencies
 npm install
-```
 
-### Set up environment variables
-
-```bash
+# Set up environment variables
 cp .env.example .env
-```
 
-### Start development server
-
-```bash
+# Start development server
 npm run dev
 ```
 
