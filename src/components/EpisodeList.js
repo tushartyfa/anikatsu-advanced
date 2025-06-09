@@ -9,8 +9,8 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
   
   // Update active episode when currentEpisode changes
   useEffect(() => {
-    if (currentEpisode?.episodeId) {
-      setActiveEpisodeId(currentEpisode.episodeId);
+    if (currentEpisode?.id) {
+      setActiveEpisodeId(currentEpisode.id);
     }
   }, [currentEpisode]);
 
@@ -20,11 +20,15 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
       const path = window.location.pathname;
       const match = path.match(/\/watch\/(.+)$/);
       if (match) {
-        const episodeId = match[1];
-        setActiveEpisodeId(episodeId);
+        const urlEpisodeId = match[1];
+        setActiveEpisodeId(urlEpisodeId);
         
         // Find the episode and update page
-        const episode = episodes.find(ep => ep.episodeId === episodeId);
+        // Compare with both ?ep= format and plain format
+        const episode = episodes.find(ep => {
+          return normalizeEpisodeId(ep.id) === normalizeEpisodeId(urlEpisodeId);
+        });
+        
         if (episode) {
           const pageNumber = Math.ceil(episode.number / episodesPerPage);
           setCurrentPage(pageNumber);
@@ -48,6 +52,23 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
     };
   }, [episodes, episodesPerPage]);
 
+  // Helper function to normalize episode IDs for comparison
+  const normalizeEpisodeId = (id) => {
+    if (!id) return '';
+    
+    // If it's already in ?ep= format
+    if (id.includes('?ep=')) return id;
+    
+    // If it's in anime-name-number format
+    const match = id.match(/^(.*?)-(\d+)$/);
+    if (match) {
+      const [, animeId, episodeNumber] = match;
+      return `${animeId}?ep=${episodeNumber}`;
+    }
+    
+    return id;
+  };
+
   const filteredEpisodes = useMemo(() => {
     if (!searchQuery) return episodes;
     const query = searchQuery.toLowerCase();
@@ -69,24 +90,27 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
   };
 
   const isCurrentEpisode = (episode) => {
-    return episode.episodeId === activeEpisodeId;
+    if (!episode || !episode.id || !activeEpisodeId) return false;
+    return normalizeEpisodeId(episode.id) === normalizeEpisodeId(activeEpisodeId);
   };
 
   const handleEpisodeSelect = (episode, e) => {
     e.preventDefault();
-    if (onEpisodeClick) {
-      onEpisodeClick(episode.episodeId);
+    if (onEpisodeClick && episode.id) {
+      onEpisodeClick(episode.id);
     }
-    setActiveEpisodeId(episode.episodeId);
+    setActiveEpisodeId(episode.id);
   };
 
   // Scroll active episode into view when page changes or active episode changes
   useEffect(() => {
     if (activeEpisodeId) {
-      const activeElement = document.querySelector(`[data-episode-id="${activeEpisodeId}"]`);
-      if (activeElement) {
-        activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+      setTimeout(() => {
+        const activeElement = document.querySelector(`[data-episode-id="${activeEpisodeId}"]`);
+        if (activeElement) {
+          activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 100);
     }
   }, [activeEpisodeId, currentPage]);
 
@@ -160,7 +184,7 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
               {currentEpisodes.map((episode) => (
                 <button
                   key={episode.number}
-                  data-episode-id={episode.episodeId}
+                  data-episode-id={episode.id}
                   onClick={(e) => handleEpisodeSelect(episode, e)}
                   className={`group relative ${
                     isCurrentEpisode(episode)
@@ -191,7 +215,7 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
               {currentEpisodes.map((episode) => (
                 <button
                   key={episode.number}
-                  data-episode-id={episode.episodeId}
+                  data-episode-id={episode.id}
                   onClick={(e) => handleEpisodeSelect(episode, e)}
                   className={`group flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300 w-full text-left ${
                     isCurrentEpisode(episode)

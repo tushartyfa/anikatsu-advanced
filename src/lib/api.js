@@ -436,14 +436,133 @@ function createFallbackAnimeData(id) {
   };
 }
 
-export const fetchEpisodeSources = async (episodeId, dub = false) => {
+export const fetchAnimeEpisodes = async (animeId) => {
+  try {
+    if (!animeId) {
+      console.error('Invalid anime ID provided');
+      return { episodes: [] };
+    }
+    
+    const apiUrl = `${API_BASE_URL}/anime/${encodeURIComponent(animeId)}/episodes`;
+    console.log(`[API Call] Fetching episodes for anime: ${animeId}`);
+    
+    const response = await fetch(apiUrl, {
+      headers: API_HEADERS,
+      credentials: 'omit'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch episodes: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('[API Response] Episodes count:', data?.data?.episodes?.length || 0);
+    
+    if (!data || !data.data) {
+      console.error('[API Error] Empty response received for episodes');
+      return { episodes: [] };
+    }
+    
+    return {
+      episodes: data.data.episodes || [],
+      totalEpisodes: data.data.totalEpisodes || 0
+    };
+  } catch (error) {
+    console.error('Error fetching anime episodes:', error);
+    return { episodes: [] };
+  }
+};
+
+export const fetchEpisodeServers = async (episodeId) => {
+  try {
+    if (!episodeId || episodeId === 'undefined') {
+      console.error('Invalid episode ID provided');
+      return { servers: [] };
+    }
+    
+    // Make sure the episodeId is properly formatted
+    // If it has a number suffix without ?ep= format, reformat it
+    let formattedEpisodeId = episodeId;
+    if (!episodeId.includes('?ep=')) {
+      // Extract the anime ID and episode number
+      const match = episodeId.match(/^(.*?)-(\d+)$/);
+      if (match) {
+        const [, animeId, episodeNumber] = match;
+        formattedEpisodeId = `${animeId}?ep=${episodeNumber}`;
+        console.log(`[API] Reformatted episode ID from ${episodeId} to ${formattedEpisodeId}`);
+      }
+    }
+    
+    const apiUrl = `${API_BASE_URL}/episode/servers?animeEpisodeId=${encodeURIComponent(formattedEpisodeId)}`;
+    console.log(`[API Call] Fetching servers from: ${apiUrl}`);
+    
+    const response = await fetch(apiUrl, {
+      headers: API_HEADERS,
+      credentials: 'omit'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch episode servers: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('[API Response] Episode servers:', data);
+    
+    if (!data || !data.success || !data.data) {
+      console.error('[API Error] Empty response received for episode servers');
+      return { servers: [] };
+    }
+    
+    // Get all servers from the response (sub, dub, raw)
+    // The response has separate arrays for sub, dub, and raw servers
+    const subServers = data.data.sub || [];
+    const dubServers = data.data.dub || [];
+    const rawServers = data.data.raw || [];
+    
+    // Combine all servers into a single array for easier handling
+    const allServers = [
+      ...subServers.map(s => ({ ...s, category: 'sub' })),
+      ...dubServers.map(s => ({ ...s, category: 'dub' })),
+      ...rawServers.map(s => ({ ...s, category: 'raw' }))
+    ];
+    
+    return {
+      servers: allServers,
+      episodeId: data.data.episodeId,
+      episodeNo: data.data.episodeNo,
+      hasSubServers: subServers.length > 0,
+      hasDubServers: dubServers.length > 0,
+      hasRawServers: rawServers.length > 0
+    };
+  } catch (error) {
+    console.error('Error fetching episode servers:', error);
+    return { servers: [] };
+  }
+};
+
+export const fetchEpisodeSources = async (episodeId, dub = false, server = 'hd-2') => {
   try {
     if (!episodeId || episodeId === 'undefined') {
       console.error('Invalid episode ID provided');
       return { sources: [] };
     }
     
-    const apiUrl = `${API_BASE_URL}/episode/sources?animeEpisodeId=${episodeId}&category=${dub ? 'dub' : 'sub'}`;
+    // Make sure the episodeId is properly formatted
+    // If it has a number suffix without ?ep= format, reformat it
+    let formattedEpisodeId = episodeId;
+    if (!episodeId.includes('?ep=')) {
+      // Extract the anime ID and episode number
+      const match = episodeId.match(/^(.*?)-(\d+)$/);
+      if (match) {
+        const [, animeId, episodeNumber] = match;
+        formattedEpisodeId = `${animeId}?ep=${episodeNumber}`;
+        console.log(`[API] Reformatted episode ID from ${episodeId} to ${formattedEpisodeId}`);
+      }
+    }
+    
+    const category = dub ? 'dub' : 'sub';
+    const serverName = server || 'hd-2'; // Default to hd-2 if server is null or empty
+    const apiUrl = `${API_BASE_URL}/episode/sources?animeEpisodeId=${encodeURIComponent(formattedEpisodeId)}&category=${category}&server=${serverName}`;
     console.log(`[API Call] Fetching sources from: ${apiUrl}`);
     
     const response = await fetch(apiUrl, {
@@ -458,15 +577,17 @@ export const fetchEpisodeSources = async (episodeId, dub = false) => {
     const data = await response.json();
     console.log('[API Response] Raw data:', data);
     
-    if (!data || !data.data) {
+    if (!data || !data.success || !data.data) {
       console.error('[API Error] Empty response received');
       return { sources: [] };
     }
     
-        return {
-      sources: data.data.sources,
+    return {
+      sources: data.data.sources || [],
       headers: data.data.headers || { "Referer": "https://hianime.to/" },
-      subtitles: data.data.subtitles || []
+      subtitles: data.data.subtitles || [],
+      anilistID: data.data.anilistID || null,
+      malID: data.data.malID || null
     };
   } catch (error) {
     console.error('Error fetching episode sources:', error);

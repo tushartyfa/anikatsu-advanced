@@ -242,34 +242,54 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
         const isHlsStream = src.includes('.m3u8') || src.includes('application/vnd.apple.mpegurl');
         
         if (isHlsStream && Hls.isSupported()) {
+          console.log('[VideoPlayer] HLS is supported, initializing');
+          
           hls = new Hls({
-            xhrSetup: (xhr) => {
+            xhrSetup: (xhr, url) => {
+              console.log('[VideoPlayer] HLS XHR setup for URL:', url);
+              
               // Set headers for HLS requests
               Object.entries(videoHeaders).forEach(([key, value]) => {
                 xhr.setRequestHeader(key, value);
+                console.log(`[VideoPlayer] Setting header: ${key}`);
               });
-            }
+            },
+            // Additional HLS settings for better performance
+            maxBufferLength: 30,
+            maxMaxBufferLength: 60,
+            startLevel: -1, // Auto level selection
+            capLevelToPlayerSize: true, // Limit quality based on player size
+            debug: false
           });
           
+          window.hls = hls; // Save reference for debugging
+          
           // Bind HLS to video element
-          hls.loadSource(getProxiedUrl(src));
+          const proxiedSrc = getProxiedUrl(src);
+          console.log('[VideoPlayer] Loading proxied source:', proxiedSrc);
+          hls.loadSource(proxiedSrc);
           hls.attachMedia(video);
           
           // Handle HLS events
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            console.log('[VideoPlayer] HLS manifest parsed');
             // Get available qualities
             const levels = hls.levels.map((level, index) => ({
               id: index,
               label: `${level.height}p`,
+              height: level.height,
               selected: index === hls.currentLevel
             }));
             
+            console.log('[VideoPlayer] Available qualities:', levels);
             setQualities(levels);
             setCurrentQuality(hls.currentLevel);
             
             // Auto-play when ready
             if (isPlaying) {
-              video.play().catch(console.error);
+              video.play().catch(err => {
+                console.error('[VideoPlayer] Autoplay error:', err);
+              });
             }
           });
           
@@ -603,31 +623,44 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
     
     console.log('[VideoPlayer] Initializing subtitle tracks on mount');
     
-    // Apply the active subtitle
-    if (activeSubtitle && showSubtitles) {
-      // First remove any existing tracks
-      const existingTracks = video.querySelectorAll('track');
-      existingTracks.forEach(track => track.remove());
-      
-      // Create and append the track element
-      const track = document.createElement('track');
-      track.kind = 'subtitles';
-      track.label = activeSubtitle.label || activeSubtitle.lang || 'Default';
-      track.srclang = activeSubtitle.lang || 'en';
-      track.src = activeSubtitle.src || activeSubtitle.url;
-      track.default = true;
-      
-      console.log('[VideoPlayer] Adding track on mount with src:', track.src);
-      video.appendChild(track);
-      
-      // Force the track to be active after a short delay
-      setTimeout(() => {
-        if (video.textTracks && video.textTracks.length > 0) {
-          console.log('[VideoPlayer] Activating text track');
-          video.textTracks[0].mode = 'showing';
-        }
-      }, 500);
+      // Apply the active subtitle
+  if (activeSubtitle && showSubtitles) {
+    // First remove any existing tracks
+    const existingTracks = video.querySelectorAll('track');
+    existingTracks.forEach(track => track.remove());
+    
+    // Create and append the track element
+    const track = document.createElement('track');
+    track.kind = 'subtitles';
+    track.label = activeSubtitle.label || activeSubtitle.lang || 'Default';
+    track.srclang = activeSubtitle.lang || 'en';
+    
+    // Format subtitle URL correctly - it might be in different formats
+    let subtitleUrl = activeSubtitle.src || activeSubtitle.url;
+    
+    // Some subtitle URLs might need proxying if they're from a different origin
+    if (subtitleUrl && (subtitleUrl.startsWith('http://') || subtitleUrl.startsWith('https://'))) {
+      const proxyBase = process.env.NEXT_PUBLIC_CORSPROXY_URL || '';
+      if (proxyBase && !subtitleUrl.includes(window.location.host)) {
+        subtitleUrl = `${proxyBase}/subtitle-proxy?url=${encodeURIComponent(subtitleUrl)}`;
+        console.log('[VideoPlayer] Proxying subtitle URL:', subtitleUrl);
+      }
     }
+    
+    track.src = subtitleUrl;
+    track.default = true;
+    
+    console.log('[VideoPlayer] Adding track on mount with src:', track.src);
+    video.appendChild(track);
+    
+    // Force the track to be active after a short delay
+    setTimeout(() => {
+      if (video.textTracks && video.textTracks.length > 0) {
+        console.log('[VideoPlayer] Activating text track');
+        video.textTracks[0].mode = 'showing';
+      }
+    }, 500);
+  }
   }, [videoRef.current, activeSubtitle, showSubtitles]);
 
   // This function manually applies the selected subtitle to the video
@@ -636,13 +669,22 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
     if (!videoRef.current || !subtitle) return;
     
     // Ensure we have valid URL
-    const subtitleUrl = subtitle.src || subtitle.url;
+    let subtitleUrl = subtitle.src || subtitle.url;
     if (!subtitleUrl) {
       console.error('[VideoPlayer] No valid URL found in subtitle:', JSON.stringify(subtitle));
       return;
     }
     
-    console.log('[VideoPlayer] Subtitle URL:', subtitleUrl);
+    // Some subtitle URLs might need proxying if they're from a different origin
+    if (subtitleUrl && (subtitleUrl.startsWith('http://') || subtitleUrl.startsWith('https://'))) {
+      const proxyBase = process.env.NEXT_PUBLIC_CORSPROXY_URL || '';
+      if (proxyBase && !subtitleUrl.includes(window.location.host)) {
+        subtitleUrl = `${proxyBase}/subtitle-proxy?url=${encodeURIComponent(subtitleUrl)}`;
+        console.log('[VideoPlayer] Proxying subtitle URL:', subtitleUrl);
+      }
+    }
+    
+    console.log('[VideoPlayer] Final subtitle URL:', subtitleUrl);
     
     // Remove all existing tracks
     const video = videoRef.current;

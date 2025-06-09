@@ -6,7 +6,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import VideoPlayer from '@/components/VideoPlayer';
 import EpisodeList from '@/components/EpisodeList';
-import { fetchEpisodeSources, fetchAnimeInfo } from '@/lib/api';
+import { 
+  fetchEpisodeSources, 
+  fetchAnimeInfo, 
+  fetchEpisodeServers, 
+  fetchAnimeEpisodes 
+} from '@/lib/api';
 
 export default function WatchPage() {
   const { episodeId } = useParams();
@@ -29,6 +34,9 @@ export default function WatchPage() {
   const [showFullSynopsis, setShowFullSynopsis] = useState(false);
   const [autoSkip, setAutoSkip] = useState(false);
   const [currentEpisodeId, setCurrentEpisodeId] = useState(episodeId);
+  const [availableServers, setAvailableServers] = useState([]);
+  const [selectedServer, setSelectedServer] = useState('hd-2');
+  const [episodes, setEpisodes] = useState([]);
 
   // Handle URL updates when currentEpisodeId changes
   useEffect(() => {
@@ -59,16 +67,22 @@ export default function WatchPage() {
       // Log the raw episodeId from the URL for debugging
       console.log('[Watch] Raw episodeId from URL:', episodeId);
       
-      // The URL might contain query parameters for episode number
-      const [baseId, queryParams] = episodeId.split('?');
-      console.log('[Watch] Base ID:', baseId);
+      // Extract animeId from the episodeId parameter
+      // The new format is: anime-name?ep=episode-number
+      const [baseId, queryString] = episodeId.split('?');
       
-      setAnimeId(baseId);
+      if (baseId) {
+        setAnimeId(baseId);
+        console.log('[Watch] Extracted anime ID:', baseId);
+      } else {
+        console.warn('[Watch] Could not extract anime ID from episode ID:', episodeId);
+      }
+      
       setCurrentEpisodeId(episodeId);
     }
   }, [episodeId]);
 
-  // Fetch episode sources first to ensure we have data even if anime info fails
+  // First fetch episode servers to get available servers and subtitles
   useEffect(() => {
     if (!currentEpisodeId || currentEpisodeId === 'undefined') {
       setError('Invalid episode ID');
@@ -76,150 +90,283 @@ export default function WatchPage() {
       return;
     }
 
-    const fetchVideoData = async () => {
+    const fetchServers = async () => {
       setIsLoading(true);
-      setError(null);
-      setVideoSource(null);
       
       try {
-        console.log(`[Watch] Fetching video for episode ${currentEpisodeId} (dub: ${isDub})`);
+        console.log(`[Watch] Fetching servers for episode ${currentEpisodeId}`);
         
-        // Fetch the episode sources from the API
-        const data = await fetchEpisodeSources(currentEpisodeId, isDub);
+        // Fetch available servers from the API
+        const data = await fetchEpisodeServers(currentEpisodeId);
         
-        console.log('[Watch] Episode API response:', data);
-        setEpisodeData(data);
-        
-        if (!data || !data.sources || data.sources.length === 0) {
-          throw new Error('No video sources available for this episode');
-        }
-        
-        // Extract headers if they exist in the response
-        if (data.headers) {
-          console.log('[Watch] Headers from API:', data.headers);
-          setVideoHeaders(data.headers);
+        if (!data || !data.servers || data.servers.length === 0) {
+          console.warn('[Watch] No servers available for this episode');
         } else {
-          // Set default headers if none provided
-          const defaultHeaders = { 
-            "Referer": "https://hianime.to/",
-            "Origin": "https://hianime.to"
-          };
-          console.log('[Watch] No headers provided from API, using defaults:', defaultHeaders);
-          setVideoHeaders(defaultHeaders);
+          // Filter servers based on current audio preference (sub/dub)
+          const filteredServers = data.servers.filter(server => 
+            server.category === (isDub ? 'dub' : 'sub')
+          );
+          
+          setAvailableServers(filteredServers);
+          console.log(`[Watch] Available ${isDub ? 'dub' : 'sub'} servers:`, filteredServers);
+          
+          // Set default server if available
+          // First try to find HD-1 server
+          let preferredServer = filteredServers.find(server => 
+            server.serverName && server.serverName.toLowerCase() === 'hd-2'
+          );
+          
+          // If not found, look for vidstreaming
+          if (!preferredServer) {
+            preferredServer = filteredServers.find(server => 
+              server.serverName && server.serverName.toLowerCase().includes('vidstreaming')
+            );
+          }
+          
+          if (preferredServer && preferredServer.serverName) {
+            setSelectedServer(preferredServer.serverName.toLowerCase());
+            console.log(`[Watch] Selected preferred server: ${preferredServer.serverName}`);
+          } else if (filteredServers.length > 0 && filteredServers[0].serverName) {
+            setSelectedServer(filteredServers[0].serverName.toLowerCase());
+            console.log(`[Watch] Selected first available server: ${filteredServers[0].serverName}`);
+          }
         }
         
-        // Try to find the best source in order of preference
-        // 1. HLS (m3u8) sources
-        // 2. High quality MP4 sources
-        const hlsSource = data.sources.find(src => src.isM3U8);
-        const mp4Source = data.sources.find(src => !src.isM3U8);
-        
-        let selectedSource = null;
-        
-        if (hlsSource && hlsSource.url) {
-          console.log('[Watch] Selected HLS source:', hlsSource.url);
-          selectedSource = hlsSource.url;
-        } else if (mp4Source && mp4Source.url) {
-          console.log('[Watch] Selected MP4 source:', mp4Source.url);
-          selectedSource = mp4Source.url;
-        } else if (data.sources[0] && data.sources[0].url) {
-          console.log('[Watch] Falling back to first available source:', data.sources[0].url);
-          selectedSource = data.sources[0].url;
-        } else {
-          throw new Error('No valid video URLs found');
-        }
-        
-        setVideoSource(selectedSource);
-        setIsLoading(false);
+        // Continue to fetch video sources with the selected server
+        fetchVideoSources(currentEpisodeId, isDub, selectedServer);
         
       } catch (error) {
-        console.error('[Watch] Error fetching video sources:', error);
-        setError(error.message || 'Failed to load video');
-        setIsLoading(false);
-        
-        // If this is the first try, attempt to retry once
-        if (!isRetrying) {
-          console.log('[Watch] First error, attempting retry...');
-          setIsRetrying(true);
-          setTimeout(() => {
-            console.log('[Watch] Executing retry...');
-            fetchVideoData();
-          }, 2000);
-        }
+        console.error('[Watch] Error fetching episode servers:', error);
+        // Continue to sources even if servers fail
+        fetchVideoSources(currentEpisodeId, isDub, selectedServer);
       }
     };
+    
+    fetchServers();
+  }, [currentEpisodeId, isDub]);
+  
+  // Fetch video sources function
+  const fetchVideoSources = async (episodeId, dub, server) => {
+    setIsLoading(true);
+    setError(null);
+    setVideoSource(null);
+    
+    try {
+      console.log(`[Watch] Fetching video for episode ${episodeId} (dub: ${dub}, server: ${server})`);
+      
+      // Fetch the episode sources from the API
+      const data = await fetchEpisodeSources(episodeId, dub, server);
+      
+      console.log('[Watch] Episode sources API response:', data);
+      setEpisodeData(data);
+      
+      if (!data || !data.sources || data.sources.length === 0) {
+        throw new Error('No video sources available for this episode');
+      }
+      
+      // Extract headers if they exist in the response
+      if (data.headers) {
+        console.log('[Watch] Headers from API:', data.headers);
+        setVideoHeaders(data.headers);
+      } else {
+        // Set default headers if none provided
+        const defaultHeaders = { 
+          "Referer": "https://hianime.to/",
+          "Origin": "https://hianime.to"
+        };
+        setVideoHeaders(defaultHeaders);
+      }
+      
+      // Set subtitles if available in the sources response
+      if (data.subtitles && data.subtitles.length > 0) {
+        setSubtitles(data.subtitles);
+      }
+      
+      // Try to find the best source in order of preference
+      // 1. HLS (m3u8) sources
+      // 2. High quality MP4 sources
+      const hlsSource = data.sources.find(src => src.isM3U8);
+      const mp4Source = data.sources.find(src => !src.isM3U8);
+      
+      let selectedSource = null;
+      
+      if (hlsSource && hlsSource.url) {
+        console.log('[Watch] Selected HLS source:', hlsSource.url);
+        selectedSource = hlsSource.url;
+      } else if (mp4Source && mp4Source.url) {
+        console.log('[Watch] Selected MP4 source:', mp4Source.url);
+        selectedSource = mp4Source.url;
+      } else if (data.sources[0] && data.sources[0].url) {
+        console.log('[Watch] Falling back to first available source:', data.sources[0].url);
+        selectedSource = data.sources[0].url;
+      } else {
+        throw new Error('No valid video URLs found');
+      }
+      
+      setVideoSource(selectedSource);
+      setIsLoading(false);
+      
+    } catch (error) {
+      console.error('[Watch] Error fetching video sources:', error);
+      setError(error.message || 'Failed to load video');
+      setIsLoading(false);
+      
+      // If this is the first try, attempt to retry once
+      if (!isRetrying) {
+        console.log('[Watch] First error, attempting retry...');
+        setIsRetrying(true);
+        setTimeout(() => {
+          console.log('[Watch] Executing retry...');
+          fetchVideoSources(episodeId, dub, server);
+        }, 2000);
+      }
+    }
+  };
 
-    fetchVideoData();
-  }, [currentEpisodeId, isDub, isRetrying]);
+  // Effect to refetch sources when server or dub changes
+  useEffect(() => {
+    if (currentEpisodeId && selectedServer) {
+      fetchVideoSources(currentEpisodeId, isDub, selectedServer);
+    }
+  }, [selectedServer, isDub]);
 
-  // Fetch anime info using extracted animeId
+  // Fetch anime info and episodes using animeId
   useEffect(() => {
     if (animeId) {
       const fetchAnimeDetails = async () => {
         try {
           setIsRetrying(true);
           console.log(`[Watch] Fetching anime info for ID: ${animeId}`);
-          const animeData = await fetchAnimeInfo(animeId);
           
+          // Fetch basic anime info
+          const animeData = await fetchAnimeInfo(animeId);
           if (animeData) {
-            console.log('[Watch] Anime info received:', animeData.title);
-            setAnime(animeData);
+            console.log('[Watch] Anime info received:', animeData.info?.name);
+            setAnime({
+              id: animeId,
+              title: animeData.info?.name || 'Unknown Anime',
+              image: animeData.info?.poster || '',
+              description: animeData.info?.description || 'No description available',
+              status: animeData.moreInfo?.status || 'Unknown',
+              type: animeData.info?.stats?.type || 'TV',
+              totalEpisodes: animeData.info?.stats?.episodes?.sub || 0,
+              genres: animeData.moreInfo?.genres || []
+            });
+          }
+          
+          // Fetch episodes separately
+          const episodesData = await fetchAnimeEpisodes(animeId);
+          if (episodesData && episodesData.episodes && episodesData.episodes.length > 0) {
+            console.log('[Watch] Episodes found:', episodesData.episodes.length);
+            setEpisodes(episodesData.episodes);
             
-            // Find the current episode in the anime episode list
-            if (animeData.episodes && animeData.episodes.length > 0) {
-              console.log('[Watch] Episodes found:', animeData.episodes.length);
+            // Find current episode in episode list
+            // Handle both formats: anime-name?ep=episode-number or anime-name-episode-number
+            const findCurrentEpisode = () => {
+              // Extract episode number from the URL
+              const [, queryString] = currentEpisodeId.split('?');
+              let currentEpisodeNumber;
               
-              // First try exact match
-              let episode = animeData.episodes.find(ep => ep.id === episodeId);
-              
-              // If not found, try to find by checking if episodeId is contained in ep.id
-              if (!episode && episodeId.includes('$episode$')) {
-                const episodeIdPart = episodeId.split('$episode$')[1];
-                episode = animeData.episodes.find(ep => ep.id.includes(episodeIdPart));
-              }
-              
-              if (episode) {
-                setCurrentEpisode(episode);
-                console.log('[Watch] Current episode found:', episode.number);
+              if (queryString && queryString.startsWith('ep=')) {
+                // If it's in the format anime-name?ep=episode-number
+                currentEpisodeNumber = queryString.replace('ep=', '');
+                console.log('[Watch] Current episode number from ?ep= format:', currentEpisodeNumber);
               } else {
-                console.warn('[Watch] Current episode not found in episode list. Looking for:', episodeId);
-                console.log('[Watch] First few episodes:', animeData.episodes.slice(0, 3).map(ep => ep.id));
+                // If it's in the format anime-name-episode-number
+                const match = currentEpisodeId.match(/-(\d+)$/);
+                if (match && match[1]) {
+                  currentEpisodeNumber = match[1];
+                  console.log('[Watch] Current episode number from dash format:', currentEpisodeNumber);
+                }
               }
+              
+              if (currentEpisodeNumber) {
+                // Try to find the episode by number
+                return episodesData.episodes.find(ep => 
+                  ep.number && ep.number.toString() === currentEpisodeNumber.toString()
+                );
+              }
+              
+              // If no match by number, try to match by full ID
+              return episodesData.episodes.find(ep => ep.id === currentEpisodeId);
+            };
+            
+            const episode = findCurrentEpisode();
+            if (episode) {
+              setCurrentEpisode(episode);
+              console.log('[Watch] Current episode found:', episode.number);
             } else {
-              console.warn('[Watch] No episodes found in anime data or episodes array is empty');
+              console.warn('[Watch] Current episode not found in episode list');
             }
           } else {
-            console.error('[Watch] Failed to fetch anime info or received empty response');
+            console.warn('[Watch] No episodes found for this anime');
           }
         } catch (error) {
-          console.error('[Watch] Error fetching anime info:', error);
+          console.error('[Watch] Error fetching anime details:', error);
         } finally {
           setIsRetrying(false);
         }
       };
       
       fetchAnimeDetails();
-    } else {
-      console.warn('[Watch] No animeId available to fetch anime details');
     }
-  }, [animeId, episodeId]);
+  }, [animeId, currentEpisodeId]);
 
   const handleDubToggle = () => {
-    setIsDub(!isDub);
+    setIsDub(prev => {
+      const newDubState = !prev;
+      // Refetch servers for the new audio type
+      fetchEpisodeServers(currentEpisodeId).then(data => {
+        if (data && data.servers && data.servers.length > 0) {
+          // Filter servers based on new audio preference
+          const filteredServers = data.servers.filter(server => 
+            server.category === (newDubState ? 'dub' : 'sub')
+          );
+          
+          setAvailableServers(filteredServers);
+          
+          // Update selected server if needed
+          // First try to find HD-1 server
+          let preferredServer = filteredServers.find(server => 
+            server.serverName && server.serverName.toLowerCase() === 'hd-2'
+          );
+          
+          // If not found, look for vidstreaming
+          if (!preferredServer) {
+            preferredServer = filteredServers.find(server => 
+              server.serverName && server.serverName.toLowerCase().includes('vidstreaming')
+            );
+          }
+          
+          if (preferredServer && preferredServer.serverName) {
+            setSelectedServer(preferredServer.serverName.toLowerCase());
+            console.log(`[Watch] Selected preferred server: ${preferredServer.serverName}`);
+          } else if (filteredServers.length > 0 && filteredServers[0].serverName) {
+            setSelectedServer(filteredServers[0].serverName.toLowerCase());
+            console.log(`[Watch] Selected first available server: ${filteredServers[0].serverName}`);
+          }
+        }
+      });
+      return newDubState;
+    });
+  };
+
+  const handleServerChange = (server) => {
+    setSelectedServer(server);
   };
 
   const handleEpisodeClick = (newEpisodeId) => {
     if (newEpisodeId !== currentEpisodeId) {
       // Update the URL using history API
-      const newUrl = `/watch/${newEpisodeId}`;
+      const newUrl = `/watch/${encodeURIComponent(newEpisodeId)}`;
       window.history.pushState({ episodeId: newEpisodeId }, '', newUrl);
       
       // Update state to trigger video reload
       setCurrentEpisodeId(newEpisodeId);
       
       // Update current episode in state
-      if (anime?.episodes) {
-        const newEpisode = anime.episodes.find(ep => ep.id === newEpisodeId);
+      if (episodes) {
+        const newEpisode = episodes.find(ep => ep.id === newEpisodeId);
         if (newEpisode) {
           setCurrentEpisode(newEpisode);
         }
@@ -227,36 +374,15 @@ export default function WatchPage() {
     }
   };
 
-  const handleRetryAnimeInfo = () => {
-    if (animeId) {
-      setIsRetrying(true);
-      fetchAnimeInfo(animeId)
-        .then(data => {
-          if (data) {
-            setAnime(data);
-            console.log('[Watch] Anime info retry succeeded:', data.title);
-          } else {
-            console.error('[Watch] Anime info retry failed: empty response');
-          }
-        })
-        .catch(error => {
-          console.error('[Watch] Anime info retry error:', error);
-        })
-        .finally(() => {
-          setIsRetrying(false);
-        });
-    }
-  };
-
   const findAdjacentEpisodes = () => {
-    if (!anime?.episodes || !currentEpisodeId) return { prev: null, next: null };
+    if (!episodes || !currentEpisode) return { prev: null, next: null };
     
-    const currentIndex = anime.episodes.findIndex(ep => ep.id === currentEpisodeId);
+    const currentIndex = episodes.findIndex(ep => ep.number === currentEpisode.number);
     if (currentIndex === -1) return { prev: null, next: null };
     
     return {
-      prev: currentIndex > 0 ? anime.episodes[currentIndex - 1] : null,
-      next: currentIndex < anime.episodes.length - 1 ? anime.episodes[currentIndex + 1] : null
+      prev: currentIndex > 0 ? episodes[currentIndex - 1] : null,
+      next: currentIndex < episodes.length - 1 ? episodes[currentIndex + 1] : null
     };
   };
 
@@ -288,7 +414,7 @@ export default function WatchPage() {
                     ) : videoSource ? (
                       <div className="h-full">
                         <VideoPlayer 
-                          key={`${currentEpisodeId}-${isDub}`}
+                          key={`${currentEpisodeId}-${isDub}-${selectedServer}`}
                           src={videoSource} 
                           poster={anime?.image} 
                           headers={videoHeaders} 
@@ -317,7 +443,7 @@ export default function WatchPage() {
               {/* Video Controls - Slimmer and without container background */}
               <div className="flex flex-col gap-4 mt-6">
                 {/* Audio and Playback Controls */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-y-4">
                   {/* Playback Settings */}
                   <div className="flex items-center gap-4">
                     <h3 className="text-white/80 text-sm font-medium">Playback Settings</h3>
@@ -336,6 +462,30 @@ export default function WatchPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Server Selection */}
+                  {availableServers.length > 0 && (
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-white/80 text-sm font-medium">Servers</h3>
+                                              <div className="flex gap-2 flex-wrap">
+                          {availableServers.map((server) => 
+                            server.serverName ? (
+                              <button
+                                key={`${server.serverName}-${server.serverId}`}
+                                onClick={() => handleServerChange(server.serverName.toLowerCase())}
+                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                                  selectedServer === server.serverName.toLowerCase()
+                                    ? 'bg-white text-black' 
+                                    : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 ring-1 ring-white/10'
+                                }`}
+                              >
+                                {server.serverName}
+                              </button>
+                            ) : null
+                          )}
+                        </div>
+                    </div>
+                  )}
 
                   {/* Audio Toggle */}
                   <div className="flex items-center gap-4">
@@ -367,7 +517,7 @@ export default function WatchPage() {
 
                 {/* Episode Navigation */}
                 <div className="flex gap-3">
-                  {anime?.episodes && (
+                  {episodes && episodes.length > 0 && (
                     <>
                       <button
                         onClick={() => {
@@ -461,13 +611,14 @@ export default function WatchPage() {
                       {anime.genres && (
                         <div className="flex flex-wrap gap-2">
                           {anime.genres.map((genre, index) => (
-                            <span
+                            <Link
                               key={index}
+                              href={`/genres/${encodeURIComponent(genre.toLowerCase())}`}
                               className="px-3 py-1 rounded-full bg-white/5 text-white text-sm 
                                        hover:bg-white/10 transition-all cursor-pointer ring-1 ring-white/10"
                             >
                               {genre}
-                            </span>
+                            </Link>
                           ))}
                         </div>
                       )}
@@ -480,18 +631,19 @@ export default function WatchPage() {
 
           {/* Right Side - Episode List (30%) */}
           <div className="w-full md:w-[30%]">
-            {anime?.episodes ? (
+            {episodes && episodes.length > 0 ? (
               <div className="h-full max-h-[calc(100vh-2rem)] overflow-hidden">
                 <EpisodeList 
-                  episodes={anime.episodes}
+                  episodes={episodes}
                   currentEpisode={currentEpisode}
                   onEpisodeClick={handleEpisodeClick}
+                  isDub={isDub}
                 />
               </div>
             ) : (
               <div className="bg-white/5 rounded-2xl shadow-2xl p-6 ring-1 ring-white/10">
                 <div className="text-center text-gray-400">
-                  No episodes available
+                  {isLoading ? 'Loading episodes...' : 'No episodes available'}
                 </div>
               </div>
             )}
