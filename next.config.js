@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    NEXT_PUBLIC_CORSPROXY_URL: process.env.CORSPROXY_URL,
+    // Environment variables here
   },
   images: {
     domains: [

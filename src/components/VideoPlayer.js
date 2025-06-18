@@ -4,12 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
 import NextImage from 'next/image';
 
-// Get the M3U8 Proxy URL from environment variables
-const CORSPROXY_URL = process.env.NEXT_PUBLIC_CORSPROXY_URL;
-
-// Debug the environment variable
-console.log('CORSPROXY_URL:', CORSPROXY_URL);
-
 export default function VideoPlayer({ src, poster, headers = {}, subtitles = [], thumbnails = null, category = 'sub', intro = null, outro = null, autoSkipIntro = false, autoSkipOutro = false, episodeId }) {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -93,31 +87,6 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
     } else {
       togglePlay();
     }
-  };
-
-  // Function to check if a URL is an M3U8 URL and if so, route it through the external proxy
-  const getProxiedUrl = (url) => {
-    if (!url) return url;
-    
-    // Log the original URL for debugging
-    console.log('[VideoPlayer] Original URL:', url);
-    
-    // Check if the URL is an M3U8 URL
-    if (url.includes('.m3u8') || url.includes('application/vnd.apple.mpegurl')) {
-      // Check if we have a CORS proxy URL configured
-      if (!CORSPROXY_URL) {
-        console.warn('[VideoPlayer] No CORS proxy URL configured, using original URL');
-        return url;
-      }
-      
-      // Route through the external M3U8 proxy server
-      const encodedUrl = encodeURIComponent(url);
-      const proxiedUrl = `${CORSPROXY_URL}/m3u8-proxy?url=${encodedUrl}`;
-      console.log('[VideoPlayer] Using proxied URL:', proxiedUrl);
-      return proxiedUrl;
-    }
-    
-    return url;
   };
 
   // Set headers from props when they change
@@ -256,34 +225,31 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
           console.log('[VideoPlayer] HLS is supported, initializing');
           
           hls = new Hls({
-            xhrSetup: (xhr, url) => {
-              console.log('[VideoPlayer] HLS XHR setup for URL:', url);
-              
-              // Set headers for HLS requests
-              Object.entries(videoHeaders).forEach(([key, value]) => {
-                xhr.setRequestHeader(key, value);
-                console.log(`[VideoPlayer] Setting header: ${key}`);
-              });
-            },
-            // Additional HLS settings for better performance
+            debug: true,
             maxBufferLength: 30,
             maxMaxBufferLength: 60,
-            startLevel: -1, // Auto level selection
-            capLevelToPlayerSize: true, // Limit quality based on player size
-            debug: false,
-            // Add more robust error recovery
-            fragLoadingMaxRetry: 5,
-            manifestLoadingMaxRetry: 5,
-            levelLoadingMaxRetry: 5,
-            fragLoadingRetryDelay: 1000,
-            manifestLoadingRetryDelay: 1000,
-            levelLoadingRetryDelay: 1000
+            enableWorker: false, // Disable worker for easier debugging
+            startLevel: -1, // Start with Auto quality
+            autoLevelEnabled: true, // Enable auto quality switching
+            abrEwmaDefaultEstimate: 500000, // Start with a higher bandwidth estimate
+            abrBandWidthFactor: 0.95, // Be more aggressive with quality upgrades
+            abrBandWidthUpFactor: 0.7, // Be more conservative with quality downgrades
+            xhrSetup: function(xhr, url) {
+              console.log('HLS attempting to load:', url);
+              
+              // Apply headers directly to all requests
+              if (!url.startsWith('blob:') && url.includes('://')) {
+                Object.entries(videoHeaders).forEach(([key, value]) => {
+                  xhr.setRequestHeader(key, value);
+                });
+              }
+            }
           });
           
           window.hls = hls; // Save reference for debugging
           
           // Bind HLS to video element
-          const proxiedSrc = getProxiedUrl(src);
+          const proxiedSrc = src;
           console.log('[VideoPlayer] Loading proxied source:', proxiedSrc);
           hls.loadSource(proxiedSrc);
           hls.attachMedia(video);
@@ -390,9 +356,6 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
       return;
     }
 
-    // Get the proxied URL if it's an M3U8 URL
-    const proxiedSrc = getProxiedUrl(src);
-
     setIsLoading(true);
     
     const setupHls = async () => {
@@ -414,13 +377,11 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
           xhrSetup: function(xhr, url) {
             console.log('HLS attempting to load:', url);
             
-            // Only route external URLs through the proxy
-            if (!url.startsWith(CORSPROXY_URL) && !url.startsWith('blob:') && url.includes('://')) {
-              // If this is a segment URL from an HLS manifest
-              const proxiedUrl = `${CORSPROXY_URL}/ts-proxy?url=${encodeURIComponent(url)}&headers=${encodeURIComponent(JSON.stringify(videoHeaders))}`;
-              console.log('Redirecting segment request through proxy:', proxiedUrl);
-              xhr.open('GET', proxiedUrl, true);
-              return;
+            // Apply headers directly to all requests
+            if (!url.startsWith('blob:') && url.includes('://')) {
+              Object.entries(videoHeaders).forEach(([key, value]) => {
+                xhr.setRequestHeader(key, value);
+              });
             }
           }
         });
@@ -488,8 +449,8 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
                   return;
                 }
                 
-                if (data.response && (data.response.code === 404 || data.url?.includes(CORSPROXY_URL))) {
-                  setError(`Could not connect to proxy server. Please check if the proxy is running at ${CORSPROXY_URL}`);
+                if (data.response && data.response.code === 404) {
+                  setError(`Video not found (404). Please try another server.`);
                   setIsLoading(false);
                   return;
                 }
@@ -651,15 +612,7 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
     // Format subtitle URL correctly - it might be in different formats
     let subtitleUrl = activeSubtitle.src || activeSubtitle.url;
     
-    // Some subtitle URLs might need proxying if they're from a different origin
-    if (subtitleUrl && (subtitleUrl.startsWith('http://') || subtitleUrl.startsWith('https://'))) {
-      const proxyBase = process.env.NEXT_PUBLIC_CORSPROXY_URL || '';
-      if (proxyBase && !subtitleUrl.includes(window.location.host)) {
-        subtitleUrl = `${proxyBase}/subtitle-proxy?url=${encodeURIComponent(subtitleUrl)}`;
-        console.log('[VideoPlayer] Proxying subtitle URL:', subtitleUrl);
-      }
-    }
-    
+    // Use subtitle URL directly
     track.src = subtitleUrl;
     track.default = true;
     
@@ -686,15 +639,6 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
     if (!subtitleUrl) {
       console.error('[VideoPlayer] No valid URL found in subtitle:', JSON.stringify(subtitle));
       return;
-    }
-    
-    // Some subtitle URLs might need proxying if they're from a different origin
-    if (subtitleUrl && (subtitleUrl.startsWith('http://') || subtitleUrl.startsWith('https://'))) {
-      const proxyBase = process.env.NEXT_PUBLIC_CORSPROXY_URL || '';
-      if (proxyBase && !subtitleUrl.includes(window.location.host)) {
-        subtitleUrl = `${proxyBase}/subtitle-proxy?url=${encodeURIComponent(subtitleUrl)}`;
-        console.log('[VideoPlayer] Proxying subtitle URL:', subtitleUrl);
-      }
     }
     
     console.log('[VideoPlayer] Final subtitle URL:', subtitleUrl);

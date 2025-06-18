@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
-    NEXT_PUBLIC_CORSPROXY_URL: process.env.CORSPROXY_URL,
+    // Environment variables here
   },
   images: {
     unoptimized: true,
