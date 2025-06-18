@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
-import Image from 'next/image';
+import NextImage from 'next/image';
 
 // Get the M3U8 Proxy URL from environment variables
 const CORSPROXY_URL = process.env.NEXT_PUBLIC_CORSPROXY_URL;
@@ -99,11 +99,22 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
   const getProxiedUrl = (url) => {
     if (!url) return url;
     
+    // Log the original URL for debugging
+    console.log('[VideoPlayer] Original URL:', url);
+    
     // Check if the URL is an M3U8 URL
     if (url.includes('.m3u8') || url.includes('application/vnd.apple.mpegurl')) {
+      // Check if we have a CORS proxy URL configured
+      if (!CORSPROXY_URL) {
+        console.warn('[VideoPlayer] No CORS proxy URL configured, using original URL');
+        return url;
+      }
+      
       // Route through the external M3U8 proxy server
       const encodedUrl = encodeURIComponent(url);
-      return `${CORSPROXY_URL}/m3u8-proxy?url=${encodedUrl}`;
+      const proxiedUrl = `${CORSPROXY_URL}/m3u8-proxy?url=${encodedUrl}`;
+      console.log('[VideoPlayer] Using proxied URL:', proxiedUrl);
+      return proxiedUrl;
     }
     
     return url;
@@ -259,7 +270,14 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
             maxMaxBufferLength: 60,
             startLevel: -1, // Auto level selection
             capLevelToPlayerSize: true, // Limit quality based on player size
-            debug: false
+            debug: false,
+            // Add more robust error recovery
+            fragLoadingMaxRetry: 5,
+            manifestLoadingMaxRetry: 5,
+            levelLoadingMaxRetry: 5,
+            fragLoadingRetryDelay: 1000,
+            manifestLoadingRetryDelay: 1000,
+            levelLoadingRetryDelay: 1000
           });
           
           window.hls = hls; // Save reference for debugging
@@ -294,26 +312,28 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
           });
           
           hls.on(Hls.Events.ERROR, (event, data) => {
+            console.error('[VideoPlayer] HLS error:', event, data);
+            
             if (data.fatal) {
               switch (data.type) {
                 case Hls.ErrorTypes.NETWORK_ERROR:
-                  console.error('HLS network error');
+                  console.error('[VideoPlayer] HLS network error, attempting recovery');
                   hls.startLoad();
                   break;
                 case Hls.ErrorTypes.MEDIA_ERROR:
-                  console.error('HLS media error');
+                  console.error('[VideoPlayer] HLS media error, attempting recovery');
                   hls.recoverMediaError();
                   break;
                 default:
-                  console.error('HLS fatal error');
-                  setError('Failed to load video');
+                  console.error('[VideoPlayer] HLS fatal error, cannot recover');
+                  setError('Failed to load video - please try another server');
                   break;
               }
             }
           });
         } else {
           // For non-HLS streams, use native video player
-          video.src = src;
+          console.log('[VideoPlayer] Using native player for source:', src);
           
           // Set headers for direct video requests
           const fetchOptions = {
@@ -322,7 +342,10 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
           
           try {
             const response = await fetch(src, fetchOptions);
-            if (!response.ok) throw new Error('Failed to load video');
+            if (!response.ok) {
+              console.error('[VideoPlayer] Failed to fetch video:', response.status, response.statusText);
+              throw new Error('Failed to load video');
+            }
             
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
@@ -330,18 +353,20 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
             
             // Auto-play when ready
             if (isPlaying) {
-              video.play().catch(console.error);
+              video.play().catch(err => {
+                console.error('[VideoPlayer] Autoplay error:', err);
+              });
             }
           } catch (error) {
-            console.error('Error loading video:', error);
-            setError('Failed to load video');
+            console.error('[VideoPlayer] Error loading video:', error);
+            setError('Failed to load video - please try another server');
           }
         }
         
         setIsLoading(false);
       } catch (error) {
-        console.error('Error setting up video:', error);
-        setError('Failed to load video');
+        console.error('[VideoPlayer] Error setting up video:', error);
+        setError('Failed to load video - please try another server');
         setIsLoading(false);
       }
     };
@@ -561,18 +586,6 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
       video.removeEventListener('ended', onEnded);
     };
   }, []);
-
-  // Setup thumbnails for scrubbing preview
-  useEffect(() => {
-    if (thumbnails) {
-      console.log('Thumbnails URL available:', thumbnails);
-      const video = videoRef.current;
-      if (video) {
-        // Add data attribute for custom video player to use
-        video.setAttribute('data-thumbnails', thumbnails);
-      }
-    }
-  }, [thumbnails]);
 
   // Toggle fullscreen
   const toggleFullscreen = () => {
@@ -1045,14 +1058,13 @@ export default function VideoPlayer({ src, poster, headers = {}, subtitles = [],
   // Load and verify thumbnails
   useEffect(() => {
     if (thumbnails) {
-      const img = new Image();
+      const img = new window.Image();
       img.onload = () => {
         setThumbnailsLoaded(true);
         console.log('Thumbnails loaded successfully');
       };
-      img.onerror = () => {
-        console.error('Failed to load thumbnails');
-        setThumbnailsLoaded(false);
+      img.onerror = (err) => {
+        console.error('Error loading thumbnails:', err);
       };
       img.src = thumbnails;
     }

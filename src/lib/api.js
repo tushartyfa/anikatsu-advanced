@@ -586,33 +586,41 @@ export const fetchEpisodeSources = async (episodeId, dub = false, server = 'hd-2
       return { sources: [] };
     }
     
-    if (!data.success) {
-      console.error('[API Error] Response indicates failure - success flag is false');
+    // Check if response is valid (status 200 or success flag)
+    // Some API responses use success flag, others use status code
+    const isValidResponse = (data.success === true) || (data.status === 200);
+    if (!isValidResponse) {
+      console.error('[API Error] Response indicates failure - invalid status or success flag');
       return { sources: [] };
     }
     
-    if (!data.data) {
+    // Get the data object from either data.data (new format) or data (old format)
+    const responseData = data.data || data;
+    
+    if (!responseData) {
       console.error('[API Error] Empty data object in response');
       return { sources: [] };
     }
     
-    if (!data.data.sources || data.data.sources.length === 0) {
+    if (!responseData.sources || responseData.sources.length === 0) {
       console.error('[API Error] No sources found in response data');
       return { sources: [] };
     }
     
-    console.log('[API Success] Found sources:', data.data.sources.map(s => ({ 
+    console.log('[API Success] Found sources:', responseData.sources.map(s => ({ 
       url: s.url.substring(0, 50) + '...',
       quality: s.quality,
       isM3U8: s.isM3U8
     })));
     
     return {
-      sources: data.data.sources || [],
-      headers: data.data.headers || { "Referer": "https://hianime.to/" },
-      subtitles: data.data.subtitles || [],
-      anilistID: data.data.anilistID || null,
-      malID: data.data.malID || null
+      sources: responseData.sources || [],
+      headers: responseData.headers || { "Referer": "https://hianime.to/" },
+      subtitles: responseData.tracks || responseData.subtitles || [],
+      anilistID: responseData.anilistID || null,
+      malID: responseData.malID || null,
+      intro: responseData.intro || null,
+      outro: responseData.outro || null
     };
   } catch (error) {
     console.error('Error fetching episode sources:', error);

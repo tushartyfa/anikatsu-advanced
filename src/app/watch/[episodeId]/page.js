@@ -178,8 +178,28 @@ export default function WatchPage() {
       }
       
       // Set subtitles if available in the sources response
-      if (data.subtitles && data.subtitles.length > 0) {
-        setSubtitles(data.subtitles);
+      // Check both subtitles and tracks fields since API might return either
+      const subtitleData = data.subtitles || data.tracks || [];
+      if (subtitleData.length > 0) {
+        // Filter out thumbnails from subtitles array
+        const filteredSubtitles = subtitleData.filter(sub => 
+          sub.lang && sub.lang.toLowerCase() !== 'thumbnails'
+        );
+        
+        // Look for thumbnails separately
+        const thumbnailTrack = subtitleData.find(sub => 
+          sub.lang && sub.lang.toLowerCase() === 'thumbnails'
+        );
+        
+        if (thumbnailTrack && thumbnailTrack.url) {
+          console.log('[Watch] Found thumbnails track:', thumbnailTrack.url);
+          setThumbnails(thumbnailTrack.url);
+        }
+        
+        if (filteredSubtitles.length > 0) {
+          console.log('[Watch] Found subtitles:', filteredSubtitles.length);
+          setSubtitles(filteredSubtitles);
+        }
       }
       
       // Try to find the best source in order of preference
@@ -421,8 +441,8 @@ export default function WatchPage() {
                           subtitles={subtitles}
                           thumbnails={thumbnails}
                           category={isDub ? 'dub' : 'sub'}
-                          intro={episodeData?.intro}
-                          outro={episodeData?.outro}
+                          intro={episodeData?.intro || null}
+                          outro={episodeData?.outro || null}
                           autoSkipIntro={autoSkip}
                           autoSkipOutro={autoSkip}
                           episodeId={currentEpisodeId}
