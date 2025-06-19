@@ -264,7 +264,7 @@ export default function MostPopularPage() {
         <>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
             {(filteredList.length > 0 ? filteredList : animeList).map((anime) => (
-              <AnimeCard key={anime.id} anime={anime} />
+              <AnimeCard key={anime.id} anime={anime} isRecent={true} />
             ))}
           </div>
           

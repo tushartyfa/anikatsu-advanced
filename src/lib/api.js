@@ -463,6 +463,9 @@ export const fetchAnimeEpisodes = async (animeId) => {
       return { episodes: [] };
     }
     
+    // API already returns episodeId in correct format (animeId?ep=episodeNumber)
+    // So we simply use it directly without any formatting
+    
     return {
       episodes: data.data.episodes || [],
       totalEpisodes: data.data.totalEpisodes || 0
@@ -480,20 +483,11 @@ export const fetchEpisodeServers = async (episodeId) => {
       return { servers: [] };
     }
     
-    // Make sure the episodeId is properly formatted
-    // If it has a number suffix without ?ep= format, reformat it
-    let formattedEpisodeId = episodeId;
-    if (!episodeId.includes('?ep=')) {
-      // Extract the anime ID and episode number
-      const match = episodeId.match(/^(.*?)-(\d+)$/);
-      if (match) {
-        const [, animeId, episodeNumber] = match;
-        formattedEpisodeId = `${animeId}?ep=${episodeNumber}`;
-        console.log(`[API] Reformatted episode ID from ${episodeId} to ${formattedEpisodeId}`);
-      }
-    }
+    console.log(`[API] Processing episode ID: ${episodeId}`);
     
-    const apiUrl = `${API_BASE_URL}/episode/servers?animeEpisodeId=${encodeURIComponent(formattedEpisodeId)}`;
+    // episodeId should already be in the correct format (animeId?ep=episodeNumber)
+    // from the API response, so we use it directly
+    const apiUrl = `${API_BASE_URL}/episode/servers?animeEpisodeId=${encodeURIComponent(episodeId)}`;
     console.log(`[API Call] Fetching servers from: ${apiUrl}`);
     
     const response = await fetch(apiUrl, {
@@ -547,22 +541,13 @@ export const fetchEpisodeSources = async (episodeId, dub = false, server = 'hd-2
       return { sources: [] };
     }
     
-    // Make sure the episodeId is properly formatted
-    // If it has a number suffix without ?ep= format, reformat it
-    let formattedEpisodeId = episodeId;
-    if (!episodeId.includes('?ep=')) {
-      // Extract the anime ID and episode number
-      const match = episodeId.match(/^(.*?)-(\d+)$/);
-      if (match) {
-        const [, animeId, episodeNumber] = match;
-        formattedEpisodeId = `${animeId}?ep=${episodeNumber}`;
-        console.log(`[API] Reformatted episode ID from ${episodeId} to ${formattedEpisodeId}`);
-      }
-    }
+    console.log(`[API] Processing episode ID for sources: ${episodeId}`);
     
+    // episodeId should already be in the correct format (animeId?ep=episodeNumber)
+    // from the API response, so we use it directly
     const category = dub ? 'dub' : 'sub';
     const serverName = server || 'hd-2'; // Default to hd-2 if server is null or empty
-    const apiUrl = `${API_BASE_URL}/episode/sources?animeEpisodeId=${encodeURIComponent(formattedEpisodeId)}&category=${category}&server=${serverName}`;
+    const apiUrl = `${API_BASE_URL}/episode/sources?animeEpisodeId=${encodeURIComponent(episodeId)}&category=${category}&server=${serverName}`;
     console.log(`[API Call] Fetching sources from: ${apiUrl}`);
     
     const response = await fetch(apiUrl, {

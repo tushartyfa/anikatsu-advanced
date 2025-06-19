@@ -77,6 +77,7 @@ export default function AnimeTabs({ topAiring = [], popular = [], latestComplete
           <AnimeCard 
             key={anime.id + '-' + index} 
             anime={anime}
+            isRecent={true}
           />
         ))}
       </div>

@@ -5,12 +5,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import AnimeRow from './AnimeRow';
 import SeasonRow from './SeasonRow';
+import { fetchAnimeEpisodes } from '@/lib/api';
 
 export default function AnimeDetails({ anime }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeVideo, setActiveVideo] = useState(null);
   const [activeTab, setActiveTab] = useState('synopsis');
   const [synopsisOverflows, setSynopsisOverflows] = useState(false);
+  const [firstEpisodeId, setFirstEpisodeId] = useState(null);
+  const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
   const synopsisRef = useRef(null);
   
   // Check if synopsis overflows when component mounts or when content changes
@@ -21,6 +24,29 @@ export default function AnimeDetails({ anime }) {
     }
   }, [anime?.info?.description, activeTab]);
   
+  // Fetch first episode ID when component mounts
+  useEffect(() => {
+    const fetchFirstEpisode = async () => {
+      if (anime?.info?.id) {
+        setIsLoadingEpisodes(true);
+        try {
+          const response = await fetchAnimeEpisodes(anime.info.id);
+          if (response.episodes && response.episodes.length > 0) {
+            // Get the first episode's episodeId
+            setFirstEpisodeId(response.episodes[0].episodeId);
+            console.log(`[AnimeDetails] First episode ID: ${response.episodes[0].episodeId}`);
+          }
+        } catch (error) {
+          console.error('[AnimeDetails] Error fetching episodes:', error);
+        } finally {
+          setIsLoadingEpisodes(false);
+        }
+      }
+    };
+    
+    fetchFirstEpisode();
+  }, [anime?.info?.id]);
+  
   if (!anime?.info) {
     return null;
   }
@@ -28,6 +54,11 @@ export default function AnimeDetails({ anime }) {
   const { info, moreInfo, relatedAnime, recommendations, seasons } = anime;
   const hasCharacters = info.characterVoiceActor?.length > 0 || info.charactersVoiceActors?.length > 0;
   const hasVideos = info.promotionalVideos && info.promotionalVideos.length > 0;
+
+  // Build the watch URL based on the first episode ID or fallback
+  const watchUrl = firstEpisodeId 
+    ? `/watch/${firstEpisodeId}` 
+    : `/watch/${info.id}?ep=1`; // Fallback to old format if API fetch fails
 
   // Video modal for promotional videos
   const VideoModal = ({ video, onClose }) => {
@@ -208,7 +239,7 @@ export default function AnimeDetails({ anime }) {
             {/* Watch Button - Full Width on Mobile */}
             {info.stats?.episodes && (info.stats.episodes.sub > 0 || info.stats.episodes.dub > 0) && (
               <Link 
-                href={`/watch/${info.id}?ep=1`}
+                href={watchUrl}
                 className="bg-[#ffffff] text-[var(--background)] px-4 py-2.5 rounded-xl mt-3 hover:opacity-90 transition-opacity flex items-center justify-center font-medium text-sm w-full shadow-lg"
               >
                 <svg
@@ -244,7 +275,7 @@ export default function AnimeDetails({ anime }) {
             {/* Watch Button - Desktop */}
             {info.stats?.episodes && (info.stats.episodes.sub > 0 || info.stats.episodes.dub > 0) && (
               <Link 
-                href={`/watch/${info.id}?ep=1`}
+                href={watchUrl}
                 className="bg-[#ffffff] text-[var(--background)] px-6 py-3 rounded-xl mt-4 hover:opacity-90 transition-opacity flex items-center justify-center font-medium text-base w-full shadow-lg"
               >
                 <svg

@@ -68,12 +68,33 @@ export default function WatchPage() {
       console.log('[Watch] Raw episodeId from URL:', episodeId);
       
       // Extract animeId from the episodeId parameter
-      // The new format is: anime-name?ep=episode-number
-      const [baseId, queryString] = episodeId.split('?');
+      // Handle different possible formats:
+      // 1. anime-name?ep=episode-number (standard format)
+      // 2. anime-name-episode-number (legacy format)
       
-      if (baseId) {
-        setAnimeId(baseId);
-        console.log('[Watch] Extracted anime ID:', baseId);
+      let extractedAnimeId;
+      let episodeNumber;
+      
+      if (episodeId.includes('?ep=')) {
+        // Format: anime-name?ep=episode-number
+        const [baseId, queryString] = episodeId.split('?');
+        extractedAnimeId = baseId;
+        episodeNumber = queryString.replace('ep=', '');
+        console.log(`[Watch] Format detected: standard (anime-name?ep=episode-number)`);
+      } else if (episodeId.includes('-')) {
+        // Format: anime-name-episode-number
+        const match = episodeId.match(/^(.*?)-(\d+)$/);
+        if (match) {
+          extractedAnimeId = match[1];
+          episodeNumber = match[2];
+          console.log(`[Watch] Format detected: legacy (anime-name-episode-number)`);
+        }
+      }
+      
+      if (extractedAnimeId) {
+        setAnimeId(extractedAnimeId);
+        console.log('[Watch] Extracted anime ID:', extractedAnimeId);
+        console.log('[Watch] Extracted episode number:', episodeNumber);
       } else {
         console.warn('[Watch] Could not extract anime ID from episode ID:', episodeId);
       }
@@ -283,32 +304,35 @@ export default function WatchPage() {
             // Find current episode in episode list
             // Handle both formats: anime-name?ep=episode-number or anime-name-episode-number
             const findCurrentEpisode = () => {
-              // Extract episode number from the URL
-              const [, queryString] = currentEpisodeId.split('?');
-              let currentEpisodeNumber;
+              // First, try to find the episode by direct ID match
+              const directMatch = episodesData.episodes.find(ep => ep.id === currentEpisodeId);
+              if (directMatch) {
+                console.log('[Watch] Found episode by direct ID match:', directMatch.number);
+                return directMatch;
+              }
               
-              if (queryString && queryString.startsWith('ep=')) {
-                // If it's in the format anime-name?ep=episode-number
-                currentEpisodeNumber = queryString.replace('ep=', '');
-                console.log('[Watch] Current episode number from ?ep= format:', currentEpisodeNumber);
-              } else {
-                // If it's in the format anime-name-episode-number
-                const match = currentEpisodeId.match(/-(\d+)$/);
-                if (match && match[1]) {
-                  currentEpisodeNumber = match[1];
-                  console.log('[Watch] Current episode number from dash format:', currentEpisodeNumber);
+              // As a fallback, try to match by episode number
+              // Extract episode number from the URL if it's in the format anime-id?ep=number
+              if (currentEpisodeId.includes('?ep=')) {
+                const [, queryString] = currentEpisodeId.split('?');
+                if (queryString) {
+                  const episodeNumber = queryString.replace('ep=', '');
+                  console.log('[Watch] Trying to find by episode number:', episodeNumber);
+                  
+                  const numberMatch = episodesData.episodes.find(ep => 
+                    ep.number && ep.number.toString() === episodeNumber.toString()
+                  );
+                  
+                  if (numberMatch) {
+                    console.log('[Watch] Found episode by number:', numberMatch.number);
+                    return numberMatch;
+                  }
                 }
               }
               
-              if (currentEpisodeNumber) {
-                // Try to find the episode by number
-                return episodesData.episodes.find(ep => 
-                  ep.number && ep.number.toString() === currentEpisodeNumber.toString()
-                );
-              }
-              
-              // If no match by number, try to match by full ID
-              return episodesData.episodes.find(ep => ep.id === currentEpisodeId);
+              // If no match found, return first episode as fallback
+              console.warn('[Watch] Could not find matching episode, falling back to first episode');
+              return episodesData.episodes[0];
             };
             
             const episode = findCurrentEpisode();
@@ -377,6 +401,11 @@ export default function WatchPage() {
 
   const handleEpisodeClick = (newEpisodeId) => {
     if (newEpisodeId !== currentEpisodeId) {
+      console.log(`[Watch] Episode clicked, ID: ${newEpisodeId}`);
+      
+      // Use the episode ID directly as it should already be in the correct format
+      // from the API response (animeId?ep=episodeNumber)
+      
       // Update the URL using history API
       const newUrl = `/watch/${encodeURIComponent(newEpisodeId)}`;
       window.history.pushState({ episodeId: newEpisodeId }, '', newUrl);

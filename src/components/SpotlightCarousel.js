@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination, EffectFade } from 'swiper/modules';
+import { fetchAnimeEpisodes } from '@/lib/api';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -14,11 +15,87 @@ import 'swiper/css/effect-fade';
 
 const SpotlightCarousel = ({ items = [] }) => {
   const [isClient, setIsClient] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [autoplay, setAutoplay] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [episodeIds, setEpisodeIds] = useState({});
+  const intervalRef = useRef(null);
+  const progressIntervalRef = useRef(null);
 
   // Handle hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Fetch first episode IDs for all spotlight items
+  useEffect(() => {
+    const fetchEpisodeData = async () => {
+      const episodeData = {};
+      
+      for (const item of items) {
+        if (item.id) {
+          try {
+            const response = await fetchAnimeEpisodes(item.id);
+            if (response.episodes && response.episodes.length > 0) {
+              episodeData[item.id] = response.episodes[0].episodeId;
+            }
+          } catch (error) {
+            console.error(`[SpotlightCarousel] Error fetching episodes for ${item.id}:`, error);
+          }
+        }
+      }
+      
+      setEpisodeIds(episodeData);
+    };
+    
+    if (items && items.length > 0) {
+      fetchEpisodeData();
+    }
+  }, [items]);
+
+  // Autoplay functionality
+  useEffect(() => {
+    if (autoplay && items.length > 1) {
+      // Clear any existing intervals
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      
+      // Set up new intervals
+      setProgress(0);
+      progressIntervalRef.current = setInterval(() => {
+        setProgress(prev => {
+          const newProgress = prev + 1;
+          return newProgress <= 100 ? newProgress : prev;
+        });
+      }, 50); // Update every 50ms to get smooth progress
+
+      intervalRef.current = setTimeout(() => {
+        setCurrentIndex(prevIndex => (prevIndex + 1) % items.length);
+        setProgress(0);
+      }, 5000);
+    }
+    
+    return () => {
+      if (intervalRef.current) clearTimeout(intervalRef.current);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    };
+  }, [autoplay, currentIndex, items.length]);
+
+  const handleDotClick = (index) => {
+    setCurrentIndex(index);
+    setProgress(0);
+    // Reset autoplay timer when manually changing slides
+    if (intervalRef.current) clearTimeout(intervalRef.current);
+    if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    if (autoplay) {
+      intervalRef.current = setTimeout(() => {
+        setCurrentIndex((index + 1) % items.length);
+      }, 5000);
+    }
+  };
+
+  const handleMouseEnter = () => setAutoplay(false);
+  const handleMouseLeave = () => setAutoplay(true);
 
   // If no items or not on client yet, show loading state
   if (!isClient || !items.length) {
@@ -31,6 +108,13 @@ const SpotlightCarousel = ({ items = [] }) => {
       </div>
     );
   }
+
+  const currentItem = items[currentIndex];
+  
+  // Get the watch URL for the current item
+  const watchUrl = episodeIds[currentItem.id] 
+    ? `/watch/${episodeIds[currentItem.id]}` 
+    : `/watch/${currentItem.id}?ep=1`; // Fallback to old format if API fetch fails
 
   return (
     <div className="w-full mb-6 md:mb-10 spotlight-carousel">
@@ -46,6 +130,20 @@ const SpotlightCarousel = ({ items = [] }) => {
         }}
         loop={true}
         className="rounded-xl overflow-hidden"
+        onSlideChange={(swiper) => {
+          setCurrentIndex(swiper.realIndex);
+          setProgress(0);
+          // Reset autoplay timer when manually changing slides
+          if (intervalRef.current) clearTimeout(intervalRef.current);
+          if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+          if (autoplay) {
+            intervalRef.current = setTimeout(() => {
+              setCurrentIndex((swiper.realIndex + 1) % items.length);
+            }, 5000);
+          }
+        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {items.map((anime, index) => (
           <SwiperSlide key={`spotlight-${anime.id}-${index}`}>
@@ -131,7 +229,7 @@ const SpotlightCarousel = ({ items = [] }) => {
                   {/* Buttons - Below title on mobile, right side on desktop */}
                   <div className="flex items-center space-x-2 md:space-x-4 mt-1 md:mt-0 md:absolute md:bottom-8 md:right-8">
                     <Link 
-                      href={`/watch/${anime.id}?ep=${anime.episodes?.sub || anime.episodes?.dub || 1}`}
+                      href={watchUrl}
                       className="bg-white hover:bg-gray-200 text-[#0a0a0a] font-medium text-xs md:text-base px-3 md:px-6 py-1.5 md:py-2 rounded flex items-center space-x-1.5 md:space-x-2 transition-colors"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 md:h-5 md:w-5" viewBox="0 0 20 20" fill="currentColor">

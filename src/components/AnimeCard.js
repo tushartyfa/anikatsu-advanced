@@ -1,11 +1,15 @@
 'use client';
 
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { fetchAnimeEpisodes } from '@/lib/api';
 
 export default function AnimeCard({ anime, isRecent }) {
   const [imageError, setImageError] = useState(false);
+  const [firstEpisodeId, setFirstEpisodeId] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const timerRef = useRef(null);
   
   if (!anime) return null;
   
@@ -14,17 +18,60 @@ export default function AnimeCard({ anime, isRecent }) {
     setImageError(true);
   };
   
+  // Fetch first episode ID when component is hovered
+  useEffect(() => {
+    const fetchFirstEpisode = async () => {
+      if (anime?.id && isHovered && !firstEpisodeId) {
+        try {
+          const response = await fetchAnimeEpisodes(anime.id);
+          if (response.episodes && response.episodes.length > 0) {
+            // Get the first episode's episodeId
+            setFirstEpisodeId(response.episodes[0].episodeId);
+            console.log(`[AnimeCard] First episode ID for ${anime.name}: ${response.episodes[0].episodeId}`);
+          }
+        } catch (error) {
+          console.error(`[AnimeCard] Error fetching episodes for ${anime.id}:`, error);
+        }
+      }
+    };
+    
+    fetchFirstEpisode();
+  }, [anime?.id, isHovered, firstEpisodeId]);
+  
+  const handleMouseEnter = () => {
+    // Clear any existing timers
+    if (timerRef.current) clearTimeout(timerRef.current);
+    // Set a small delay to prevent API calls for quick mouseovers
+    timerRef.current = setTimeout(() => {
+      setIsHovered(true);
+    }, 300); // Delay to prevent unnecessary API calls
+  };
+  
+  const handleMouseLeave = () => {
+    // Clear the timer if the user moves the mouse away quickly
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setIsHovered(false);
+  };
+  
   // Get image URL with fallback
   const imageSrc = imageError ? '/images/placeholder.png' : anime.poster;
   
   // Generate appropriate links
   const infoLink = `/anime/${anime.id}`;
-  const watchLink = isRecent 
-    ? `/watch/${anime.id}?ep=${anime.episodes?.sub || anime.episodes?.dub || 1}` 
-    : `/anime/${anime.id}`;
+  
+  // Build the watch URL based on the first episode ID or fallback
+  const watchLink = isRecent ? (
+    firstEpisodeId 
+      ? `/watch/${firstEpisodeId}` 
+      : `/watch/${anime.id}?ep=${anime.episodes?.sub || anime.episodes?.dub || 1}`
+  ) : infoLink;
   
   return (
-    <div className="anime-card w-full flex flex-col">
+    <div 
+      className="anime-card w-full flex flex-col"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {/* Image card linking to watch page */}
       <Link 
         href={watchLink}

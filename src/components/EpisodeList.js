@@ -52,21 +52,11 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
     };
   }, [episodes, episodesPerPage]);
 
-  // Helper function to normalize episode IDs for comparison
+  // Helper function for episode ID comparison
+  // The API returns episode IDs in the format: animeId?ep=episodeNumber
   const normalizeEpisodeId = (id) => {
-    if (!id) return '';
-    
-    // If it's already in ?ep= format
-    if (id.includes('?ep=')) return id;
-    
-    // If it's in anime-name-number format
-    const match = id.match(/^(.*?)-(\d+)$/);
-    if (match) {
-      const [, animeId, episodeNumber] = match;
-      return `${animeId}?ep=${episodeNumber}`;
-    }
-    
-    return id;
+    // Simply return the ID as-is since the API already provides the correct format
+    return id || '';
   };
 
   const filteredEpisodes = useMemo(() => {
@@ -97,9 +87,11 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
   const handleEpisodeSelect = (episode, e) => {
     e.preventDefault();
     if (onEpisodeClick && episode.id) {
+      // Use the episode ID directly as it's already in the correct format from the API
+      console.log(`[EpisodeList] Selected episode: ${episode.number}, ID: ${episode.id}`);
       onEpisodeClick(episode.id);
+      setActiveEpisodeId(episode.id);
     }
-    setActiveEpisodeId(episode.id);
   };
 
   // Scroll active episode into view when page changes or active episode changes
