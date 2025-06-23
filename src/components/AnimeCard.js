@@ -11,13 +11,6 @@ export default function AnimeCard({ anime, isRecent }) {
   const [isLoading, setIsLoading] = useState(false);
   const timerRef = useRef(null);
   
-  if (!anime) return null;
-  
-  const handleImageError = () => {
-    console.log("Image error for:", anime.name);
-    setImageError(true);
-  };
-  
   // Fetch first episode ID when component mounts for recent anime
   useEffect(() => {
     const fetchFirstEpisode = async () => {
@@ -71,6 +64,13 @@ export default function AnimeCard({ anime, isRecent }) {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [anime?.id, anime?.name, isRecent, firstEpisodeId, isLoading]);
+
+  if (!anime) return null;
+  
+  const handleImageError = () => {
+    console.log("Image error for:", anime.name);
+    setImageError(true);
+  };
   
   // Get image URL with fallback
   const imageSrc = imageError ? '/images/placeholder.png' : anime.poster;
