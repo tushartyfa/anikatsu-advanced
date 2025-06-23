@@ -30,14 +30,45 @@ export default function AnimeDetails({ anime }) {
       if (anime?.info?.id) {
         setIsLoadingEpisodes(true);
         try {
+          console.log(`[AnimeDetails] Fetching episodes for anime: ${anime.info.id}`);
           const response = await fetchAnimeEpisodes(anime.info.id);
+          console.log('[AnimeDetails] Episodes response:', response);
+          
           if (response.episodes && response.episodes.length > 0) {
-            // Get the first episode's episodeId
-            setFirstEpisodeId(response.episodes[0].episodeId);
-            console.log(`[AnimeDetails] First episode ID: ${response.episodes[0].episodeId}`);
+            // Log the first episode to check its structure
+            console.log('[AnimeDetails] First episode:', response.episodes[0]);
+            
+            // Get the first episode's id
+            const firstEp = response.episodes[0];
+            if (firstEp.id) {
+              setFirstEpisodeId(firstEp.id);
+              console.log(`[AnimeDetails] First episode ID found: ${firstEp.id}`);
+            } else if (firstEp.episodeId) {
+              // Fallback to episodeId if id is not available
+              setFirstEpisodeId(firstEp.episodeId);
+              console.log(`[AnimeDetails] Falling back to episodeId: ${firstEp.episodeId}`);
+            } else {
+              // If no episode ID is found in the API response, create a fallback ID
+              const fallbackId = `${anime.info.id}?ep=1`;
+              setFirstEpisodeId(fallbackId);
+              console.log(`[AnimeDetails] Using fallback ID: ${fallbackId}`);
+            }
+          } else if (anime.info.id) {
+            // If no episodes found but anime ID is available, use fallback
+            const fallbackId = `${anime.info.id}?ep=1`;
+            setFirstEpisodeId(fallbackId);
+            console.log(`[AnimeDetails] No episodes found, using fallback ID: ${fallbackId}`);
+          } else {
+            console.warn('[AnimeDetails] No episodes found and no anime ID available');
           }
         } catch (error) {
           console.error('[AnimeDetails] Error fetching episodes:', error);
+          // Even on error, try to use fallback
+          if (anime.info.id) {
+            const fallbackId = `${anime.info.id}?ep=1`;
+            setFirstEpisodeId(fallbackId);
+            console.log(`[AnimeDetails] Error occurred, using fallback ID: ${fallbackId}`);
+          }
         } finally {
           setIsLoadingEpisodes(false);
         }
@@ -47,6 +78,11 @@ export default function AnimeDetails({ anime }) {
     fetchFirstEpisode();
   }, [anime?.info?.id]);
   
+  // Add a useEffect to debug when and why firstEpisodeId changes
+  useEffect(() => {
+    console.log('[AnimeDetails] firstEpisodeId changed:', firstEpisodeId);
+  }, [firstEpisodeId]);
+  
   if (!anime?.info) {
     return null;
   }
@@ -55,10 +91,13 @@ export default function AnimeDetails({ anime }) {
   const hasCharacters = info.characterVoiceActor?.length > 0 || info.charactersVoiceActors?.length > 0;
   const hasVideos = info.promotionalVideos && info.promotionalVideos.length > 0;
 
-  // Build the watch URL based on the first episode ID or fallback
+  // Build the watch URL based on the first episode ID
   const watchUrl = firstEpisodeId 
     ? `/watch/${firstEpisodeId}` 
-    : `/watch/${info.id}?ep=1`; // Fallback to old format if API fetch fails
+    : ''; // Empty string if no episodes available - this shouldn't happen with our fallback
+
+  // Add debug log here
+  console.log('[AnimeDetails] Rendered with watchUrl:', watchUrl, 'firstEpisodeId:', firstEpisodeId);
 
   // Video modal for promotional videos
   const VideoModal = ({ video, onClose }) => {
@@ -236,8 +275,8 @@ export default function AnimeDetails({ anime }) {
               </div>
             </div>
             
-            {/* Watch Button - Full Width on Mobile */}
-            {info.stats?.episodes && (info.stats.episodes.sub > 0 || info.stats.episodes.dub > 0) && (
+            {/* Watch Button - Mobile */}
+            {firstEpisodeId && (
               <Link 
                 href={watchUrl}
                 className="bg-[#ffffff] text-[var(--background)] px-4 py-2.5 rounded-xl mt-3 hover:opacity-90 transition-opacity flex items-center justify-center font-medium text-sm w-full shadow-lg"
@@ -273,7 +312,7 @@ export default function AnimeDetails({ anime }) {
             </div>
             
             {/* Watch Button - Desktop */}
-            {info.stats?.episodes && (info.stats.episodes.sub > 0 || info.stats.episodes.dub > 0) && (
+            {firstEpisodeId && (
               <Link 
                 href={watchUrl}
                 className="bg-[#ffffff] text-[var(--background)] px-6 py-3 rounded-xl mt-4 hover:opacity-90 transition-opacity flex items-center justify-center font-medium text-base w-full shadow-lg"

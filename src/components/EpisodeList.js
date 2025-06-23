@@ -24,10 +24,7 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
         setActiveEpisodeId(urlEpisodeId);
         
         // Find the episode and update page
-        // Compare with both ?ep= format and plain format
-        const episode = episodes.find(ep => {
-          return normalizeEpisodeId(ep.id) === normalizeEpisodeId(urlEpisodeId);
-        });
+        const episode = episodes.find(ep => ep.id === urlEpisodeId);
         
         if (episode) {
           const pageNumber = Math.ceil(episode.number / episodesPerPage);
@@ -52,13 +49,6 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
     };
   }, [episodes, episodesPerPage]);
 
-  // Helper function for episode ID comparison
-  // The API returns episode IDs in the format: animeId?ep=episodeNumber
-  const normalizeEpisodeId = (id) => {
-    // Simply return the ID as-is since the API already provides the correct format
-    return id || '';
-  };
-
   const filteredEpisodes = useMemo(() => {
     if (!searchQuery) return episodes;
     const query = searchQuery.toLowerCase();
@@ -81,7 +71,7 @@ export default function EpisodeList({ episodes, currentEpisode, onEpisodeClick, 
 
   const isCurrentEpisode = (episode) => {
     if (!episode || !episode.id || !activeEpisodeId) return false;
-    return normalizeEpisodeId(episode.id) === normalizeEpisodeId(activeEpisodeId);
+    return episode.id === activeEpisodeId;
   };
 
   const handleEpisodeSelect = (episode, e) => {

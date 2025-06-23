@@ -8,7 +8,7 @@ import { fetchAnimeEpisodes } from '@/lib/api';
 export default function AnimeCard({ anime, isRecent }) {
   const [imageError, setImageError] = useState(false);
   const [firstEpisodeId, setFirstEpisodeId] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const timerRef = useRef(null);
   
   if (!anime) return null;
@@ -18,40 +18,59 @@ export default function AnimeCard({ anime, isRecent }) {
     setImageError(true);
   };
   
-  // Fetch first episode ID when component is hovered
+  // Fetch first episode ID when component mounts for recent anime
   useEffect(() => {
     const fetchFirstEpisode = async () => {
-      if (anime?.id && isHovered && !firstEpisodeId) {
+      // Only fetch for recent anime and if we don't already have the episode ID
+      if (isRecent && anime?.id && !firstEpisodeId && !isLoading) {
+        setIsLoading(true);
         try {
+          console.log(`[AnimeCard] Fetching episodes for anime: ${anime.id}`);
           const response = await fetchAnimeEpisodes(anime.id);
+          console.log(`[AnimeCard] Episodes response for ${anime.name}:`, response);
+          
           if (response.episodes && response.episodes.length > 0) {
-            // Get the first episode's episodeId
-            setFirstEpisodeId(response.episodes[0].episodeId);
-            console.log(`[AnimeCard] First episode ID for ${anime.name}: ${response.episodes[0].episodeId}`);
+            // Check for the episode ID in the format expected by the watch page
+            const firstEp = response.episodes[0];
+            if (firstEp.id) {
+              setFirstEpisodeId(firstEp.id);
+              console.log(`[AnimeCard] First episode ID (id) for ${anime.name}: ${firstEp.id}`);
+            } else if (firstEp.episodeId) {
+              setFirstEpisodeId(firstEp.episodeId);
+              console.log(`[AnimeCard] First episode ID (episodeId) for ${anime.name}: ${firstEp.episodeId}`);
+            } else {
+              // Create a fallback ID if neither id nor episodeId are available
+              const fallbackId = `${anime.id}?ep=1`;
+              setFirstEpisodeId(fallbackId);
+              console.log(`[AnimeCard] Using fallback ID for ${anime.name}: ${fallbackId}`);
+            }
+          } else if (anime.id) {
+            // If no episodes found, create a fallback ID
+            const fallbackId = `${anime.id}?ep=1`;
+            setFirstEpisodeId(fallbackId);
+            console.log(`[AnimeCard] No episodes found for ${anime.name}, using fallback ID: ${fallbackId}`);
           }
         } catch (error) {
           console.error(`[AnimeCard] Error fetching episodes for ${anime.id}:`, error);
+          // Even on error, try to use fallback
+          if (anime.id) {
+            const fallbackId = `${anime.id}?ep=1`;
+            setFirstEpisodeId(fallbackId);
+            console.log(`[AnimeCard] Error for ${anime.name}, using fallback ID: ${fallbackId}`);
+          }
+        } finally {
+          setIsLoading(false);
         }
       }
     };
     
     fetchFirstEpisode();
-  }, [anime?.id, isHovered, firstEpisodeId]);
-  
-  const handleMouseEnter = () => {
-    // Clear any existing timers
-    if (timerRef.current) clearTimeout(timerRef.current);
-    // Set a small delay to prevent API calls for quick mouseovers
-    timerRef.current = setTimeout(() => {
-      setIsHovered(true);
-    }, 300); // Delay to prevent unnecessary API calls
-  };
-  
-  const handleMouseLeave = () => {
-    // Clear the timer if the user moves the mouse away quickly
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setIsHovered(false);
-  };
+    
+    // Clean up timer if component unmounts
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [anime?.id, anime?.name, isRecent, firstEpisodeId, isLoading]);
   
   // Get image URL with fallback
   const imageSrc = imageError ? '/images/placeholder.png' : anime.poster;
@@ -60,21 +79,17 @@ export default function AnimeCard({ anime, isRecent }) {
   const infoLink = `/anime/${anime.id}`;
   
   // Build the watch URL based on the first episode ID or fallback
-  const watchLink = isRecent ? (
-    firstEpisodeId 
-      ? `/watch/${firstEpisodeId}` 
-      : `/watch/${anime.id}?ep=${anime.episodes?.sub || anime.episodes?.dub || 1}`
-  ) : infoLink;
+  const watchLink = isRecent && firstEpisodeId 
+    ? `/watch/${firstEpisodeId}` 
+    : isRecent 
+      ? `/anime/${anime.id}` // Temporarily link to info page while loading
+      : `/anime/${anime.id}`; // Non-recent anime always link to info
   
   return (
-    <div 
-      className="anime-card w-full flex flex-col"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Image card linking to watch page */}
+    <div className="anime-card w-full flex flex-col">
+      {/* Image card linking to watch page for recent anime, or info page otherwise */}
       <Link 
-        href={watchLink}
+        href={isRecent ? watchLink : infoLink}
         className="block w-full rounded-lg overflow-hidden transition-transform duration-300 hover:scale-[1.02] group"
         prefetch={false}
       >

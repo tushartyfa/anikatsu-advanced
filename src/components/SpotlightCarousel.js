@@ -19,6 +19,7 @@ const SpotlightCarousel = ({ items = [] }) => {
   const [autoplay, setAutoplay] = useState(true);
   const [progress, setProgress] = useState(0);
   const [episodeIds, setEpisodeIds] = useState({});
+  const [loadingItems, setLoadingItems] = useState({});
   const intervalRef = useRef(null);
   const progressIntervalRef = useRef(null);
 
@@ -30,28 +31,73 @@ const SpotlightCarousel = ({ items = [] }) => {
   // Fetch first episode IDs for all spotlight items
   useEffect(() => {
     const fetchEpisodeData = async () => {
-      const episodeData = {};
+      // Create a copy to track what we're loading
+      const newLoadingItems = { ...loadingItems };
+      const episodeData = { ...episodeIds };
       
       for (const item of items) {
-        if (item.id) {
+        // Skip if we already have the episode ID or if it's already loading
+        if (item.id && !episodeData[item.id] && !newLoadingItems[item.id]) {
+          newLoadingItems[item.id] = true;
+        }
+      }
+      
+      // Update loading state
+      setLoadingItems(newLoadingItems);
+      
+      // Process items that need to be loaded
+      for (const item of items) {
+        if (item.id && !episodeData[item.id] && newLoadingItems[item.id]) {
           try {
+            console.log(`[SpotlightCarousel] Fetching episodes for anime: ${item.id}`);
             const response = await fetchAnimeEpisodes(item.id);
+            console.log(`[SpotlightCarousel] Episodes response for ${item.name}:`, response);
+            
             if (response.episodes && response.episodes.length > 0) {
-              episodeData[item.id] = response.episodes[0].episodeId;
+              // Check for episode ID in the expected format
+              const firstEp = response.episodes[0];
+              if (firstEp.id) {
+                episodeData[item.id] = firstEp.id;
+                console.log(`[SpotlightCarousel] Found episode ID (id) for ${item.name}: ${firstEp.id}`);
+              } else if (firstEp.episodeId) {
+                episodeData[item.id] = firstEp.episodeId;
+                console.log(`[SpotlightCarousel] Found episode ID (episodeId) for ${item.name}: ${firstEp.episodeId}`);
+              } else {
+                // Create a fallback ID if neither id nor episodeId are available
+                episodeData[item.id] = `${item.id}?ep=1`;
+                console.log(`[SpotlightCarousel] Using fallback ID for ${item.name}: ${item.id}?ep=1`);
+              }
+            } else {
+              // If no episodes, use a fallback
+              episodeData[item.id] = `${item.id}?ep=1`;
+              console.log(`[SpotlightCarousel] No episodes for ${item.name}, using fallback: ${item.id}?ep=1`);
             }
           } catch (error) {
             console.error(`[SpotlightCarousel] Error fetching episodes for ${item.id}:`, error);
+            // Even on error, try to use fallback
+            episodeData[item.id] = `${item.id}?ep=1`;
+          } finally {
+            // Mark as no longer loading
+            newLoadingItems[item.id] = false;
           }
         }
       }
       
+      // Update states
       setEpisodeIds(episodeData);
+      setLoadingItems(newLoadingItems);
     };
     
     if (items && items.length > 0) {
       fetchEpisodeData();
     }
-  }, [items]);
+    
+    // Clean up function
+    return () => {
+      if (intervalRef.current) clearTimeout(intervalRef.current);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    };
+  }, [items, episodeIds, loadingItems]);
 
   // Autoplay functionality
   useEffect(() => {
@@ -114,7 +160,7 @@ const SpotlightCarousel = ({ items = [] }) => {
   // Get the watch URL for the current item
   const watchUrl = episodeIds[currentItem.id] 
     ? `/watch/${episodeIds[currentItem.id]}` 
-    : `/watch/${currentItem.id}?ep=1`; // Fallback to old format if API fetch fails
+    : `/anime/${currentItem.id}`;  // Direct to anime info if no episode ID
 
   return (
     <div className="w-full mb-6 md:mb-10 spotlight-carousel">
@@ -228,8 +274,9 @@ const SpotlightCarousel = ({ items = [] }) => {
 
                   {/* Buttons - Below title on mobile, right side on desktop */}
                   <div className="flex items-center space-x-2 md:space-x-4 mt-1 md:mt-0 md:absolute md:bottom-8 md:right-8">
+                    {/* Watch button - Uses episodeIds[anime.id] if available, otherwise links to anime details */}
                     <Link 
-                      href={watchUrl}
+                      href={episodeIds[anime.id] ? `/watch/${episodeIds[anime.id]}` : `/anime/${anime.id}`}
                       className="bg-white hover:bg-gray-200 text-[#0a0a0a] font-medium text-xs md:text-base px-3 md:px-6 py-1.5 md:py-2 rounded flex items-center space-x-1.5 md:space-x-2 transition-colors"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 md:h-5 md:w-5" viewBox="0 0 20 20" fill="currentColor">
