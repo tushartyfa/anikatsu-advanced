@@ -1,74 +1,119 @@
 <p align="center">
-  <a href="https://justanime.vercel.app">
-    <img src="./public/Favicon.png" alt="JustAnime" width="160">
-  </a>
+  <div align="center">
+    <a href="https://zenime.site/">
+      <img alt="AnimeHi" src="https://raw.githubusercontent.com/itzzzme/zenime/refs/heads/main/public/logo.png" width="220"/>
+    </a>
+  </div>
+    <h3 align="center">Zenime - Ad free anime streaming platform</h3>
+    <p align="center">
+  <a href="https://github.com/itzzzme/zenime">
+      <img src="https://img.shields.io/github/stars/itzzzme/zenime" alt="Github Stars">
+    </a>
+      <img src="https://img.shields.io/github/issues/itzzzme/zenime" alt="Github Issues">
+     <a href="https://github.com/itzzzme/zenime">
+      <img src="https://img.shields.io/github/forks/itzzzme/zenime" alt="Github Forks" />
+    </a>
 </p>
-<h1 align="center"><b>JustAnime</b></h1>
-
-<h4 align="center"><b>A sleek anime streaming platform with a modern UI</b></h4>
-
+</p>
 <p align="center">
-  <a href="#what-is-justanime">About</a> •
-  <a href="#features">Features</a> •
-  <a href="#quick-start">Quick Start</a> •
-  <a href="#development">Development</a>
-</p>
+    <a href="https://zenime.site">Zenime</a> is an open-source anime streaming service that uses <a href="https://github.com/itzzzme/anime-api">custom</a> API, built using ReactJS with javascript and Tailwind CSS. It lets you easily find any anime with intuitive search & suggestion feature and stream without any ads.
+ </p>
 
-<p align="center">
-  <a href="https://github.com/tejaspanchall/JustAnime/stargazers">
-    <img src="https://img.shields.io/github/stars/tejaspanchall/JustAnime?style=flat-square&color=yellow" alt="Stars" />
-  </a>
-  <a href="https://github.com/tejaspanchall/JustAnime/network/members">
-    <img src="https://img.shields.io/github/forks/tejaspanchall/JustAnime?style=flat-square&color=blue" alt="Forks" />
-  </a>
-  <a href="https://github.com/tejaspanchall/JustAnime/issues">
-    <img src="https://img.shields.io/github/issues/tejaspanchall/JustAnime?style=flat-square&color=red" alt="Issues" />
-  </a>
-</p>
+<details>
+<summary>View more Features</summary>
 
-## What is JustAnime?
+### General
 
-Welcome to **JustAnime**, your premier destination for all things anime! Explore a comprehensive collection of high-definition anime with a seamless and user-friendly interface powered by **[aniwatch-api](https://github.com/ghoshRitesh12/aniwatch-api)**.
+- Sub Anime support
+- Dub Anime support
+- User-friendly interface
+- Mobile responsive
+- Fast page load
+- Character & Voice Actors
 
-Built using **Next.js** and **React**, JustAnime offers a cutting-edge, minimalist design that ensures both fast loading times and smooth navigation. Whether you're looking for the latest anime series or classic favorites, JustAnime has you covered with an ad-free streaming experience that supports both English subtitles and dubbed versions. Additionally, you can easily keep track of your watched episodes without the hassle of creating an account, making your viewing experience as convenient as possible.
+### Watch Page
 
-## Features
+- Related Animes
+- Recommended Animes
+- Available seasons
+- Estimated schedule of upcoming episodes
+- **Player**
+  - Autoplay
+  - Autoskip intro/outro
+  - Autonext
 
-### General:
+</details>
 
-* Sub/Dub Support - Switch between subbed and dubbed versions
-* Responsive Design - Optimized for all devices from mobile to desktop
-* Continue Watching - Resume from where you left off
-* Advanced Search - With real-time suggestions as you type
+## Previews
 
-### Player Experience:
+<div style="text-align: left;">
+  <img src="https://raw.githubusercontent.com/itzzzme/zenime/refs/heads/main/public/homepage.webp" alt="Home Page" style="max-width: 80%;" >
+  <details>
+  <summary style="margin-top:10px">View more screenshots</summary>
+  <br/>
+  AnimeInfo Page
+  <img style="margin-top:10px" src="https://raw.githubusercontent.com/itzzzme/zenime/refs/heads/main/public/animeinfo.webp" alt="AnimeInfo Page" style="max-width: 80%;">
+  <br/>
+  Searchbar
+  <img style="margin-top:10px" src="https://raw.githubusercontent.com/itzzzme/zenime/refs/heads/main/public/searchbar.webp" alt="Searchbar" style="max-width: 50%;">
+  <br/>
+  Character & Voice Actors
+  <img style="margin-top:10px" src="https://raw.githubusercontent.com/itzzzme/zenime/refs/heads/main/public/voiceactors.webp" alt="Character & Voice Actors" style="max-width: 80%;">
+  <br/>
+  Watch Page
+  <img style="margin-top:10px" src="https://raw.githubusercontent.com/itzzzme/zenime/refs/heads/main/public/watchpage.webp" alt="Watch Page" style="max-width: 80%;">
+  <br/>
+  </details>
+</div>
 
-* Autoplay - Seamlessly continue to the next episode
-* Quality Selection - Choose your preferred streaming quality
-* Multiple Servers - Switch between different streaming servers
-* Subtitles - Toggle subtitles on/off
-* Playback Speed - Adjust video playback speed
-* Audio Controls - Volume adjustment and audio boost option
+## Installation and Local Development
 
-## Quick Start
+### 1. Make sure you have node installed on your device
+
+### 2. Run the following code to clone the repository and install all required dependencies
 
 ```bash
-# Clone the repository & Navigate to projetc directory
-git clone https://github.com/tejaspanchall/JustAnime.git
-cd JustAnime
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
+git clone https://github.com/itzzzme/zenime.git
+cd zenime
+npm install # or yarn
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) to see the application in action.
+### 3. Refer the <a href="https://github.com/itzzzme/zenime/blob/main/.env.example">.env.example</a> to set your .env file up
 
-## Development
+## Start the server
 
-Pull requests and stars are always welcome. If you encounter any bug or want to add a new feature to this api, consider creating a new [issue](https://github.com/tejaspanchall/JustAnime/issues).
+```bash
+npm start # or npm run dev (to run develepment server)
+```
+## Live Deployment
+
+### Vercel
+
+Host your own instance of <a href="https://zenime.site">Zenime</a>  on vercel
+
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/itzzzme/zenime)
+
+### Render
+
+Host your own instance of <a href="https://zenime.site">Zenime</a> on Render.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/itzzzme/zenime)
+
+### Pull Requests
+
+- Pull requests are welcomed that address bug fixes, improvements, or new features.
+- Fork the repository and create a new branch for your changes.
+- Ensure your code follows our coding standards.
+- Include tests if applicable.
+- Describe your changes clearly in the pull request, explaining the problem and solution.
+
+ ### Reporting Issues
+
+If you discover any issues or have suggestions for improvement, please open an issue. Provide a clear and concise description of the problem, steps to reproduce it, and any relevant information about your environment.
+
+### Support
+
+ If you like the project feel free to drop a star ✨. Your appreciation means a lot.
+
+<p align="center" style="text-decoration: none;">Made by <a href="https://github.com/itzzzme" tarGET="_blank">itzzzme 
+</a>🫰</p>
