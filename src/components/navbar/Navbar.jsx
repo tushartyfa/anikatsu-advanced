@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
-import logoTitle from "@/src/config/logoTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
-  faFilm,
   faRandom,
-  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "@/src/context/LanguageContext";
 import { Link, useLocation } from "react-router-dom";
@@ -13,7 +10,6 @@ import Sidebar from "../sidebar/Sidebar";
 import { SearchProvider } from "@/src/context/SearchContext";
 import WebSearch from "../searchbar/WebSearch";
 import MobileSearch from "../searchbar/MobileSearch";
-import { FaTelegramPlane } from "react-icons/fa";
 
 function Navbar() {
   const location = useLocation();
@@ -41,11 +37,13 @@ function Navbar() {
   const handleCloseSidebar = () => {
     setIsSidebarOpen(false);
   };
+
   const handleRandomClick = () => {
     if (location.pathname === "/random") {
       window.location.reload();
     }
   };
+
   useEffect(() => {
     setIsNotHomePage(
       location.pathname !== "/" && location.pathname !== "/home"
@@ -55,89 +53,64 @@ function Navbar() {
   return (
     <SearchProvider>
       <nav
-        className={`fixed top-0 left-0 w-full h-16 z-[1000000] flex p-4 py-8 items-center justify-between transition-all duration-300 ease-in-out ${
-          isNotHomePage ? "bg-[#201F31]" : "bg-opacity-0"
-        } ${
-          isScrolled ? "bg-[#2D2B44] bg-opacity-90 backdrop-blur-md" : ""
-        } max-[600px]:h-fit max-[600px]:flex-col max-[1200px]:bg-opacity-100 max-[600px]:py-2`}
+        className={`fixed top-0 left-0 w-full z-[1000000] transition-all duration-300 ease-in-out
+          ${isNotHomePage ? "bg-[#18181B]" : "bg-opacity-0"}
+          ${isScrolled ? "bg-[#18181B]/80 backdrop-blur-md shadow-lg" : ""}`}
       >
-        <div className="flex gap-x-6 items-center w-fit max-lg:w-full max-lg:justify-between">
-          <div className="flex gap-x-6 items-center w-fit">
-            <FontAwesomeIcon
-              icon={faBars}
-              className="text-2xl text-white mt-1 cursor-pointer"
-              onClick={handleHamburgerClick}
-            />
-            <Link
-              to="/"
-              className="text-4xl font-bold max-[575px]:text-3xl cursor-pointer"
-            >
-              {logoTitle.slice(0, 3)}
-              <span className="text-[#FFBADE]">{logoTitle.slice(3, 4)}</span>
-              {logoTitle.slice(4)}
-            </Link>
-          </div>
-          <WebSearch />
-        </div>
-        <div className="flex gap-x-7 items-center max-lg:hidden">
-          {[
-            { icon: faRandom, label: "Random", path: "/random" },
-            { icon: faFilm, label: "Movie", path: "/movie" },
-            { icon: faStar, label: "Popular", path: "/most-popular" },
-          ].map((item) => (
-            <Link
-              key={item.path}
-              to={
-                item.path === "/random"
-                  ? location.pathname === "/random"
-                    ? "#"
-                    : "/random"
-                  : item.path
-              }
-              onClick={item.path === "/random" ? handleRandomClick : undefined}
-              className="flex flex-col gap-y-1 items-center cursor-pointer"
-            >
+        <div className="max-w-[1920px] mx-auto px-4 h-16 flex items-center justify-between">
+          {/* Left Section */}
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4">
               <FontAwesomeIcon
-                icon={item.icon}
-                className="text-[#ffbade] text-xl font-bold"
+                icon={faBars}
+                className="text-xl text-gray-200 cursor-pointer hover:text-white transition-colors"
+                onClick={handleHamburgerClick}
               />
-              <p className="text-[15px]">{item.label}</p>
-            </Link>
-          ))}
-          <div className="flex flex-col gap-y-1 items-center w-auto">
-            <div className="flex">
-              {["EN", "JP"].map((lang, index) => (
+              <Link to="/" className="flex items-center">
+                <img src="/logo.png" alt="JustAnime Logo" className="h-9 w-auto" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Center Section - Search */}
+          <div className="flex-1 flex justify-center items-center max-w-none mx-8 hidden md:flex">
+            <div className="flex items-center gap-2 w-[600px]">
+              <WebSearch />
+              <Link
+                to={location.pathname === "/random" ? "#" : "/random"}
+                onClick={handleRandomClick}
+                className="p-[10px] aspect-square bg-[#2a2a2a]/75 text-white/50 hover:text-white rounded-lg transition-colors flex items-center justify-center"
+                title="Random Anime"
+              >
+                <FontAwesomeIcon icon={faRandom} className="text-lg" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Section */}
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-2 bg-[#27272A] rounded-md p-1">
+              {["EN", "JP"].map((lang) => (
                 <button
                   key={lang}
                   onClick={() => toggleLanguage(lang)}
-                  className={`px-1 py-[1px] text-xs font-bold ${
-                    index === 0 ? "rounded-l-[3px]" : "rounded-r-[3px]"
-                  } ${
+                  className={`px-3 py-1 text-sm font-medium rounded ${
                     language === lang
-                      ? "bg-[#ffbade] text-black"
-                      : "bg-gray-600 text-white"
+                      ? "bg-[#3F3F46] text-white"
+                      : "text-gray-400 hover:text-white"
                   }`}
                 >
                   {lang}
                 </button>
               ))}
             </div>
-            <div className="w-full">
-              <p className="whitespace-nowrap text-[15px]">Anime name</p>
-            </div>
           </div>
-          <Link
-            to="https://t.me/zenime_discussion"
-            className="flex flex-col gap-y-1 items-center cursor-pointer"
-          >
-            <FaTelegramPlane
-              // icon={faTelegram}
-              className="text-xl font-bold text-[#ffbade]"
-            />
-            <p className="text-[15px] mb-[1px] text-white">Join Telegram</p>
-          </Link>
         </div>
-        <MobileSearch />
+
+        {/* Mobile Search */}
+        <div className="md:hidden">
+          <MobileSearch />
+        </div>
       </nav>
       <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
     </SearchProvider>

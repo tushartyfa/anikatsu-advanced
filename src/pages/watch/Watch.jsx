@@ -186,7 +186,7 @@ export default function Watch() {
         <img
           src={
             !animeInfoLoading
-              ? `https://wsrv.nl/?url=${animeInfo?.poster}`
+              ? `${animeInfo?.poster}`
               : "https://i.postimg.cc/rFZnx5tQ/2-Kn-Kzog-md.webp"
           }
           alt={`${animeInfo?.title} Poster`}
@@ -336,7 +336,7 @@ export default function Watch() {
                         </p>
                         <div className="absolute inset-0 z-10 bg-[url('https://i.postimg.cc/pVGY6RXd/thumb.png')] bg-repeat"></div>
                         <img
-                          src={`https://wsrv.nl/?url=${season.season_poster}`}
+                          src={`${season.season_poster}`}
                           alt=""
                           className="w-full h-full object-cover blur-[3px] opacity-50"
                         />
@@ -383,7 +383,7 @@ export default function Watch() {
           <div className="flex flex-col gap-y-4 items-start ml-8 max-[1400px]:ml-0 max-[1400px]:mt-10 max-[1400px]:flex-row max-[1400px]:gap-x-6 max-[1024px]:px-[30px] max-[1024px]:mt-8 max-[500px]:mt-4 max-[500px]:px-4">
             {animeInfo && animeInfo?.poster ? (
               <img
-                src={`https://wsrv.nl/?url=${animeInfo?.poster}`}
+                src={`${animeInfo?.poster}`}
                 alt=""
                 className="w-[100px] h-[150px] object-cover max-[500px]:w-[70px] max-[500px]:h-[90px]"
               />

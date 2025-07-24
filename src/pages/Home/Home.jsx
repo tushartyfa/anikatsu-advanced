@@ -18,7 +18,7 @@ function Home() {
   if (!homeInfo) return <Error error="404" />;
   return (
     <>
-      <div className="px-4 w-full max-[1200px]:px-0">
+      <div className="pt-16 px-4 w-full max-[1200px]:px-0">
         <Spotlight spotlights={homeInfo.spotlights} />
         <ContinueWatching />
         <Trending trending={homeInfo.trending} />
