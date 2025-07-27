@@ -20,6 +20,9 @@ function Home() {
     <>
       <div className="pt-16 px-4 w-full max-[1200px]:px-0">
         <Spotlight spotlights={homeInfo.spotlights} />
+        <div className="mt-6">
+          <Genre data={homeInfo.genres} />
+        </div>
         <ContinueWatching />
         <Trending trending={homeInfo.trending} />
         <div className="mt-10 flex gap-6 max-[1200px]:px-4 max-[1200px]:grid max-[1200px]:grid-cols-2 max-[1200px]:mt-12 max-[1200px]:gap-y-10 max-[680px]:grid-cols-1">
@@ -70,7 +73,6 @@ function Home() {
             />
           </div>
           <div className="w-full mt-[60px]">
-            <Genre data={homeInfo.genres} />
             <Topten data={homeInfo.topten} className={"mt-12"} />
           </div>
         </div>
