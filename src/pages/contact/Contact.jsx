@@ -14,7 +14,7 @@ function Contact() {
         </p>
         <div className="flex flex-wrap gap-6">
           <a
-            href="https://t.me/zenime_discussion"
+            href="#"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 px-4 py-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"

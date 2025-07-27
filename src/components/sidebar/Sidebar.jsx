@@ -24,18 +24,33 @@ const Sidebar = ({ isOpen, onClose }) => {
   const scrollPosition = useRef(0);
 
   useEffect(() => {
+    const handleScroll = () => {
+      if (!isOpen) {
+        scrollPosition.current = window.scrollY;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isOpen]);
+
+  useEffect(() => {
     if (isOpen) {
-      scrollPosition.current = window.pageYOffset;
-      document.body.classList.add('sidebar-open');
+      scrollPosition.current = window.scrollY;
+      document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollPosition.current}px`;
+      document.body.style.width = '100%';
     } else {
-      document.body.classList.remove('sidebar-open');
+      document.body.style.position = '';
       document.body.style.top = '';
+      document.body.style.width = '';
       window.scrollTo(0, scrollPosition.current);
     }
+
     return () => {
-      document.body.classList.remove('sidebar-open');
+      document.body.style.position = '';
       document.body.style.top = '';
+      document.body.style.width = '';
     };
   }, [isOpen]);
 
@@ -44,29 +59,25 @@ const Sidebar = ({ isOpen, onClose }) => {
   }, [location]);
 
   return (
-    <>
+    <div className="sidebar-container" aria-hidden={!isOpen}>
       {isOpen && (
         <div
-          className="fixed inset-0 transform transition-all duration-400 ease-in-out backdrop-blur-lg bg-black/50"
+          className="sidebar-overlay"
           onClick={onClose}
-          style={{ zIndex: 1000000 }}
         />
       )}
 
-      <div
-        className={`fixed h-[100dvh] w-[280px] max-[575px]:w-[260px] top-0 left-0 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-        style={{ zIndex: 1000200 }}
+      <aside
+        className={`sidebar-main ${isOpen ? 'sidebar-open' : ''}`}
+        role="dialog"
+        aria-modal="true"
       >
-        <div
-          className="bg-[#0a0a0a] w-full h-full flex flex-col items-start overflow-y-auto sidebar"
-        >
+        <div className="sidebar-content">
           {/* Header */}
-          <div className="w-full p-6 border-b border-white/5">
+          <div className="sidebar-header">
             <button
               onClick={onClose}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white/10 hover:bg-white/15 rounded-lg transition-colors"
+              className="close-button"
             >
               <FaChevronLeft className="text-sm" />
               <span className="text-sm font-medium">Close Menu</span>
@@ -74,33 +85,29 @@ const Sidebar = ({ isOpen, onClose }) => {
           </div>
 
           {/* Quick Actions */}
-          <div className="w-full p-4 border-b border-white/5 lg:hidden">
-            <div className="grid grid-cols-3 gap-2">
+          <div className="quick-actions">
+            <div className="quick-actions-grid">
               <Link
                 to="/random"
-                className="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                className="quick-action-item"
               >
                 <FontAwesomeIcon icon={faRandom} className="text-lg" />
                 <span className="text-xs font-medium">Random</span>
               </Link>
               <Link
                 to="/movie"
-                className="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                className="quick-action-item"
               >
                 <FontAwesomeIcon icon={faFilm} className="text-lg" />
                 <span className="text-xs font-medium">Movie</span>
               </Link>
-              <div className="flex flex-col items-center gap-2 p-3 rounded-lg bg-white/5">
-                <div className="flex bg-white/10 rounded">
-                  {["EN", "JP"].map((lang, index) => (
+              <div className="quick-action-item">
+                <div className="language-switcher">
+                  {["EN", "JP"].map((lang) => (
                     <button
                       key={lang}
                       onClick={() => toggleLanguage(lang)}
-                      className={`px-2 py-1 text-xs font-medium transition-colors ${
-                        language === lang
-                          ? "bg-white/15 text-white"
-                          : "text-white/60 hover:text-white"
-                      }`}
+                      className={`lang-button ${language === lang ? 'active' : ''}`}
                     >
                       {lang}
                     </button>
@@ -112,21 +119,21 @@ const Sidebar = ({ isOpen, onClose }) => {
           </div>
 
           {/* Menu Items */}
-          <div className="w-full p-2">
+          <nav className="menu-items">
             {MENU_ITEMS.map((item, index) => (
               <Link
                 key={index}
                 to={item.path}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                className="menu-item"
               >
                 <FontAwesomeIcon icon={item.icon} className="text-lg w-5" />
                 <span className="font-medium">{item.name}</span>
               </Link>
             ))}
-          </div>
+          </nav>
         </div>
-      </div>
-    </>
+      </aside>
+    </div>
   );
 };
 
