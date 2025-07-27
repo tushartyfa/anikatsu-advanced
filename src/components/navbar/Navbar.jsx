@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faRandom,
+  faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "@/src/context/LanguageContext";
 import { Link, useLocation } from "react-router-dom";
@@ -19,6 +20,7 @@ function Navbar() {
   );
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,9 +55,8 @@ function Navbar() {
   return (
     <SearchProvider>
       <nav
-        className={`fixed top-0 left-0 w-full z-[1000000] transition-all duration-300 ease-in-out
-          ${isNotHomePage ? "bg-[#18181B]" : "bg-opacity-0"}
-          ${isScrolled ? "bg-[#18181B]/80 backdrop-blur-md shadow-lg" : ""}`}
+        className={`fixed top-0 left-0 w-full z-[1000000] transition-all duration-300 ease-in-out bg-[#0a0a0a]
+          ${isScrolled ? "bg-opacity-80 backdrop-blur-md shadow-lg" : "bg-opacity-100"}`}
       >
         <div className="max-w-[1920px] mx-auto px-4 h-16 flex items-center justify-between">
           {/* Left Section */}
@@ -66,7 +67,7 @@ function Navbar() {
                 className="text-xl text-gray-200 cursor-pointer hover:text-white transition-colors"
                 onClick={handleHamburgerClick}
               />
-              <Link to="/" className="flex items-center">
+              <Link to="/home" className="flex items-center">
                 <img src="/logo.png" alt="JustAnime Logo" className="h-9 w-auto" />
               </Link>
             </div>
@@ -87,32 +88,45 @@ function Navbar() {
             </div>
           </div>
 
-          {/* Right Section */}
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex items-center gap-2 bg-[#27272A] rounded-md p-1">
-              {["EN", "JP"].map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => toggleLanguage(lang)}
-                  className={`px-3 py-1 text-sm font-medium rounded ${
-                    language === lang
-                      ? "bg-[#3F3F46] text-white"
-                      : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  {lang}
-                </button>
-              ))}
-            </div>
+          {/* Language Toggle - Desktop */}
+          <div className="hidden md:flex items-center gap-2 bg-[#27272A] rounded-md p-1">
+            {["EN", "JP"].map((lang) => (
+              <button
+                key={lang}
+                onClick={() => toggleLanguage(lang)}
+                className={`px-3 py-1 text-sm font-medium rounded ${
+                  language === lang
+                    ? "bg-[#3F3F46] text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+
+          {/* Mobile Search Icon */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              className="p-[10px] aspect-square bg-[#2a2a2a]/75 text-white/50 hover:text-white rounded-lg transition-colors flex items-center justify-center"
+              title="Search Anime"
+            >
+              <FontAwesomeIcon icon={faMagnifyingGlass} className="text-lg" />
+            </button>
           </div>
         </div>
 
-        {/* Mobile Search */}
-        <div className="md:hidden">
-          <MobileSearch />
-        </div>
+        {/* Mobile Search Dropdown */}
+        {isMobileSearchOpen && (
+          <div className="md:hidden bg-[#18181B] shadow-lg">
+            <MobileSearch onClose={() => setIsMobileSearchOpen(false)} />
+          </div>
+        )}
+
+        {/* Sidebar */}
+        <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
       </nav>
-      <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
     </SearchProvider>
   );
 }
