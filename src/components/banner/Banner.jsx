@@ -19,8 +19,8 @@ function Banner({ item, index }) {
         alt={item.title}
         className="absolute right-0 object-cover h-full w-[80%] bg-auto max-[1200px]:w-full max-[1200px]:bottom-0"
       />
-      <div className="spotlight-overlay"></div>
-      <div className="absolute flex flex-col left-0 bottom-[50px] w-[55%] p-4 z-10 max-[1390px]:w-[45%] max-[1390px]:bottom-[40px] max-[1300px]:w-[600px] max-[1120px]:w-[60%] max-md:w-[90%] max-md:bottom-[50px] max-[300px]:w-full">
+      <div className="spotlight-overlay absolute inset-0 z-[1]"></div>
+      <div className="absolute flex flex-col left-0 bottom-[50px] w-[55%] p-4 z-[2] max-[1390px]:w-[45%] max-[1390px]:bottom-[40px] max-[1300px]:w-[600px] max-[1120px]:w-[60%] max-md:w-[90%] max-md:bottom-[50px] max-[300px]:w-full">
         <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffbade] to-[#ff90c5] font-semibold text-[20px] w-fit max-[1300px]:text-[15px]">
           #{index + 1} Spotlight
         </p>
@@ -105,7 +105,7 @@ function Banner({ item, index }) {
           {item.description}
         </p>
       </div>
-      <div className="absolute bottom-[50px] right-[40px] flex gap-x-5 z-10 max-md:mt-6 max-sm:w-fit max-[320px]:flex-col max-[320px]:space-y-3">
+      <div className="absolute bottom-[50px] right-[40px] flex gap-x-5 z-[2] max-md:mt-6 max-sm:w-fit max-[320px]:flex-col max-[320px]:space-y-3">
         <Link
           to={`/watch/${item.id}`}
           className="bg-white/90 hover:bg-white text-black font-medium px-7 py-3 rounded-lg transition-all duration-200 flex items-center gap-x-2.5 shadow-lg shadow-black/10 backdrop-blur-sm hover:translate-y-[-1px]"

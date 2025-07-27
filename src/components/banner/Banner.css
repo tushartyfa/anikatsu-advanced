@@ -1,15 +1,11 @@
 .spotlight {
   overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .spotlight-overlay {
-  width: 100.1%;
-  height: 100.1%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom:0;
   background: radial-gradient(
       circle at 130% center,
       rgba(10, 10, 10, 0) 50%,
@@ -30,14 +26,14 @@
       rgba(10, 10, 10, 0) 100%
     ),
     linear-gradient(
-      to bottom,m 
+      to bottom,
       rgba(10, 10, 10, 1) 0%,
       rgba(10, 10, 10, 0) 20%,
       rgba(10, 10, 10, 0) 100%
     );
-
-  z-index: 1;
+  pointer-events: none;
 }
+
 @media only screen and (max-width: 1300px) {
   .spotlight-overlay {
     background: radial-gradient(
@@ -67,6 +63,7 @@
     );
   }
 }
+
 @media only screen and (max-width: 1200px) {
   .spotlight-overlay {
     background: radial-gradient(
@@ -96,6 +93,7 @@
     );
   }
 }
+
 @media only screen and (max-width: 900px) {
   .spotlight-overlay {
     background: radial-gradient(
