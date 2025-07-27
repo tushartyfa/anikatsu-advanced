@@ -4,6 +4,7 @@ import {
   faBars,
   faRandom,
   faMagnifyingGlass,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "@/src/context/LanguageContext";
 import { Link, useLocation } from "react-router-dom";
@@ -109,10 +110,14 @@ function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className="p-[10px] aspect-square bg-[#2a2a2a]/75 text-white/50 hover:text-white rounded-lg transition-colors flex items-center justify-center"
-              title="Search Anime"
+              className="p-[10px] aspect-square bg-[#2a2a2a]/75 text-white/50 hover:text-white rounded-lg transition-colors flex items-center justify-center w-[38px] h-[38px]"
+              title={isMobileSearchOpen ? "Close Search" : "Search Anime"}
             >
-              <FontAwesomeIcon icon={faMagnifyingGlass} className="text-lg" />
+              <FontAwesomeIcon 
+                icon={isMobileSearchOpen ? faXmark : faMagnifyingGlass} 
+                className="w-[18px] h-[18px] transition-transform duration-200"
+                style={{ transform: isMobileSearchOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
+              />
             </button>
           </div>
         </div>
