@@ -29,8 +29,8 @@ function App() {
 
   return (
     <HomeInfoProvider>
-      <div className="app-container">
-        <main className="content">
+      <div className="app-container px-4 lg:px-10">
+        <main className="content max-w-[2048px] mx-auto w-full">
           {!isSplashScreen && <Navbar />}
           <Routes>
             <Route path="/" element={<SplashScreen />} />

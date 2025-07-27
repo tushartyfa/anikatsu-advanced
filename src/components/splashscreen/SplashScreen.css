@@ -98,18 +98,23 @@ body {
 
 /* Enter button */
 .enter-button {
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
   color: black;
-  padding: 12px 24px;
+  padding: 14px 28px;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 500;
   margin: 8px 0 60px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .enter-button:hover {
-  background: #ffbade;
+  background: white;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
 }
 
 /* FAQ Section */
@@ -133,10 +138,11 @@ body {
 }
 
 .faq-item {
-  background: #141414;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
 }
 
 .faq-question {
@@ -155,18 +161,18 @@ body {
 }
 
 .faq-question:hover {
-  background: #1a1a1a;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .faq-toggle {
   font-size: 16px;
-  color: white;
-  opacity: 0.8;
-  transition: transform 0.2s ease;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
 }
 
 .faq-toggle.rotate {
   transform: rotate(180deg);
+  color: white;
 }
 
 .faq-answer {

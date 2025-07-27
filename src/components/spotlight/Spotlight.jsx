@@ -1,18 +1,19 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
+import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/autoplay";
 import "swiper/css/navigation";
+import "swiper/css/pagination";
 import "./Spotlight.css";
 import Banner from "../banner/Banner";
 
 const Spotlight = ({ spotlights }) => {
   return (
     <>
-      <div className="relative h-[600px] max-[1390px]:h-[530px] max-[1300px]:h-[500px] max-md:h-[420px]">
-        <div className="absolute right-[10px] bottom-0 flex flex-col space-y-2 z-10 max-[575px]:hidden">
-          <div className="button-next"></div>
+      <div className="relative h-[450px] max-[1390px]:h-[400px] max-[1300px]:h-[350px] max-md:h-[300px] pt-[20px]">
+        <div className="absolute right-[10px] top-[30px] flex space-x-2 z-10 max-[575px]:hidden">
           <div className="button-prev"></div>
+          <div className="button-next"></div>
         </div>
         {spotlights && spotlights.length > 0 ? (
           <>
@@ -25,14 +26,18 @@ const Spotlight = ({ spotlights }) => {
                 nextEl: ".button-next",
                 prevEl: ".button-prev",
               }}
+              pagination={{
+                clickable: true,
+                dynamicBullets: false,
+              }}
               autoplay={{
                 delay: 3000,
                 disableOnInteraction: false,
               }}
-              modules={[Navigation, Autoplay]}
-              className="h-[600px] max-[1390px]:h-full"
+              modules={[Navigation, Autoplay, Pagination]}
+              className="h-[450px] max-[1390px]:h-full"
               style={{
-                "--swiper-pagination-bullet-inactive-color": "#ffffff",
+                "--swiper-pagination-bullet-inactive-color": "rgba(255, 255, 255, 0.5)",
                 "--swiper-pagination-bullet-inactive-opacity": "1",
               }}
             >

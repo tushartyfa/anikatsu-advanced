@@ -14,8 +14,6 @@ body,
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  max-width: 2048px;
-  margin-inline: auto;
 }
 .content {
   width: 100%;
