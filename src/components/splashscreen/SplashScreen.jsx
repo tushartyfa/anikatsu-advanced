@@ -4,6 +4,7 @@ import "./SplashScreen.css";
 import logoTitle from "@/src/config/logoTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 const FAQ_ITEMS = [
   {
@@ -72,7 +73,7 @@ function SplashScreen() {
         </div>
 
         <Link to="/home" className="enter-button">
-          Enter Homepage →
+          Enter Homepage <FontAwesomeIcon icon={faAngleRight} className="angle-icon" />
         </Link>
 
         <div className="faq-section">
