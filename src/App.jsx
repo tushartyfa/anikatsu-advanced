@@ -15,6 +15,9 @@ import Search from "./pages/search/Search";
 import Watch from "./pages/watch/Watch";
 import Producer from "./components/producer/Producer";
 import SplashScreen from "./components/splashscreen/SplashScreen";
+import Terms from "./pages/terms/Terms";
+import DMCA from "./pages/dmca/DMCA";
+import Contact from "./pages/contact/Contact";
 
 function App() {
   const location = useLocation();
@@ -40,6 +43,9 @@ function App() {
             <Route path="/random" element={<AnimeInfo random={true} />} />
             <Route path="/404-not-found-page" element={<Error error="404" />} />
             <Route path="/error-page" element={<Error />} />
+            <Route path="/terms-of-service" element={<Terms />} />
+            <Route path="/dmca" element={<DMCA />} />
+            <Route path="/contact" element={<Contact />} />
             {/* Render category routes */}
             {categoryRoutes.map((path) => (
               <Route
