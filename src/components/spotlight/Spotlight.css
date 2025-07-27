@@ -106,6 +106,7 @@
   }
   .button-prev,
   .button-next {
-    display: none;
+    width: 28px;
+    height: 28px;
   }
 }

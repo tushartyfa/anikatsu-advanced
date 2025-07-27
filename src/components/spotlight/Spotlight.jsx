@@ -11,7 +11,7 @@ const Spotlight = ({ spotlights }) => {
   return (
     <>
       <div className="relative h-[450px] max-[1390px]:h-[400px] max-[1300px]:h-[350px] max-md:h-[300px] pt-[20px]">
-        <div className="absolute right-[10px] top-[30px] flex space-x-2 z-10 max-[575px]:hidden">
+        <div className="absolute right-[10px] top-[30px] flex space-x-2 z-10 max-[575px]:top-[10px] max-[575px]:right-[10px]">
           <div className="button-prev"></div>
           <div className="button-next"></div>
         </div>
