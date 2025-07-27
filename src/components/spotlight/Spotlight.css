@@ -13,11 +13,9 @@
 }
 .button-prev,
 .button-next {
-  width: 32px;
-  height: 32px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
+  width: 36px;
+  height: 36px;
+  background-color: #1a1a1a;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -28,17 +26,15 @@
 
 .button-prev:hover,
 .button-next:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  background-color: #2a2a2a;
 }
 
 .button-prev::after,
 .button-next::after {
   content: '';
-  width: 7px;
-  height: 7px;
-  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  width: 9px;
+  height: 9px;
+  border: 2px solid #ffffff;
   border-left: 0;
   border-bottom: 0;
 }
@@ -79,7 +75,7 @@
 }
 
 .swiper-pagination {
-  bottom: 15px !important;
+  bottom: 20px !important;
 }
 
 .swiper-pagination-bullet {
@@ -93,12 +89,12 @@
 
 @media only screen and (max-width: 575px) {
   .swiper-horizontal > .swiper-pagination-bullets {
-    bottom: 10px !important;
+    bottom: 20px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     width: auto !important;
     display: flex !important;
-    gap: 6px;
+    gap: 4px;
     align-items: center;
     justify-content: center;
     flex-direction: row !important;
@@ -106,7 +102,15 @@
   }
   .button-prev,
   .button-next {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
+  }
+  .swiper-pagination-bullet {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  .swiper-pagination-bullet-active {
+    width: 16px !important;
+    border-radius: 8px !important;
   }
 }

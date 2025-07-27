@@ -13,16 +13,16 @@ import "./Banner.css";
 function Banner({ item, index }) {
   const { language } = useLanguage();
   return (
-    <section className="spotlight w-full h-full relative">
+    <section className="spotlight w-full h-full relative rounded-2xl overflow-hidden">
       <img
         src={`${item.poster}`}
         alt={item.title}
-        className="absolute right-0 object-cover h-full w-[80%] bg-auto max-[1200px]:w-full max-[1200px]:bottom-0"
+        className="absolute inset-0 object-cover w-full h-full rounded-2xl"
       />
-      <div className="spotlight-overlay absolute inset-0 z-[1]"></div>
+      <div className="spotlight-overlay absolute inset-0 z-[1] rounded-2xl"></div>
       
-      <div className="absolute flex flex-col left-0 bottom-[50px] w-[55%] p-4 z-[2] max-[1390px]:w-[45%] max-[1390px]:bottom-[40px] max-[1300px]:w-[600px] max-[1120px]:w-[60%] max-md:w-[90%] max-md:bottom-[20px] max-[300px]:w-full">
-        <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffbade] to-[#ff90c5] font-semibold text-[20px] w-fit max-[1300px]:text-[15px]">
+      <div className="absolute flex flex-col left-0 bottom-[40px] w-[55%] p-4 z-[2] max-[1390px]:w-[45%] max-[1390px]:bottom-[40px] max-[1300px]:w-[600px] max-[1120px]:w-[60%] max-md:w-[90%] max-md:bottom-[20px] max-[300px]:w-full">
+        <p className="text-[#ffbade] font-semibold text-[20px] w-fit max-[1300px]:text-[15px]">
           #{index + 1} Spotlight
         </p>
         <h3 className="text-white line-clamp-2 text-5xl font-bold mt-4 text-left max-[1390px]:text-[45px] max-[1300px]:text-3xl max-[1300px]:mt-3 max-md:text-2xl max-md:mt-1 max-[575px]:text-[22px] max-sm:leading-6 max-sm:w-[80%] max-[320px]:w-full">
