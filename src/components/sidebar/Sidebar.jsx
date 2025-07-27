@@ -1,6 +1,6 @@
 import { FaChevronLeft } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilm, faRandom, faHome, faClock, faFire, faTv, faPlay, faCirclePlay, faFilePen, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faFilm, faRandom, faHome, faClock, faFire, faTv, faPlay, faCirclePlay, faFilePen } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "@/src/context/LanguageContext";
 import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -16,7 +16,6 @@ const MENU_ITEMS = [
   { name: "OVAs", path: "/ova", icon: faCirclePlay },
   { name: "ONAs", path: "/ona", icon: faPlay },
   { name: "Specials", path: "/special", icon: faClock },
-  { name: "Join Telegram", path: "https://t.me/zenime_discussion", icon: faPaperPlane },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
