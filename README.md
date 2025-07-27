@@ -4,7 +4,7 @@
       <img alt="JustAnime" src="https://github.com/tejaspanchall/JustAnime/blob/main/public/footer.png" width="220"/>
     </a>
   </div>
-    <h3 align="center">JustAnime - Ad free anime streaming platform</h3>
+    <h3 align="center">JustAnime - Clean & ad free anime streaming</h3>
     <p align="center">
   <a href="https://github.com/tejaspanchall/JustAnime">
       <img src="https://img.shields.io/github/stars/tejaspanchall/JustAnime" alt="Github Stars">
@@ -78,7 +78,7 @@ cd JustAnime
 npm install # or yarn
 ```
 
-### 3. Refer the <a href="https://github.com/itzzzme/zenime/blob/main/.env.example">.env.example</a> to set your .env file up
+### 3. Refer the <a href="https://github.com/tejaspanchall/JustAnime/blob/main/.env.example">.env.example</a> to set your .env file up
 
 ## Start the server
 
@@ -91,15 +91,15 @@ npm start # or npm run dev (to run develepment server)
 
 Host your own instance of <a href="https://justanime.vercel.app">JustAnime</a>  on vercel
 
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/itzzzme/zenime)
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tejaspanchall/JustAnime)
 
 ### Render
 
 Host your own instance of <a href="https://justanime.vercel.app">JustAnime</a> on Render.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/itzzzme/zenime)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/tejaspanchall/JustAnime)
 
-### Pull Requests
+## Pull Requests
 
 - Pull requests are welcomed that address bug fixes, improvements, or new features.
 - Fork the repository and create a new branch for your changes.
@@ -111,6 +111,7 @@ Host your own instance of <a href="https://justanime.vercel.app">JustAnime</a> o
 
 If you discover any issues or have suggestions for improvement, please open an issue. Provide a clear and concise description of the problem, steps to reproduce it, and any relevant information about your environment.
 
-### Support
 
- If you like the project feel free to drop a star ✨. Your appreciation means a lot.
+<h2 align="center">
+  <b>Enjoy streaming anime the way it should be! 🍿</b>
+</h2>
