@@ -46,6 +46,7 @@ function VoiceactorList({ id, isOpen, onClose }) {
     };
     fetchCategoryInfo();
   }, [page]);
+
   if (error) {
     navigate("/error-page");
     return <Error />;
@@ -54,119 +55,121 @@ function VoiceactorList({ id, isOpen, onClose }) {
     navigate("/404-not-found-page");
     return null;
   }
+
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-screen overflow-y-auto bg-black/80 z-50 flex justify-center py-10  max-[575px]:py-3"
-      style={{
-        zIndex: 1000000,
-        pointerEvents: "auto",
+      className="fixed inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm z-[1000000]"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div
-        className={`w-[920px] h-fit flex flex-col relative backdrop-blur-[10px] rounded-lg p-6 bg-white/10 ${
-          loading ? "h-fit" : ""
-        } max-[1000px]:w-[80vw] max-md:w-[90vw] max-[480px]:p-3`}
-        style={{
-          pointerEvents: "auto",
-        }}
-      >
-        {!loading && (
-          <h2 className="text-2xl font-bold col-span-2 max-[480px]:text-lg">
-            Characters & Voice Actors
-          </h2>
-        )}
+      <div className="min-h-screen w-full py-4 sm:py-8 px-2 sm:px-4 flex items-center justify-center">
+        <div
+          className="w-full max-w-[920px] bg-zinc-900/80 backdrop-blur-xl rounded-xl border border-zinc-800 shadow-2xl max-h-[85vh] flex flex-col mx-auto max-sm:max-h-[80vh] max-sm:w-[92%] max-sm:my-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="relative flex items-center justify-between p-3 sm:p-6 border-b border-zinc-800/50 flex-shrink-0">
+            {!loading && (
+              <h2 className="text-base sm:text-xl font-bold text-zinc-100">
+                Characters & Voice Actors
+              </h2>
+            )}
+            <button
+              onClick={onClose}
+              className="absolute right-2 sm:right-4 top-2 sm:top-4 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 transition-all duration-300"
+            >
+              <span className="text-lg sm:text-xl leading-none mb-0.5">&times;</span>
+            </button>
+          </div>
 
-        {loading ? (
-          <VoiceActorlistLoader />
-        ) : (
-          <div className="w-full grid grid-cols-2 gap-4 mt-5 max-[1000px]:grid-cols-1">
-            {VoiceactorList.map((item, index) => (
-              <div
-                key={index}
-                className="flex p-4 items-center justify-between py-2 bg-[#444445] rounded-lg h-[80px] max-[480px]:p-1 max-[480px]:bg-transparent max-[480px]:rounded-none max-[480px]:border-b-[1px] border-dotted max-[480px]:h-[60px] max-[480px]:pb-4"
-              >
-                <div className="flex gap-x-2 items-center w-[50%] overflow-hidden">
-                  <img
-                    src={item.character.poster}
-                    className="w-[45px] h-[45px] rounded-full flex-shrink-0 object-cover hover:cursor-pointer max-[480px]:w-[30px] max-[480px]:h-[30px]"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.src = "https://i.postimg.cc/HnHKvHpz/no-avatar.jpg";
-                    }}
-                  />
-                  <div className="flex flex-col text-left gap-y-1 w-full">
-                    {item.character.name && (
-                      <h1 className="text-[13px] font-semibold max-[480px]:text-[11px]">
-                        {item.character.name}
-                      </h1>
-                    )}
-                    {item.character.cast && (
-                      <p className="text-[12px] font-light max-[480px]:text-[10px]">
-                        {item.character.cast}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {item.voiceActors &&
-                  item.voiceActors.length > 0 &&
-                  (item.voiceActors.length > 1 ? (
-                    <div className="flex flex-wrap gap-x-[4px] items-center justify-end w-[50%] max-sm:flex-nowrap max-sm:overflow-auto max-[350px]:justify-start max-sm:py-3">
-                      {item.voiceActors.map((data, index) => (
-                        <img
-                          key={index}
-                          src={data.poster}
-                          className="w-[41px] h-[41px] opacity-70 cursor-pointer rounded-full flex-shrink-0 object-cover grayscale hover:grayscale-0 hover:opacity-100 max-[480px]:w-[30px] max-[480px]:h-[30px] transition-all duration-300 ease-in-out"
-                          title={data.name}
-                          style={{
-                            border: "4px solid rgba(105, 108, 117, 0.8)",
-                          }}
-                          onError={(e) => {
-                            e.target.src = "https://i.postimg.cc/HnHKvHpz/no-avatar.jpg";
-                          }}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-end gap-x-2 w-[50%] overflow-hidden max-[480px]:flex-wrap max-[480px]:flex-col-reverse max-[480px]:items-end max-[480px]:gap-y-1">
-                      {item?.voiceActors[0]?.name && (
-                        <p className="text-right text-[13px] max-[480px]:text-[11px]">
-                          {item.voiceActors[0].name}
-                        </p>
-                      )}
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-2 sm:p-6 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+            {loading ? (
+              <VoiceActorlistLoader />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                {VoiceactorList.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-2 sm:p-3 bg-zinc-800/50 hover:bg-zinc-800/70 rounded-lg border border-zinc-700/30 transition-all duration-300"
+                  >
+                    {/* Character Section */}
+                    <div className="flex items-center gap-2 sm:gap-3 w-[48%]">
                       <img
-                        src={item.voiceActors[0].poster}
-                        alt=""
-                        title={item.voiceActors.name}
+                        src={item.character.poster}
+                        className="w-9 h-9 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-zinc-700 hover:border-zinc-500 transition-all duration-300"
                         loading="lazy"
-                        className="w-[45px] h-[45px] rounded-full opacity-70 flex-shrink-0 object-cover grayscale hover:grayscale-0 hover:opacity-100 max-[480px]:w-[30px] max-[480px]:h-[30px] transition-all duration-300 ease-in-out"
                         onError={(e) => {
                           e.target.src = "https://i.postimg.cc/HnHKvHpz/no-avatar.jpg";
                         }}
                       />
+                      <div className="min-w-0">
+                        {item.character.name && (
+                          <h3 className="text-xs sm:text-sm text-zinc-100 font-medium truncate">
+                            {item.character.name}
+                          </h3>
+                        )}
+                        {item.character.cast && (
+                          <p className="text-[10px] sm:text-xs text-zinc-400 truncate">
+                            {item.character.cast}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  ))}
+
+                    {/* Voice Actors Section */}
+                    {item.voiceActors && item.voiceActors.length > 0 && (
+                      <div className="flex items-center justify-end gap-2 sm:gap-3 w-[48%]">
+                        {item.voiceActors.length > 1 ? (
+                          <div className="flex items-center justify-end gap-1 sm:gap-2 w-full overflow-x-auto py-1 sm:py-2">
+                            {item.voiceActors.map((actor, idx) => (
+                              <img
+                                key={idx}
+                                src={actor.poster}
+                                className="w-7 h-7 sm:w-10 sm:h-10 rounded-full object-cover flex-shrink-0 opacity-60 hover:opacity-100 border-2 border-zinc-700 hover:border-zinc-500 transition-all duration-300"
+                                title={actor.name}
+                                onError={(e) => {
+                                  e.target.src = "https://i.postimg.cc/HnHKvHpz/no-avatar.jpg";
+                                }}
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <>
+                            <div className="text-right min-w-0">
+                              <p className="text-xs sm:text-sm text-zinc-300 truncate">
+                                {item.voiceActors[0].name}
+                              </p>
+                            </div>
+                            <img
+                              src={item.voiceActors[0].poster}
+                              className="w-9 h-9 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0 opacity-60 hover:opacity-100 border-2 border-zinc-700 hover:border-zinc-500 transition-all duration-300"
+                              title={item.voiceActors[0].name}
+                              onError={(e) => {
+                                e.target.src = "https://i.postimg.cc/HnHKvHpz/no-avatar.jpg";
+                              }}
+                            />
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
 
-        <div
-          className="bg-white w-[30px] h-[30px] p-2 rounded-full text-3xl absolute z-[1000] top-[-14px] right-[-14px] hover:text-[#FFBADE] cursor-pointer transform transition-all ease-in-out duration-300 flex items-center justify-center hover:bg-[#ffbade] max-md:top-0 max-md:right-0 max-md:rounded-none max-md:rounded-bl-lg max-md:rounded-tr-lg"
-          onClick={onClose}
-        >
-          <button className="text-black mb-[6px] font-semibold">&times;</button>
+          {/* Pagination */}
+          <div className="p-2 sm:p-6 sm:pt-2 border-t border-zinc-800/50 flex-shrink-0">
+            <PageSlider
+              page={page}
+              totalPages={totalPages}
+              handlePageChange={setPage}
+              start={true}
+            />
+          </div>
         </div>
-
-        <PageSlider
-          page={page}
-          totalPages={totalPages}
-          handlePageChange={setPage}
-          start={true}
-          style={{
-            marginTop: "10px",
-          }}
-        />
       </div>
     </div>
   );
