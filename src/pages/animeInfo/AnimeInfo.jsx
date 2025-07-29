@@ -153,7 +153,7 @@ function AnimeInfo({ random = false }) {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <div className="relative w-full overflow-hidden mt-[64px] max-md:mt-[50px]">
+      <div className="relative w-full overflow-hidden mt-[74px] max-md:mt-[60px]">
 
         {/* Main Content */}
         <div className="relative z-10 container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-12">
