@@ -144,26 +144,12 @@ export const useWatch = (animeId, initialEpisodeId) => {
         }
         const savedServerName = localStorage.getItem("server_name");
         const savedServerType = localStorage.getItem("server_type");
-        let initialServer =
-          data.find(
-            (s) =>
-              s.serverName === savedServerName && s.type === savedServerType
-          ) ||
-          data.find((s) => s.serverName === savedServerName) ||
-          data.find((s) => s.type === savedServerType) ||
-          data.find(
-            (s) => s.serverName === "HD-1" && s.type === savedServerType
-          ) ||
-          data.find(
-            (s) => s.serverName === "HD-2" && s.type === savedServerType
-          ) ||
-          data.find(
-            (s) => s.serverName === "HD-3" && s.type === savedServerType
-          ) ||
-          data.find(
-            (s) => s.serverName === "HD-4" && s.type === savedServerType
-          ) ||
+        const initialServer =
+          filteredServers.find(s => s.serverName === savedServerName && s.type === savedServerType) ||
+          filteredServers.find(s => s.serverName === savedServerName) ||
+          filteredServers.find(s => s.type === savedServerType && ["HD-1", "HD-2", "HD-3", "HD-4"].includes(s.serverName)) ||
           filteredServers[0];
+
         setServers(filteredServers);
         setActiveServerType(initialServer?.type);
         setActiveServerName(initialServer?.serverName);
@@ -189,8 +175,7 @@ export const useWatch = (animeId, initialEpisodeId) => {
     )
       return;
     if (
-      (activeServerName?.toLowerCase() === "hd-1" 
-        || activeServerName?.toLowerCase() === "hd-2"|| activeServerName?.toLowerCase() === "hd-3"|| activeServerName?.toLowerCase() === "hd-4") 
+      (activeServerName?.toLowerCase() === "hd-1" || activeServerName?.toLowerCase() === "hd-4") 
         &&
       !serverLoading
     ) {
@@ -206,7 +191,7 @@ export const useWatch = (animeId, initialEpisodeId) => {
           const data = await getStreamInfo(
             animeId,
             episodeId,
-            server.serverName.toLowerCase(),
+            server.serverName.toLowerCase()==="hd-3"?"hd-1":server.serverName.toLowerCase(),
             server.type.toLowerCase()
           );
           setStreamInfo(data);

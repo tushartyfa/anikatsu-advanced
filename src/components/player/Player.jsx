@@ -50,7 +50,6 @@ export default function Player({
   thumbnail,
   intro,
   outro,
-  serverName,
   autoSkipIntro,
   autoPlay,
   autoNext,
@@ -213,6 +212,11 @@ export default function Player({
     const iframeUrl = streamInfo?.streamingLink?.iframe;
     const headers = {};
     headers.referer=new URL(iframeUrl).origin+"/";
+    console.log(m3u8proxy[Math.floor(Math.random() * m3u8proxy?.length)] +
+        encodeURIComponent(streamUrl) +
+         "&headers=" +
+         encodeURIComponent(JSON.stringify(headers)));
+
     const art = new Artplayer({
       url:
         m3u8proxy[Math.floor(Math.random() * m3u8proxy?.length)] +
@@ -235,6 +239,11 @@ export default function Player({
       autoOrientation: true,
       fastForward: true,
       aspectRatio: true,
+      moreVideoAttr: {
+        crossOrigin: 'anonymous',
+        preload: 'none',
+        playsInline: true,
+      },
       plugins: [
         artplayerPluginHlsControl({
           quality: {

@@ -1,10 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import BouncingLoader from "../ui/bouncingloader/Bouncingloader";
-import axios from "axios"; 
 
 export default function IframePlayer({
-  animeId,
   episodeId,
   serverName,
   servertype,
@@ -14,7 +12,6 @@ export default function IframePlayer({
   playNext,
   autoNext,
 }) {
-  const api_url=import.meta.env.VITE_API_URL;
   const baseURL =
     serverName.toLowerCase() === "hd-1"
       ? import.meta.env.VITE_BASE_IFRAME_URL
@@ -37,26 +34,7 @@ export default function IframePlayer({
       setIframeLoaded(false);
       setIframeSrc("");
 
-      const lowerName = serverName.toLowerCase();
-
-      if (lowerName === "hd-1" || lowerName === "hd-4") {
-        setIframeSrc(`${baseURL}/${episodeId}/${servertype}`);
-      } else if (lowerName === "hd-2" || lowerName === "hd-3") {
-        try {
-          const res = await axios.get(
-            `${api_url}/stream?id=${animeId}?ep=${episodeId}&server=${serverName}&type=${servertype}`
-          );
-
-          const link = res?.data?.results?.streamingLink?.link;
-          if (link) {
-            setIframeSrc(`${link}&_debug=true`);
-          } else {
-            console.error("Streaming link not found in response");
-          }
-        } catch (err) {
-          console.error("Failed to fetch streaming link:", err);
-        }
-      }
+      setIframeSrc(`${baseURL}/${episodeId}/${servertype}`);
     };
 
     loadIframeUrl();
