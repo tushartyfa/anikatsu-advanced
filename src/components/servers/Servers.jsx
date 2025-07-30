@@ -64,7 +64,7 @@ function Servers({
         <div className="w-full h-full rounded-lg grid grid-cols-[minmax(0,30%),minmax(0,70%)] overflow-hidden max-[800px]:grid-cols-[minmax(0,40%),minmax(0,60%)] max-[600px]:flex max-[600px]:flex-col max-[600px]:rounded-none max-[600px]:gap-2">
           <div className="h-full bg-[#e0e0e0] px-6 text-black flex flex-col justify-center items-center gap-y-2 max-[600px]:bg-transparent max-[600px]:h-auto max-[600px]:text-white max-[600px]:py-1 max-[600px]:px-2">
             <p className="text-center leading-5 font-medium text-[14px] max-[600px]:text-[13px] max-[600px]:mb-0">
-              You are watching{" "}
+              You are watching:{" "}
               <br className="max-[600px]:hidden" />
               <span className="font-semibold max-[600px]:text-[#e0e0e0] max-[600px]:ml-1">
                 Episode {activeEpisodeNum}

@@ -202,7 +202,7 @@ function Episodelist({
         )}
       </div>
       
-      <div ref={listContainerRef} className="w-full flex-1 overflow-y-auto bg-[#1a1a1a] max-h-[calc(100vh-400px)] max-[1200px]:max-h-[400px]">
+      <div ref={listContainerRef} className="w-full flex-1 overflow-y-auto bg-[#1a1a1a] max-h-[calc(100vh-200px)] max-[1200px]:max-h-[400px]">
         <div
           className={`${
             totalEpisodes > 30
