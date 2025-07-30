@@ -8,20 +8,78 @@
   bottom: 0;
   background: linear-gradient(
     to top,
-    rgba(32, 31, 49, 1) 0%,
-    rgba(32, 31, 49, 0) 20%,
-    rgba(32, 31, 49, 0) 100%
+    rgba(18, 18, 18, 1) 0%,
+    rgba(18, 18, 18, 0.7) 20%,
+    rgba(18, 18, 18, 0) 60%,
+    rgba(18, 18, 18, 0.2) 100%
   );
-
   z-index: 50;
+  transition: all 0.3s ease-in-out;
 }
+
+.group:hover .overlay {
+  background: linear-gradient(
+    to top,
+    rgba(18, 18, 18, 0.95) 0%,
+    rgba(18, 18, 18, 0.8) 50%,
+    rgba(18, 18, 18, 0.6) 100%
+  );
+}
+
 .dot {
-  width: 5px;
-  height: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  width: 3px;
+  height: 3px;
   display: inline-block;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  margin: 0 4px;
+  position: relative;
+  top: -1px;
+}
+
+/* Modern Card Styles */
+.category-card-container {
+  transition: transform 0.3s ease-in-out;
+}
+
+.category-card-container:hover {
+  transform: translateY(-4px);
+}
+
+.category-badge {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all 0.3s ease;
+}
+
+.category-badge:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.item-title {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+.item-title:hover {
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.play-icon {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.group:hover .play-icon {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }

@@ -1,5 +1,4 @@
 import CategoryCard from '@/src/components/categorycard/CategoryCard';
-import Genre from '@/src/components/genres/Genre';
 import CategoryCardLoader from '@/src/components/Loader/CategoryCard.loader';
 import SidecardLoader from '@/src/components/Loader/Sidecard.loader';
 import PageSlider from '@/src/components/pageslider/PageSlider';
@@ -20,7 +19,7 @@ function Search() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchSearch = async () => {
+        const fetchSearch = async () => {   
             setLoading(true);
             try {
                 const data = await getSearch(keyword,page);
@@ -62,8 +61,15 @@ function Search() {
                     <SidecardLoader />
                 ) : (
                     <>
-                        {homeInfo?.most_popular && <Sidecard data={homeInfo.most_popular} className="mt-0" label="Most Popular" />}
-                        {homeInfo?.genres && <Genre data={homeInfo.genres} />}
+                        {homeInfo?.most_popular && (
+                            <div className="bg-[#141414] rounded-lg p-6">
+                                <h2 className="text-xl font-semibold mb-4 text-white">Most Popular</h2>
+                                <Sidecard
+                                    data={homeInfo.most_popular}
+                                    className="!mt-0"
+                                />
+                            </div>
+                        )}
                     </>
                 )}
             </div>
