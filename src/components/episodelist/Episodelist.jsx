@@ -137,9 +137,9 @@ function Episodelist({
   }, [activeEpisodeId, episodes]);
 
   return (
-    <div className="relative flex flex-col w-full h-full max-[1200px]:max-h-[500px]">
-      <div className="sticky top-0 z-10 flex flex-col gap-y-[5px] justify-start px-4 py-5 bg-[#1a1a1a] border-b border-[#2a2a2a]">
-        <h1 className="text-[14px] font-semibold text-white mb-2">Episodes</h1>
+    <div className="flex flex-col w-full h-full">
+      <div className="sticky top-0 z-10 flex flex-col gap-y-[5px] justify-start px-4 py-3 bg-[#1a1a1a] border-b border-[#2a2a2a]">
+        <h1 className="text-[14px] font-semibold text-white mb-1">Episodes</h1>
         {totalEpisodes > 100 && (
           <div className="w-full flex gap-x-4 items-center max-[1200px]:justify-between">
             <div className="min-w-fit flex text-[13px]">
@@ -198,7 +198,7 @@ function Episodelist({
           </div>
         )}
       </div>
-      <div ref={listContainerRef} className="w-full h-full overflow-y-auto bg-[#1a1a1a]">
+      <div ref={listContainerRef} className="w-full flex-1 overflow-y-auto bg-[#1a1a1a]">
         <div
           className={`${
             totalEpisodes > 30

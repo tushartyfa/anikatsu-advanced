@@ -3,14 +3,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 
 const ToggleButton = ({ label, isActive, onClick }) => (
-  <button className="flex gap-x-2" onClick={onClick}>
-    <h1 className="capitalize text-[13px]">{label}</h1>
+  <button 
+    className="flex items-center text-xs px-2 py-0.5 rounded transition-colors hover:bg-[#2a2a2a]" 
+    onClick={onClick}
+  >
+    <span className="text-gray-300">{label}</span>
     <span
-      className={`capitalize text-[13px] ${
-        isActive ? "text-[#ffbade]" : "text-red-500"
+      className={`ml-1.5 ${
+        isActive ? "text-white" : "text-gray-500"
       }`}
     >
-      {isActive ? "on" : "off"}
+      {isActive ? "ON" : "OFF"}
     </span>
   </button>
 );
@@ -42,25 +45,25 @@ export default function WatchControls({
   }, [episodeId, episodes]);
 
   return (
-    <div className="bg-[#11101A] w-full flex justify-between flex-wrap px-4 pt-4 max-[1200px]:bg-[#14151A] max-[375px]:flex-col max-[375px]:gap-y-2">
-      <div className="flex gap-x-4 flex-wrap">
+    <div className="w-full flex justify-between items-center px-3 py-2 border-b border-gray-800">
+      <div className="flex gap-x-2">
         <ToggleButton
-          label="auto play"
+          label="Auto Play"
           isActive={autoPlay}
           onClick={() => setAutoPlay((prev) => !prev)}
         />
-         <ToggleButton
-          label="auto skip intro"
+        <ToggleButton
+          label="Skip Intro"
           isActive={autoSkipIntro}
           onClick={() => setAutoSkipIntro((prev) => !prev)}
-        /> 
+        />
         <ToggleButton
-          label="auto next"
+          label="Auto Next"
           isActive={autoNext}
           onClick={() => setAutoNext((prev) => !prev)}
         />
       </div>
-      <div className="flex gap-x-6 max-[575px]:gap-x-4 max-[375px]:justify-end">
+      <div className="flex items-center gap-x-2">
         <button
           onClick={() => {
             if (currentEpisodeIndex > 0) {
@@ -70,11 +73,13 @@ export default function WatchControls({
             }
           }}
           disabled={currentEpisodeIndex <= 0}
+          className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${
+            currentEpisodeIndex <= 0 
+              ? "text-gray-600 cursor-not-allowed" 
+              : "text-gray-300 hover:text-white"
+          }`}
         >
-          <FontAwesomeIcon
-            icon={faBackward}
-            className="text-[20px] max-[575px]:text-[16px] text-white"
-          />
+          <FontAwesomeIcon icon={faBackward} className="text-[14px]" />
         </button>
         <button
           onClick={() => {
@@ -85,11 +90,13 @@ export default function WatchControls({
             }
           }}
           disabled={currentEpisodeIndex >= episodes?.length - 1}
+          className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${
+            currentEpisodeIndex >= episodes?.length - 1 
+              ? "text-gray-600 cursor-not-allowed" 
+              : "text-gray-300 hover:text-white"
+          }`}
         >
-          <FontAwesomeIcon
-            icon={faForward}
-            className="text-[20px] max-[575px]:text-[16px] text-white"
-          />
+          <FontAwesomeIcon icon={faForward} className="text-[14px]" />
         </button>
       </div>
     </div>

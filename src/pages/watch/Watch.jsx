@@ -72,6 +72,10 @@ export default function Watch() {
     autoNext,
     setAutoNext,
   } = useWatchControl();
+  const playerRef = useRef(null);
+  const videoContainerRef = useRef(null);
+  const controlsRef = useRef(null);
+  const episodesRef = useRef(null);
 
   useEffect(() => {
     if (!episodes || episodes.length === 0) return;
@@ -119,26 +123,66 @@ export default function Watch() {
   }, [streamInfo, episodeId, animeId, totalEpisodes, navigate]);
 
   useEffect(() => {
+    // Function to adjust the height of episodes list to match only video + controls
     const adjustHeight = () => {
       if (window.innerWidth > 1200) {
-        const player = document.querySelector(".player");
-        const episodes = document.querySelector(".episodes");
-        if (player && episodes) {
-          episodes.style.height = `${player.clientHeight}px`;
+        if (videoContainerRef.current && controlsRef.current && episodesRef.current) {
+          // Calculate combined height of video container and controls
+          const videoHeight = videoContainerRef.current.offsetHeight;
+          const controlsHeight = controlsRef.current.offsetHeight;
+          const totalHeight = videoHeight + controlsHeight;
+          
+          // Apply the combined height to episodes container
+          episodesRef.current.style.height = `${totalHeight}px`;
         }
       } else {
-        const episodes = document.querySelector(".episodes");
-        if (episodes) {
-          episodes.style.height = "auto";
+        if (episodesRef.current) {
+          episodesRef.current.style.height = 'auto';
         }
       }
     };
-    adjustHeight();
-    window.addEventListener("resize", adjustHeight);
+
+    // Initial adjustment with delay to ensure player is fully rendered
+    const initialTimer = setTimeout(() => {
+      adjustHeight();
+    }, 500);
+    
+    // Set up resize listener
+    window.addEventListener('resize', adjustHeight);
+    
+    // Create MutationObserver to monitor player changes
+    const observer = new MutationObserver(() => {
+      setTimeout(adjustHeight, 100);
+    });
+    
+    // Start observing both video container and controls
+    if (videoContainerRef.current) {
+      observer.observe(videoContainerRef.current, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      });
+    }
+    
+    if (controlsRef.current) {
+      observer.observe(controlsRef.current, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      });
+    }
+    
+    // Set up additional interval for continuous adjustments
+    const intervalId = setInterval(adjustHeight, 1000);
+    
+    // Clean up
     return () => {
-      window.removeEventListener("resize", adjustHeight);
+      clearTimeout(initialTimer);
+      clearInterval(intervalId);
+      observer.disconnect();
+      window.removeEventListener('resize', adjustHeight);
     };
-  });
+  }, [buffering, activeServerType, activeServerName, episodeId, streamUrl, episodes]);
 
   function Tag({ bgColor, index, icon, text }) {
     return (
@@ -182,13 +226,13 @@ export default function Watch() {
   }, [animeId, animeInfo]);
   return (
     <div className="w-full min-h-screen bg-[#0a0a0a]">
-      <div className="w-full max-w-[1920px] mx-auto px-6 pt-[128px] pb-12 max-[1200px]:pt-[64px] max-[1024px]:px-4 max-md:pt-[50px]">
+      <div className="w-full max-w-[1920px] mx-auto px-6 pt-[80px] pb-12 max-[1200px]:pt-[48px] max-[1024px]:px-4 max-md:pt-[32px]">
         <div className="grid grid-cols-[minmax(0,70%),minmax(0,30%)] gap-6 w-full h-full max-[1200px]:flex max-[1200px]:flex-col">
           {/* Left Column - Player, Controls, Servers */}
           <div className="flex flex-col w-full gap-6">
-            <div className="player w-full h-fit bg-black flex flex-col rounded-xl overflow-hidden">
+            <div ref={playerRef} className="player w-full h-fit bg-black flex flex-col rounded-xl overflow-hidden">
               {/* Video Container */}
-              <div className="w-full relative aspect-video bg-black">
+              <div ref={videoContainerRef} className="w-full relative aspect-video bg-black">
                 {!buffering ? (["hd-1", "hd-4"].includes(activeServerName.toLowerCase()) ?
                   <IframePlayer
                     episodeId={episodeId}
@@ -241,9 +285,9 @@ export default function Watch() {
               </div>
 
               {/* Controls Section */}
-              <div className="bg-[#0f0f0f]">
+              <div className="bg-[#121212]">
                 {!buffering && (
-                  <div className="border-b border-[#272727]">
+                  <div ref={controlsRef}>
                     <Watchcontrols
                       autoPlay={autoPlay}
                       setAutoPlay={setAutoPlay}
@@ -260,8 +304,7 @@ export default function Watch() {
                 )}
 
                 {/* Title and Server Selection */}
-                <div className="p-3">
-
+                <div className="px-3 py-2">
                   <div>
                     <Servers
                       servers={servers}
@@ -326,9 +369,20 @@ export default function Watch() {
                 )}
                 <div className="flex flex-col gap-y-4 flex-1">
                   {animeInfo && animeInfo?.title ? (
-                    <h1 className="text-[28px] font-medium text-white leading-tight">
-                      {language ? animeInfo?.title : animeInfo?.japanese_title}
-                    </h1>
+                    <Link 
+                      to={`/${animeId}`}
+                      className="group"
+                    >
+                      <h1 className="text-[28px] font-medium text-white leading-tight group-hover:text-gray-300 transition-colors">
+                        {language ? animeInfo?.title : animeInfo?.japanese_title}
+                      </h1>
+                      <div className="flex items-center gap-1.5 mt-1 text-gray-400 text-sm group-hover:text-white transition-colors">
+                        <span>View Details</span>
+                        <svg className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </Link>
                   ) : (
                     <Skeleton className="w-[170px] h-[20px] rounded-xl" />
                   )}
@@ -366,12 +420,6 @@ export default function Watch() {
                       )}
                     </p>
                   )}
-                  <Link
-                    to={`/${animeId}`}
-                    className="w-fit px-4 py-2 bg-[#2a2a2a] hover:bg-[#333] text-gray-300 hover:text-white rounded-md transition-all text-sm font-medium mt-2"
-                  >
-                    View Details
-                  </Link>
                 </div>
               </div>
             </div>
@@ -380,22 +428,47 @@ export default function Watch() {
             {seasons?.length > 0 && (
               <div className="p-6 bg-[#141414] rounded-lg">
                 <h2 className="text-xl font-semibold mb-4 text-white">More Seasons</h2>
-                <div className="grid grid-cols-5 gap-4 max-[1200px]:grid-cols-4 max-[900px]:grid-cols-3 max-[600px]:grid-cols-2">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                   {seasons.map((season, index) => (
                     <Link
                       to={`/${season.id}`}
                       key={index}
-                      className={`relative aspect-[2/3] rounded-lg overflow-hidden group ${
-                        animeId === String(season.id) ? "ring-2 ring-white" : ""
+                      className={`relative w-full aspect-[3/1] rounded-lg overflow-hidden cursor-pointer group ${
+                        animeId === String(season.id)
+                          ? "ring-2 ring-white/40 shadow-lg shadow-white/10"
+                          : ""
                       }`}
                     >
                       <img
-                        src={`${season.season_poster}`}
-                        alt=""
-                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                        src={season.season_poster}
+                        alt={season.season}
+                        className={`w-full h-full object-cover scale-150 ${
+                          animeId === String(season.id)
+                            ? "opacity-50"
+                            : "opacity-40 group-hover:opacity-50 transition-opacity"
+                        }`}
                       />
-                      <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center p-3 group-hover:bg-opacity-40 transition-all">
-                        <p className="text-center text-sm font-medium">
+                      {/* Dots Pattern Overlay */}
+                      <div 
+                        className="absolute inset-0 z-10" 
+                        style={{ 
+                          backgroundImage: `url('data:image/svg+xml,<svg width="3" height="3" viewBox="0 0 3 3" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="1.5" cy="1.5" r="0.5" fill="white" fill-opacity="0.25"/></svg>')`,
+                          backgroundSize: '3px 3px'
+                        }}
+                      />
+                      {/* Dark Gradient Overlay */}
+                      <div className={`absolute inset-0 z-20 bg-gradient-to-r ${
+                        animeId === String(season.id)
+                          ? "from-black/50 to-transparent"
+                          : "from-black/40 to-transparent"
+                      }`} />
+                      {/* Title Container */}
+                      <div className="absolute inset-0 z-30 flex items-center justify-center">
+                        <p className={`text-[14px] sm:text-[16px] font-bold text-center px-2 sm:px-4 transition-colors duration-300 ${
+                          animeId === String(season.id)
+                            ? "text-white"
+                            : "text-white/90 group-hover:text-white"
+                        }`}>
                           {season.season}
                         </p>
                       </div>
@@ -404,22 +477,29 @@ export default function Watch() {
                 </div>
               </div>
             )}
+          </div>
 
-            {/* Recommended Section */}
-            {animeInfo?.recommended_data.length > 0 && (
-              <div className="p-6 bg-[#141414] rounded-lg">
-                <h2 className="text-xl font-semibold mb-4 text-white">Recommended</h2>
-                <CategoryCard
-                  data={animeInfo?.recommended_data}
-                  limit={animeInfo?.recommended_data.length}
-                  showViewMore={false}
+          {/* Right Column - Episodes and Related */}
+          <div className="flex flex-col gap-6 h-full">
+            {/* Episodes Section */}
+            <div ref={episodesRef} className="episodes flex-shrink-0 bg-[#141414] rounded-lg overflow-hidden">
+              {!episodes ? (
+                <div className="h-full flex items-center justify-center">
+                  <BouncingLoader />
+                </div>
+              ) : (
+                <Episodelist
+                  episodes={episodes}
+                  currentEpisode={episodeId}
+                  onEpisodeClick={(id) => setEpisodeId(id)}
+                  totalEpisodes={totalEpisodes}
                 />
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Related Anime Section */}
             {animeInfo && animeInfo.related_data ? (
-              <div className="p-6 bg-[#141414] rounded-lg">
+              <div className="bg-[#141414] rounded-lg p-6">
                 <h2 className="text-xl font-semibold mb-4 text-white">Related Anime</h2>
                 <Sidecard
                   data={animeInfo.related_data}
@@ -430,22 +510,6 @@ export default function Watch() {
               <div className="mt-6">
                 <SidecardLoader />
               </div>
-            )}
-          </div>
-
-          {/* Right Column - Episodes */}
-          <div className="episodes h-full bg-[#141414] rounded-lg overflow-hidden">
-            {!episodes ? (
-              <div className="h-full flex items-center justify-center">
-                <BouncingLoader />
-              </div>
-            ) : (
-              <Episodelist
-                episodes={episodes}
-                currentEpisode={episodeId}
-                onEpisodeClick={(id) => setEpisodeId(id)}
-                totalEpisodes={totalEpisodes}
-              />
             )}
           </div>
         </div>
