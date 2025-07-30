@@ -5,13 +5,12 @@ import {
   faMicrophone,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "@/src/context/LanguageContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useToolTipPosition from "@/src/hooks/useToolTipPosition";
 import Qtip from "../qtip/Qtip";
 
 function Sidecard({ data, label, className }) {
   const { language } = useLanguage();
-  const navigate = useNavigate();
   const [hoverTimeout, setHoverTimeout] = useState(null);
   const handleMouseEnter = (item, index) => {
     const timeout = setTimeout(() => {
@@ -37,70 +36,71 @@ function Sidecard({ data, label, className }) {
               key={index}
               className="group"
               ref={(el) => (cardRefs.current[index] = el)}
+              onMouseEnter={() => handleMouseEnter(item, index)}
+              onMouseLeave={handleMouseLeave}
             >
-              <div className="flex items-start gap-3 p-2 rounded-lg transition-colors hover:bg-[#1f1f1f]">
-                {hoveredItem === item.id + index && window.innerWidth > 1024 && (
-                  <div
-                    className={`absolute ${tooltipPosition} ${tooltipHorizontalPosition} ${
-                      tooltipPosition === "top-1/2"
-                        ? "translate-y-[50px]"
-                        : "translate-y-[-50px]"
-                    } z-[100000] transform transition-all duration-300 ease-in-out ${
-                      hoveredItem === item.id + index
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-2"
-                    }`}
-                  >
-                    <Qtip id={item.id} />
-                  </div>
-                )}
-                <img
-                  src={`${item.poster}`}
-                  alt={item.title}
-                  className="w-[50px] h-[70px] rounded object-cover cursor-pointer transition-transform group-hover:scale-105"
-                  onClick={() => navigate(`/watch/${item.id}`)}
-                  onMouseEnter={() => handleMouseEnter(item, index)}
-                  onMouseLeave={handleMouseLeave}
-                />
-                <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                  <Link
-                    to={`/${item.id}`}
-                    className="text-sm font-medium text-gray-200 hover:text-white transition-colors line-clamp-1"
-                    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  >
-                    {language === "EN" ? item.title : item.japanese_title}
-                  </Link>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {item.tvInfo?.sub && (
-                      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-[#2a2a2a] rounded text-gray-300">
-                        <FontAwesomeIcon
-                          icon={faClosedCaptioning}
-                          className="text-[10px]"
-                        />
-                        <span className="text-[10px] font-medium">
-                          {item.tvInfo.sub}
+              <Link
+                to={`/${item.id}`}
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className="block"
+              >
+                <div className="flex items-start gap-3 p-2 rounded-lg transition-colors hover:bg-[#1f1f1f]">
+                  {hoveredItem === item.id + index && window.innerWidth > 1024 && (
+                    <div
+                      className={`absolute ${tooltipPosition} ${tooltipHorizontalPosition} ${
+                        tooltipPosition === "top-1/2"
+                          ? "translate-y-[50px]"
+                          : "translate-y-[-50px]"
+                      } z-[100000] transform transition-all duration-300 ease-in-out ${
+                        hoveredItem === item.id + index
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-2"
+                      }`}
+                    >
+                      <Qtip id={item.id} />
+                    </div>
+                  )}
+                  <img
+                    src={`${item.poster}`}
+                    alt={item.title}
+                    className="w-[50px] h-[70px] rounded object-cover"
+                  />
+                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                    <span className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors line-clamp-1">
+                      {language === "EN" ? item.title : item.japanese_title}
+                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {item.tvInfo?.sub && (
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-[#2a2a2a] rounded text-gray-300">
+                          <FontAwesomeIcon
+                            icon={faClosedCaptioning}
+                            className="text-[10px]"
+                          />
+                          <span className="text-[10px] font-medium">
+                            {item.tvInfo.sub}
+                          </span>
+                        </div>
+                      )}
+                      {item.tvInfo?.dub && (
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-[#2a2a2a] rounded text-gray-300">
+                          <FontAwesomeIcon
+                            icon={faMicrophone}
+                            className="text-[10px]"
+                          />
+                          <span className="text-[10px] font-medium">
+                            {item.tvInfo.dub}
+                          </span>
+                        </div>
+                      )}
+                      {item.tvInfo?.showType && (
+                        <span className="text-xs text-gray-400">
+                          {item.tvInfo.showType}
                         </span>
-                      </div>
-                    )}
-                    {item.tvInfo?.dub && (
-                      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-[#2a2a2a] rounded text-gray-300">
-                        <FontAwesomeIcon
-                          icon={faMicrophone}
-                          className="text-[10px]"
-                        />
-                        <span className="text-[10px] font-medium">
-                          {item.tvInfo.dub}
-                        </span>
-                      </div>
-                    )}
-                    {item.tvInfo?.showType && (
-                      <span className="text-xs text-gray-400">
-                        {item.tvInfo.showType}
-                      </span>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
           ))}
       </div>

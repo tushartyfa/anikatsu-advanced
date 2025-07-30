@@ -226,7 +226,7 @@ export default function Watch() {
   }, [animeId, animeInfo]);
   return (
     <div className="w-full min-h-screen bg-[#0a0a0a]">
-      <div className="w-full max-w-[1920px] mx-auto px-6 pt-[80px] pb-12 max-[1200px]:pt-[48px] max-[1024px]:px-4 max-md:pt-[32px]">
+      <div className="w-full max-w-[1920px] mx-auto px-6 pt-[80px] pb-6 max-[1200px]:pt-[48px] max-[1024px]:px-4 max-md:pt-[32px]">
         <div className="grid grid-cols-[minmax(0,70%),minmax(0,30%)] gap-6 w-full h-full max-[1200px]:flex max-[1200px]:flex-col">
           {/* Left Column - Player, Controls, Servers */}
           <div className="flex flex-col w-full gap-6">
