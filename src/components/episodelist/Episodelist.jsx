@@ -138,18 +138,18 @@ function Episodelist({
 
   return (
     <div className="flex flex-col w-full h-full">
-      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-[#1a1a1a] border-b border-[#2a2a2a]">
-        <div className="flex items-center gap-4">
-          <h1 className="text-[14px] font-semibold text-white">Episodes</h1>
+      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-2.5 bg-[#1a1a1a] border-b border-[#2a2a2a] max-[600px]:px-2">
+        <div className="flex items-center gap-4 max-[600px]:gap-2">
+          <h1 className="text-[14px] font-semibold text-white max-[600px]:text-[13px]">Episodes</h1>
           {totalEpisodes > 100 && (
             <div className="flex items-center">
               <div
                 onClick={() => setShowDropDown((prev) => !prev)}
-                className="text-gray-300 relative cursor-pointer flex items-center gap-2 hover:text-white transition-colors"
+                className="text-gray-300 relative cursor-pointer flex items-center gap-2 hover:text-white transition-colors max-[600px]:gap-1"
                 ref={dropDownRef}
               >
                 <FontAwesomeIcon icon={faList} className="text-gray-400" />
-                <p className="text-[12px]">
+                <p className="text-[12px] max-[600px]:text-[11px]">
                   {selectedRange[0]}-{selectedRange[1]}
                 </p>
                 <FontAwesomeIcon
@@ -169,7 +169,7 @@ function Episodelist({
                           item === activeRange ? "bg-[#404040]" : ""
                         }`}
                       >
-                        <p className="font-medium text-[12px] p-3 flex justify-between items-center text-gray-300 hover:text-white">
+                        <p className="font-medium text-[12px] p-2.5 flex justify-between items-center text-gray-300 hover:text-white max-[600px]:text-[11px] max-[600px]:p-2">
                           {item}
                           {item === activeRange ? (
                             <FontAwesomeIcon icon={faCheck} className="text-white" />
@@ -185,15 +185,15 @@ function Episodelist({
         </div>
         
         {totalEpisodes > 100 && (
-          <div className="flex items-center min-w-[180px]">
-            <div className="w-full flex items-center gap-2 px-3 py-1.5 bg-[#2a2a2a] rounded-lg border border-[#3a3a3a] focus-within:border-gray-500 transition-colors">
+          <div className="flex items-center min-w-[180px] max-[600px]:min-w-[120px]">
+            <div className="w-full flex items-center gap-2 px-3 py-1.5 bg-[#2a2a2a] rounded-lg border border-[#3a3a3a] focus-within:border-gray-500 transition-colors max-[600px]:px-2 max-[600px]:py-1">
               <FontAwesomeIcon
                 icon={faMagnifyingGlass}
                 className="text-[12px] text-gray-400"
               />
               <input
                 type="text"
-                className="w-full bg-transparent focus:outline-none text-[13px] text-white placeholder:text-gray-500"
+                className="w-full bg-transparent focus:outline-none text-[13px] text-white placeholder:text-gray-500 max-[600px]:text-[12px]"
                 placeholder="Go to episode..."
                 onChange={handleChange}
               />
@@ -202,11 +202,14 @@ function Episodelist({
         )}
       </div>
       
-      <div ref={listContainerRef} className="w-full flex-1 overflow-y-auto bg-[#1a1a1a]">
+      <div ref={listContainerRef} className="w-full flex-1 overflow-y-auto bg-[#1a1a1a] max-h-[calc(100vh-400px)] max-[1200px]:max-h-[400px]">
         <div
           className={`${
             totalEpisodes > 30
-              ? "p-4 grid grid-cols-5 gap-2 max-[1200px]:grid-cols-12 max-[860px]:grid-cols-10 max-[575px]:grid-cols-8 max-[478px]:grid-cols-6 max-[350px]:grid-cols-5"
+              ? "p-4 grid gap-2 max-[600px]:p-2 max-[600px]:gap-1.5" + 
+                (totalEpisodes > 100 
+                  ? " grid-cols-5" 
+                  : " grid-cols-5 max-[1200px]:grid-cols-12 max-[860px]:grid-cols-10 max-[575px]:grid-cols-8 max-[478px]:grid-cols-6 max-[350px]:grid-cols-5")
               : ""
           }`}
         >
@@ -224,7 +227,7 @@ function Episodelist({
                     <div
                       key={item?.id}
                       ref={isActive ? activeEpisodeRef : null}
-                      className={`flex items-center justify-center rounded-lg h-[35px] text-[13px] font-medium cursor-pointer transition-all ${
+                      className={`flex items-center justify-center rounded-lg h-[35px] text-[13px] font-medium cursor-pointer transition-all max-[600px]:h-[30px] max-[600px]:text-[12px] ${
                         item?.filler
                           ? isActive
                             ? "bg-white text-black"
@@ -262,7 +265,7 @@ function Episodelist({
                   <div
                     key={item?.id}
                     ref={isActive ? activeEpisodeRef : null}
-                    className={`w-full px-4 py-3 flex items-center justify-start gap-x-6 cursor-pointer transition-all ${
+                    className={`w-full px-4 py-2.5 flex items-center justify-start gap-x-4 cursor-pointer transition-all max-[600px]:px-3 max-[600px]:py-2 max-[600px]:gap-x-3 ${
                       (index + 1) % 2 && !isActive
                         ? "bg-[#202020]"
                         : "bg-[#1a1a1a]"
@@ -277,11 +280,11 @@ function Episodelist({
                       }
                     }}
                   >
-                    <p className={`text-[14px] font-medium ${isActive ? "text-white" : "text-gray-400"}`}>
+                    <p className={`text-[14px] font-medium max-[600px]:text-[13px] ${isActive ? "text-white" : "text-gray-400"}`}>
                       {index + 1}
                     </p>
                     <div className="w-full flex items-center justify-between gap-x-[5px]">
-                      <h1 className={`line-clamp-1 text-[14px] transition-colors ${
+                      <h1 className={`line-clamp-1 text-[14px] transition-colors max-[600px]:text-[13px] ${
                         isActive ? "text-white font-medium" : "text-gray-400 font-normal"
                       }`}>
                         {language === "EN" ? item?.title : item?.japanese_title}
@@ -289,7 +292,7 @@ function Episodelist({
                       {isActive && (
                         <FontAwesomeIcon
                           icon={faCirclePlay}
-                          className="w-[18px] h-[18px] text-white"
+                          className="w-[18px] h-[18px] text-white max-[600px]:w-[16px] max-[600px]:h-[16px]"
                         />
                       )}
                     </div>

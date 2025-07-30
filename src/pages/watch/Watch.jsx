@@ -226,7 +226,7 @@ export default function Watch() {
   }, [animeId, animeInfo]);
   return (
     <div className="w-full min-h-screen bg-[#0a0a0a]">
-      <div className="w-full max-w-[1920px] mx-auto px-6 pt-[80px] pb-6 max-[1200px]:pt-[48px] max-[1024px]:px-4 max-md:pt-[32px]">
+      <div className="w-full max-w-[1920px] mx-auto pt-16 px-4 pb-6 w-full max-[1200px]:px-0">
         <div className="grid grid-cols-[minmax(0,70%),minmax(0,30%)] gap-6 w-full h-full max-[1200px]:flex max-[1200px]:flex-col">
           {/* Left Column - Player, Controls, Servers */}
           <div className="flex flex-col w-full gap-6">
@@ -355,30 +355,102 @@ export default function Watch() {
               </div>
             </div>
 
+            {/* Mobile-only Seasons Section */}
+            {seasons?.length > 0 && (
+              <div className="hidden max-[1200px]:block p-6 bg-[#141414] rounded-lg">
+                <h2 className="text-xl font-semibold mb-4 text-white">More Seasons</h2>
+                <div className="grid grid-cols-2 gap-2">
+                  {seasons.map((season, index) => (
+                    <Link
+                      to={`/${season.id}`}
+                      key={index}
+                      className={`relative w-full aspect-[3/1] rounded-lg overflow-hidden cursor-pointer group ${
+                        animeId === String(season.id)
+                          ? "ring-2 ring-white/40 shadow-lg shadow-white/10"
+                          : ""
+                      }`}
+                    >
+                      <img
+                        src={season.season_poster}
+                        alt={season.season}
+                        className={`w-full h-full object-cover scale-150 ${
+                          animeId === String(season.id)
+                            ? "opacity-50"
+                            : "opacity-40 group-hover:opacity-50 transition-opacity"
+                        }`}
+                      />
+                      {/* Dots Pattern Overlay */}
+                      <div 
+                        className="absolute inset-0 z-10" 
+                        style={{ 
+                          backgroundImage: `url('data:image/svg+xml,<svg width="3" height="3" viewBox="0 0 3 3" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="1.5" cy="1.5" r="0.5" fill="white" fill-opacity="0.25"/></svg>')`,
+                          backgroundSize: '3px 3px'
+                        }}
+                      />
+                      {/* Dark Gradient Overlay */}
+                      <div className={`absolute inset-0 z-20 bg-gradient-to-r ${
+                        animeId === String(season.id)
+                          ? "from-black/50 to-transparent"
+                          : "from-black/40 to-transparent"
+                      }`} />
+                      {/* Title Container */}
+                      <div className="absolute inset-0 z-30 flex items-center justify-center">
+                        <p className={`text-[14px] font-bold text-center px-2 transition-colors duration-300 ${
+                          animeId === String(season.id)
+                            ? "text-white"
+                            : "text-white/90 group-hover:text-white"
+                        }`}>
+                          {season.season}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Mobile-only Episodes Section */}
+            <div className="hidden max-[1200px]:block">
+              <div ref={episodesRef} className="episodes flex-shrink-0 bg-[#141414] rounded-lg overflow-hidden">
+                {!episodes ? (
+                  <div className="h-full flex items-center justify-center">
+                    <BouncingLoader />
+                  </div>
+                ) : (
+                  <Episodelist
+                    episodes={episodes}
+                    currentEpisode={episodeId}
+                    onEpisodeClick={(id) => setEpisodeId(id)}
+                    totalEpisodes={totalEpisodes}
+                  />
+                )}
+              </div>
+            </div>
+
             {/* Anime Info Section */}
-            <div className="p-6 bg-[#141414] rounded-lg">
-              <div className="flex gap-x-6 max-[600px]:flex-col max-[600px]:gap-y-4">
+            <div className="p-6 bg-[#141414] rounded-lg max-[600px]:p-4">
+              <div className="flex gap-x-6 max-[600px]:flex-row max-[600px]:gap-4">
                 {animeInfo && animeInfo?.poster ? (
                   <img
                     src={`${animeInfo?.poster}`}
                     alt=""
-                    className="w-[120px] h-[180px] object-cover rounded-md max-[600px]:w-full max-[600px]:h-[200px]"
+                    className="w-[120px] h-[180px] object-cover rounded-md max-[600px]:w-[100px] max-[600px]:h-[150px]"
                   />
                 ) : (
-                  <Skeleton className="w-[120px] h-[180px] rounded-md" />
+                  <Skeleton className="w-[120px] h-[180px] rounded-md max-[600px]:w-[100px] max-[600px]:h-[150px]" />
                 )}
-                <div className="flex flex-col gap-y-4 flex-1">
+                <div className="flex flex-col gap-y-4 flex-1 max-[600px]:gap-y-2">
                   {animeInfo && animeInfo?.title ? (
                     <Link 
                       to={`/${animeId}`}
                       className="group"
                     >
-                      <h1 className="text-[28px] font-medium text-white leading-tight group-hover:text-gray-300 transition-colors">
+                      <h1 className="text-[28px] font-medium text-white leading-tight group-hover:text-gray-300 transition-colors max-[600px]:text-[20px]">
                         {language ? animeInfo?.title : animeInfo?.japanese_title}
                       </h1>
-                      <div className="flex items-center gap-1.5 mt-1 text-gray-400 text-sm group-hover:text-white transition-colors">
+                      <div className="flex items-center gap-1.5 mt-1 text-gray-400 text-sm group-hover:text-white transition-colors max-[600px]:text-[12px] max-[600px]:mt-0.5">
                         <span>View Details</span>
-                        <svg className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform max-[600px]:w-3 max-[600px]:h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
@@ -386,13 +458,13 @@ export default function Watch() {
                   ) : (
                     <Skeleton className="w-[170px] h-[20px] rounded-xl" />
                   )}
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 max-[600px]:gap-1.5">
                     {animeInfo ? (
                       tags.map(
                         ({ condition, icon, text }, index) =>
                           condition && (
-                            <span key={index} className="px-3 py-1 bg-[#1a1a1a] rounded-full text-sm flex items-center gap-x-1 text-gray-300">
-                              {icon && <FontAwesomeIcon icon={icon} className="text-[12px]" />}
+                            <span key={index} className="px-3 py-1 bg-[#1a1a1a] rounded-full text-sm flex items-center gap-x-1 text-gray-300 max-[600px]:px-2 max-[600px]:py-0.5 max-[600px]:text-[11px]">
+                              {icon && <FontAwesomeIcon icon={icon} className="text-[12px] max-[600px]:text-[10px]" />}
                               {text}
                             </span>
                           )
@@ -402,14 +474,14 @@ export default function Watch() {
                     )}
                   </div>
                   {animeInfo?.animeInfo?.Overview && (
-                    <p className="text-[15px] text-gray-400 leading-relaxed">
+                    <p className="text-[15px] text-gray-400 leading-relaxed max-[600px]:text-[13px] max-[600px]:leading-normal">
                       {animeInfo?.animeInfo?.Overview.length > 270 ? (
                         <>
                           {isFullOverview
                             ? animeInfo?.animeInfo?.Overview
                             : `${animeInfo?.animeInfo?.Overview.slice(0, 270)}...`}
                           <button
-                            className="ml-2 text-gray-300 hover:text-white transition-colors"
+                            className="ml-2 text-gray-300 hover:text-white transition-colors max-[600px]:text-[12px] max-[600px]:ml-1"
                             onClick={() => setIsFullOverview(!isFullOverview)}
                           >
                             {isFullOverview ? "Show Less" : "Read More"}
@@ -424,9 +496,9 @@ export default function Watch() {
               </div>
             </div>
 
-            {/* Seasons Section */}
+            {/* Desktop-only Seasons Section */}
             {seasons?.length > 0 && (
-              <div className="p-6 bg-[#141414] rounded-lg">
+              <div className="p-6 bg-[#141414] rounded-lg max-[1200px]:hidden">
                 <h2 className="text-xl font-semibold mb-4 text-white">More Seasons</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                   {seasons.map((season, index) => (
@@ -479,8 +551,8 @@ export default function Watch() {
             )}
           </div>
 
-          {/* Right Column - Episodes and Related */}
-          <div className="flex flex-col gap-6 h-full">
+          {/* Right Column - Episodes and Related (Desktop Only) */}
+          <div className="flex flex-col gap-6 h-full max-[1200px]:hidden">
             {/* Episodes Section */}
             <div ref={episodesRef} className="episodes flex-shrink-0 bg-[#141414] rounded-lg overflow-hidden">
               {!episodes ? (
@@ -512,6 +584,17 @@ export default function Watch() {
               </div>
             )}
           </div>
+
+          {/* Mobile-only Related Section */}
+          {animeInfo && animeInfo.related_data && (
+            <div className="hidden max-[1200px]:block bg-[#141414] rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4 text-white">Related Anime</h2>
+              <Sidecard
+                data={animeInfo.related_data}
+                className="!mt-0"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
