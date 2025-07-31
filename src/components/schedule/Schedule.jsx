@@ -114,28 +114,28 @@ const Schedule = () => {
 
   return (
     <>
-      <div className="w-full mt-[60px] max-[480px]:mt-[40px]">
+      <div className="w-full mt-8 max-[480px]:mt-6">
         <div className="flex items-center justify-between max-[570px]:flex-col max-[570px]:items-start max-[570px]:gap-y-2">
-          <div className="font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px]">
+          <div className="font-bold text-2xl text-white max-[478px]:text-[18px]">
             Estimated Schedule
           </div>
-          <p className="leading-[28px] px-[10px] bg-white text-black rounded-full my-[6px] text-[16px] font-bold max-[478px]:text-[12px] max-[275px]:text-[10px]">
+          <p className="leading-[28px] px-3 bg-zinc-800 text-white rounded-md text-[14px] font-medium max-[478px]:text-[12px] max-[275px]:text-[10px]">
             ({GMTOffset}) {currentTime.toLocaleDateString()}{" "}
             {currentTime.toLocaleTimeString()}
           </p>
         </div>
       </div>
-      <div className="w-full overflow-x-scroll space-x-4 scrollbar-hide pt-10 px-6 max-[480px]:px-4 max-[478px]:pt-4">
+      <div className="w-full overflow-x-scroll space-x-4 scrollbar-hide pt-6 px-4 max-[480px]:px-2 max-[478px]:pt-4">
         <div className="relative w-full">
           <Swiper
             slidesPerView={3}
             spaceBetween={2}
             breakpoints={{
-              250: { slidesPerView: 3, spaceBetween: 10 },
-              640: { slidesPerView: 4, spaceBetween: 10 },
-              768: { slidesPerView: 5, spaceBetween: 10 },
-              1024: { slidesPerView: 7, spaceBetween: 10 },
-              1300: { slidesPerView: 7, spaceBetween: 15 },
+              250: { slidesPerView: 3, spaceBetween: 8 },
+              640: { slidesPerView: 4, spaceBetween: 8 },
+              768: { slidesPerView: 5, spaceBetween: 8 },
+              1024: { slidesPerView: 7, spaceBetween: 8 },
+              1300: { slidesPerView: 7, spaceBetween: 8 },
             }}
             modules={[Pagination, Navigation]}
             navigation={{
@@ -150,20 +150,20 @@ const Schedule = () => {
                   <div
                     ref={(el) => (cardRefs.current[index] = el)}
                     onClick={() => toggleActive(index)}
-                    className={`h-[70px] flex flex-col justify-center items-center w-full text-center rounded-xl shadow-lg cursor-pointer ${
+                    className={`h-[60px] flex flex-col justify-center items-center w-full text-center rounded-lg cursor-pointer transition-all duration-200 ${
                       currentActiveIndex === index
-                        ? "bg-[#ffbade] text-black"
-                        : "bg-white bg-opacity-5 text-[#ffffff] hover:bg-[#373646] transition-all duration-300 ease-in-out"
+                        ? "bg-white text-black"
+                        : "bg-zinc-800 text-white hover:bg-zinc-700"
                     }`}
                   >
-                    <div className="text-[18px] font-bold max-[400px]:text-[14px] max-[350px]:text-[12px]">
+                    <div className="text-[16px] font-bold max-[400px]:text-[14px] max-[350px]:text-[12px]">
                       {date.dayname}
                     </div>
                     <div
-                      className={`text-[14px] max-[400px]:text-[12px] ${
+                      className={`text-[13px] max-[400px]:text-[11px] ${
                         currentActiveIndex === index
-                          ? "text-black"
-                          : "text-gray-400"
+                          ? "text-zinc-800"
+                          : "text-zinc-400"
                       } max-[350px]:text-[10px]`}
                     >
                       {date.monthName} {date.day}
@@ -172,28 +172,28 @@ const Schedule = () => {
                 </SwiperSlide>
               ))}
           </Swiper>
-          <button className="next absolute top-1/2 right-[-15px] transform -translate-y-1/2 flex justify-center items-center cursor-pointer">
+          <button className="next absolute top-1/2 right-[-12px] transform -translate-y-1/2 flex justify-center items-center cursor-pointer">
             <FaChevronRight className="text-[12px]" />
           </button>
-          <button className="prev absolute top-1/2 left-[-15px] transform -translate-y-1/2 flex justify-center items-center cursor-pointer">
+          <button className="prev absolute top-1/2 left-[-12px] transform -translate-y-1/2 flex justify-center items-center cursor-pointer">
             <FaChevronLeft className="text-[12px]" />
           </button>
         </div>
       </div>
       {loading ? (
-        <div className="w-full h-[70px] flex justify-center items-center">
+        <div className="w-full h-[60px] flex justify-center items-center">
           <BouncingLoader />
         </div>
       ) : !scheduleData || scheduleData.length === 0 ? (
-        <div className="w-full h-[70px] flex justify-center items-center mt-5 text-xl">
+        <div className="w-full h-[60px] flex justify-center items-center mt-4 text-lg text-zinc-400">
           No data to display
         </div>
       ) : error ? (
-        <div className="w-full h-[70px] flex justify-center items-center mt-5 text-xl">
+        <div className="w-full h-[60px] flex justify-center items-center mt-4 text-lg text-zinc-400">
           Something went wrong
         </div>
       ) : (
-        <div className="flex flex-col mt-5 items-start">
+        <div className="flex flex-col mt-4 items-start">
           {(showAll
             ? scheduleData
             : Array.isArray(scheduleData)
@@ -203,31 +203,31 @@ const Schedule = () => {
             <Link
               to={`/${item.id}`}
               key={idx}
-              className="w-full flex justify-between py-4 border-[#FFFFFF0D] border-b-[1px] group cursor-pointer max-[325px]:py-2"
+              className="w-full flex justify-between py-3 border-zinc-800 border-b-[1px] group cursor-pointer hover:bg-zinc-900/50 px-2 transition-all duration-200 max-[325px]:py-2"
             >
-              <div className="flex items-center max-w-[500px] gap-x-7 max-[400px]:gap-x-2">
-                <div className="text-lg font-semibold text-[#ffffff59] group-hover:text-[#ffbade] transition-all duration-300 ease-in-out max-[600px]:text-[14px] max-[275px]:text-[12px]">
+              <div className="flex items-center max-w-[500px] gap-x-4 max-[400px]:gap-x-2">
+                <div className="text-base font-medium text-zinc-500 group-hover:text-white transition-all duration-200 max-[600px]:text-[14px] max-[275px]:text-[12px]">
                   {item.time || "N/A"}
                 </div>
-                <h3 className="text-[17px] font-semibold line-clamp-1 group-hover:text-[#ffbade] transition-all duration-300 ease-in-out max-[600px]:text-[14px] max-[275px]:text-[12px]">
+                <h3 className="text-[16px] font-medium line-clamp-1 group-hover:text-white transition-all duration-200 max-[600px]:text-[14px] max-[275px]:text-[12px]">
                   {item.title || "N/A"}
                 </h3>
               </div>
-              <button className="max-w-[150px] flex items-center py-1 px-4 rounded-lg gap-x-2 group-hover:bg-[#ffbade] transition-all duration-300 ease-in-out">
+              <div className="flex items-center gap-x-2 py-1 px-3 rounded-md bg-zinc-800 group-hover:bg-white transition-all duration-200">
                 <FontAwesomeIcon
                   icon={faPlay}
-                  className="mt-[1px] text-[10px] max-[320px]:text-[8px] group-hover:text-black transition-all duration-300 ease-in-out"
+                  className="mt-[1px] text-[10px] max-[320px]:text-[8px] text-zinc-400 group-hover:text-black"
                 />
-                <p className="text-[14px] text-white group-hover:text-black transition-all duration-300 ease-in-out max-[275px]:text-[12px]">
-                  Episode {item.episode_no || "N/A"}
+                <p className="text-[13px] text-zinc-400 group-hover:text-black max-[275px]:text-[12px]">
+                  EP {item.episode_no || "N/A"}
                 </p>
-              </button>
+              </div>
             </Link>
           ))}
           {scheduleData.length > 7 && (
             <button
               onClick={toggleShowAll}
-              className="text-white py-4 hover:text-[#ffbade] font-semibold transition-all duration-300 ease-in-out max-sm:text-[13px]"
+              className="text-zinc-400 py-3 hover:text-white font-medium transition-all duration-200 max-sm:text-[13px]"
             >
               {showAll ? "Show Less" : "Show More"}
             </button>

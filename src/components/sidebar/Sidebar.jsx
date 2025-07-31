@@ -8,6 +8,8 @@ import "./Sidebar.css";
 
 const MENU_ITEMS = [
   { name: "Home", path: "/home", icon: faHome },
+  { name: "Recently Added", path: "/recently-added", icon: faCirclePlay },
+  { name: "Top Upcoming", path: "/top-upcoming", icon: faFilePen },
   { name: "Subbed Anime", path: "/subbed-anime", icon: faFilePen },
   { name: "Dubbed Anime", path: "/dubbed-anime", icon: faPlay },
   { name: "Most Popular", path: "/most-popular", icon: faFire },

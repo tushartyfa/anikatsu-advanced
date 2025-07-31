@@ -87,19 +87,20 @@ const CategoryCard = React.memo(
     };
     return (
       <div className={`w-full ${className}`}>
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px] capitalize tracking-wide">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="font-semibold text-2xl text-white max-[478px]:text-[18px] capitalize tracking-wide">
             {label}
           </h1>
           {showViewMore && (
             <Link
               to={`/${path}`}
-              className="flex w-fit items-baseline h-fit rounded-3xl gap-x-1 group"
+              className="flex items-center gap-x-1 py-1 px-2 -mr-2 rounded-md
+                text-[13px] font-medium text-[#ffffff80] hover:text-white
+                transition-all duration-300 group"
             >
-              <p className="text-gray-300 text-[12px] font-medium h-fit leading-0 group-hover:text-white transition-all ease-out">
-                View more
-              </p>
-              <FaChevronRight className="text-gray-300 text-[10px] group-hover:text-white transition-all ease-out" />
+              View all
+              <FaChevronRight className="text-[10px] transform transition-transform duration-300 
+                group-hover:translate-x-0.5" />
             </Link>
           )}
         </div>
@@ -115,12 +116,12 @@ const CategoryCard = React.memo(
               {itemsToRender.firstRow.map((item, index) => (
                 <div
                   key={index}
-                  className="flex flex-col transition-transform duration-300 ease-in-out category-card-container"
+                  className="flex flex-col category-card-container"
                   style={{ height: "fit-content" }}
                   ref={(el) => (cardRefs.current[index] = el)}
                 >
                   <div
-                    className="w-full relative group hover:cursor-pointer"
+                    className="w-full relative group hover:cursor-pointer overflow-hidden rounded-xl"
                     onClick={() =>
                       navigate(
                         `${
@@ -139,51 +140,72 @@ const CategoryCard = React.memo(
                         className="text-[40px] text-white absolute top-1/2 left-1/2 play-icon z-[10000]"
                       />
                     )}
-
                     <div className="overlay"></div>
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden rounded-xl">
                       <img
                         src={`${item.poster}`}
                         alt={item.title}
-                        className={`w-full h-[320px] object-cover max-[1200px]:h-[35vw] max-[758px]:h-[45vw] max-[478px]:h-[60vw] group-hover:blur-[7px] transform transition-all duration-300 ease-in-out ultra-wide:h-[400px] ${cardStyle}`}
+                        className={`w-full h-[320px] object-cover max-[1200px]:h-[35vw] max-[758px]:h-[45vw] max-[478px]:h-[60vw] transform transition-all duration-300 ease-in-out ultra-wide:h-[400px] ${cardStyle}`}
                       />
                     </div>
                     {(item.tvInfo?.rating === "18+" ||
                       item?.adultContent === true) && (
-                      <div className="text-white px-2 py-1 rounded-md bg-black/50 backdrop-blur-sm border border-white/10 absolute top-2 left-2 flex items-center justify-center text-[12px] font-medium">
+                      <div className="text-white px-3 py-1 rounded-lg bg-black/40 backdrop-blur-md border border-white/10 absolute top-3 left-3 flex items-center justify-center text-[12px] font-medium">
                         18+
                       </div>
                     )}
-                    <div className="absolute left-2 bottom-3 flex items-center justify-center w-fit space-x-2 z-[100] max-[270px]:flex-col max-[270px]:gap-y-[3px]">
-                      {item.tvInfo?.sub && (
-                        <div className="category-badge flex space-x-1 justify-center items-center">
-                          <FontAwesomeIcon
-                            icon={faClosedCaptioning}
-                            className="text-[12px] text-white/90"
-                          />
-                          <p className="text-[12px] text-white/90">
-                            {item.tvInfo.sub}
-                          </p>
+                    <div className="info-container">
+                      <div className="flex items-center justify-start w-fit space-x-2 z-[100] max-[270px]:flex-col max-[270px]:gap-y-[3px]">
+                        {item.tvInfo?.sub && (
+                          <div className="category-badge flex space-x-1 justify-center items-center">
+                            <FontAwesomeIcon
+                              icon={faClosedCaptioning}
+                              className="text-[12px] text-white/90"
+                            />
+                            <p className="text-[12px] text-white/90">
+                              {item.tvInfo.sub}
+                            </p>
+                          </div>
+                        )}
+                        {item.tvInfo?.dub && (
+                          <div className="category-badge flex space-x-1 justify-center items-center">
+                            <FontAwesomeIcon
+                              icon={faMicrophone}
+                              className="text-[12px] text-white/90"
+                            />
+                            <p className="text-[12px] text-white/90">
+                              {item.tvInfo.dub}
+                            </p>
+                          </div>
+                        )}
+                        {item.tvInfo?.eps && (
+                          <div className="category-badge flex space-x-1 justify-center items-center">
+                            <p className="text-[12px] text-white/90">
+                              {item.tvInfo.eps}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      <Link
+                        to={`/${item.id}`}
+                        className="text-white font-medium mt-3 item-title hover:text-white hover:cursor-pointer line-clamp-1 block"
+                      >
+                        {language === "EN" ? item.title : item.japanese_title}
+                      </Link>
+                      <div className="flex items-center gap-x-2 w-full mt-2 overflow-hidden">
+                        <div className="text-gray-300 text-[13px] text-nowrap overflow-hidden text-ellipsis font-medium">
+                          {item.tvInfo.showType.split(" ").shift()}
                         </div>
-                      )}
-                      {item.tvInfo?.dub && (
-                        <div className="category-badge flex space-x-1 justify-center items-center">
-                          <FontAwesomeIcon
-                            icon={faMicrophone}
-                            className="text-[12px] text-white/90"
-                          />
-                          <p className="text-[12px] text-white/90">
-                            {item.tvInfo.dub}
-                          </p>
+                        <div className="dot"></div>
+                        <div className="text-gray-300 text-[13px] text-nowrap overflow-hidden text-ellipsis font-medium">
+                          {item.tvInfo?.duration === "m" ||
+                          item.tvInfo?.duration === "?" ||
+                          item.duration === "m" ||
+                          item.duration === "?"
+                            ? "N/A"
+                            : item.tvInfo?.duration || item.duration || "N/A"}
                         </div>
-                      )}
-                      {item.tvInfo?.eps && (
-                        <div className="category-badge flex space-x-1 justify-center items-center">
-                          <p className="text-[12px] text-white/90">
-                            {item.tvInfo.eps}
-                          </p>
-                        </div>
-                      )}
+                      </div>
                     </div>
                     {hoveredItem === item.id + index &&
                       window.innerWidth > 1024 && (
@@ -198,31 +220,11 @@ const CategoryCard = React.memo(
                         </div>
                       )}
                   </div>
-                  <Link
-                    to={`/${item.id}`}
-                    className="text-gray-100 font-medium mt-2 item-title hover:text-white hover:cursor-pointer line-clamp-1"
-                  >
-                    {language === "EN" ? item.title : item.japanese_title}
-                  </Link>
                   {item.description && (
-                    <div className="line-clamp-3 text-[13px] font-light text-gray-400 mt-1 max-[1200px]:hidden">
+                    <div className="line-clamp-3 text-[13px] font-light text-gray-400 mt-3 max-[1200px]:hidden">
                       {item.description}
                     </div>
                   )}
-                  <div className="flex items-center gap-x-2 w-full mt-2 overflow-hidden">
-                    <div className="text-gray-500 text-[13px] text-nowrap overflow-hidden text-ellipsis font-medium">
-                      {item.tvInfo.showType.split(" ").shift()}
-                    </div>
-                    <div className="dot"></div>
-                    <div className="text-gray-500 text-[13px] text-nowrap overflow-hidden text-ellipsis font-medium">
-                      {item.tvInfo?.duration === "m" ||
-                      item.tvInfo?.duration === "?" ||
-                      item.duration === "m" ||
-                      item.duration === "?"
-                        ? "N/A"
-                        : item.tvInfo?.duration || item.duration || "N/A"}
-                    </div>
-                  </div>
                 </div>
               ))}
             </div>

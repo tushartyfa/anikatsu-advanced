@@ -1,74 +1,79 @@
-import { Pagination, Navigation } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useLanguage } from "@/src/context/LanguageContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faClosedCaptioning,
+  faMicrophone,
+  faFire
+} from "@fortawesome/free-solid-svg-icons";
 
-const Trending = ({ trending }) => {
+const Trending = ({ trending, className }) => {
   const { language } = useLanguage();
-  const navigate = useNavigate();
+
   return (
-    <div className="mt-6 max-[1200px]:px-4 max-md:px-0">
-      <h1 className="text-[#ffbade] text-2xl font-bold max-md:pl-4">
-        Trending
-      </h1>
-      <div className="pr-[60px] relative mx-auto overflow-hidden z-[1] mt-6 max-[759px]:pr-0">
-        <Swiper
-          className="w-full h-full"
-          slidesPerView={3}
-          spaceBetween={2}
-          breakpoints={{
-            479: { spaceBetween: 15 },
-            575: { spaceBetween: 15 },
-            640: { slidesPerView: 3, spaceBetween: 15 },
-            900: { slidesPerView: 4, spaceBetween: 15 },
-            1300: { slidesPerView: 6, spaceBetween: 15 },
-          }}
-          modules={[Pagination, Navigation]}
-          navigation={{
-            nextEl: ".btn-next",
-            prevEl: ".btn-prev",
-          }}
-        >
-          {trending &&
-            trending.map((item, idx) => (
-              <SwiperSlide
-                key={idx}
-                className="text-center flex text-[18px] justify-center items-center"
-                onClick={() => navigate(`/watch/${item.id}`)}
+    <div className={`bg-[#141414] rounded-lg p-6 ${className}`}>
+      <div className="flex items-center gap-2 mb-4">
+        <FontAwesomeIcon icon={faFire} className="text-white/90" />
+        <h2 className="text-xl font-semibold text-white">Trending Now</h2>
+      </div>
+      <div className="flex flex-col space-y-2 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-[#1a1a1a] scrollbar-thumb-[#2a2a2a] hover:scrollbar-thumb-[#333] scrollbar-thumb-rounded">
+        {trending &&
+          trending.map((item, index) => (
+            <div key={index} className="group">
+              <Link
+                to={`/${item.id}`}
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className="block"
               >
-                <div className="w-full h-auto pb-[115%] relative inline-block overflow-hidden max-[575px]:pb-[150%]">
-                  <div className="absolute left-0 top-0 bottom-0 overflow-hidden w-[40px] text-center font-semibold bg-[#201F31] max-[575px]:top-0 max-[575px]:h-[30px] max-[575px]:z-[9] max-[575px]:bg-white">
-                    <span className="absolute left-0 right-0 bottom-0 text-[24px] leading-[1.1em] text-center z-[9] transform -rotate-90 max-[575px]:transform max-[575px]:rotate-0 max-[575px]:text-[#111] max-[575px]:text-[18px] max-[575px]:leading-[30px]">
-                      {item.number}
-                    </span>
-                    <div className="w-[150px] h-fit text-left transform -rotate-90 absolute bottom-[100px] left-[-55px] leading-[40px] text-ellipsis whitespace-nowrap overflow-hidden text-white text-[16px] font-medium">
-                      {language === "EN" ? item.title : item.japanese_title}
+                <div className="flex items-start gap-3 p-2 rounded-lg transition-colors hover:bg-[#1a1a1a]">
+                  <div className="relative">
+                    <img
+                      src={item.poster}
+                      alt={item.title}
+                      className="w-[50px] h-[70px] rounded object-cover"
+                    />
+                    <div className="absolute top-0 left-0 bg-white/90 text-black text-xs font-bold px-1.5 rounded-br">
+                      #{index + 1}
                     </div>
                   </div>
-                  <Link
-                    to={`/${item.id}`}
-                    className="inline-block bg-[#2a2c31] absolute w-auto left-[40px] right-0 top-0 bottom-0 max-[575px]:left-0 max-[575px]:top-0 max-[575px]:bottom-0"
-                  >
-                    <img
-                      src={`${item.poster}`}
-                      alt={item.title}
-                      className="block w-full h-full object-cover hover:cursor-pointer"
-                      title={item.title}
-                    />
-                  </Link>
+                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                    <span className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors line-clamp-2">
+                      {language === "EN" ? item.title : item.japanese_title}
+                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {item.tvInfo?.sub && (
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-[#2a2a2a] rounded text-gray-300">
+                          <FontAwesomeIcon
+                            icon={faClosedCaptioning}
+                            className="text-[10px]"
+                          />
+                          <span className="text-[10px] font-medium">
+                            {item.tvInfo.sub}
+                          </span>
+                        </div>
+                      )}
+                      {item.tvInfo?.dub && (
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-[#2a2a2a] rounded text-gray-300">
+                          <FontAwesomeIcon
+                            icon={faMicrophone}
+                            className="text-[10px]"
+                          />
+                          <span className="text-[10px] font-medium">
+                            {item.tvInfo.dub}
+                          </span>
+                        </div>
+                      )}
+                      {item.tvInfo?.showType && (
+                        <span className="text-xs text-gray-400">
+                          {item.tvInfo.showType}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </SwiperSlide>
-            ))}
-        </Swiper>
-        <div className="absolute top-0 right-0 bottom-0 w-[45px] flex flex-col space-y-2 max-[759px]:hidden">
-          <div className="btn-next bg-[#383747] h-[50%] flex justify-center items-center rounded-[8px] cursor-pointer transition-all duration-300 ease-out hover:bg-[#ffbade] hover:text-[#383747]">
-            <FaChevronRight />
-          </div>
-          <div className="btn-prev bg-[#383747] h-[50%] flex justify-center items-center rounded-[8px] cursor-pointer transition-all duration-300 ease-out hover:bg-[#ffbade] hover:text-[#383747]">
-            <FaChevronLeft />
-          </div>
-        </div>
+              </Link>
+            </div>
+          ))}
       </div>
     </div>
   );

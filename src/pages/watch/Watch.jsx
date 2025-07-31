@@ -9,17 +9,14 @@ import IframePlayer from "@/src/components/player/IframePlayer";
 import Episodelist from "@/src/components/episodelist/Episodelist";
 import website_name from "@/src/config/website";
 import Sidecard from "@/src/components/sidecard/Sidecard";
-import CategoryCard from "@/src/components/categorycard/CategoryCard";
 import {
   faClosedCaptioning,
   faMicrophone,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Servers from "@/src/components/servers/Servers";
-import CategoryCardLoader from "@/src/components/Loader/CategoryCard.loader";
 import { Skeleton } from "@/src/components/ui/Skeleton/Skeleton";
 import SidecardLoader from "@/src/components/Loader/Sidecard.loader";
-import Voiceactor from "@/src/components/voiceactor/Voiceactor";
 import Watchcontrols from "@/src/components/watchcontrols/Watchcontrols";
 import useWatchControl from "@/src/hooks/useWatchControl";
 import Player from "@/src/components/player/Player";

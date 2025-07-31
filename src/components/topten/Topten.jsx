@@ -49,19 +49,17 @@ function Topten({ data, className }) {
   };
 
   return (
-    <div className={`flex flex-col space-y-6 ${className}`}>
+    <div className={`flex flex-col space-y-4 ${className}`}>
       <div className="flex justify-between items-center max-[350px]:flex-col max-[350px]:gap-y-2 max-[350px]:items-start">
-        <h1 className="font-bold text-2xl text-[#ffbade]">Top 10</h1>
-        <ul className="flex justify-between w-fit bg-[#373646] rounded-[4px] text-sm font-bold">
+        <h1 className="font-bold text-2xl text-white tracking-tight">Top 10</h1>
+        <ul className="flex justify-between w-fit bg-[#1a1a1a] rounded-lg overflow-hidden shadow-lg">
           {["today", "week", "month"].map((period) => (
             <li
               key={period}
-              className={`cursor-pointer p-2 px-3 ${
+              className={`cursor-pointer p-1.5 px-4 transition-all duration-200 ${
                 activePeriod === period
-                  ? "bg-[#ffbade] text-[#555462]"
-                  : "text-white hover:text-[#ffbade]"
-              } ${period === "today" ? "rounded-l-[4px]" : ""} ${
-                period === "month" ? "rounded-r-[4px]" : ""
+                  ? "bg-white text-black font-medium"
+                  : "text-gray-400 hover:text-white hover:bg-[#2a2a2a]"
               }`}
               onClick={() => handlePeriodChange(period)}
             >
@@ -71,19 +69,19 @@ function Topten({ data, className }) {
         </ul>
       </div>
 
-      <div className="flex flex-col space-y-4 bg-[#2B2A3C] p-4 pt-8">
+      <div className="flex flex-col space-y-3 bg-[#1a1a1a] p-3 pt-6 rounded-lg shadow-lg">
         {currentData &&
           currentData.map((item, index) => (
             <div
               key={index}
-              className="flex items-center gap-x-4"
+              className="flex items-center gap-x-3 group"
               ref={(el) => (cardRefs.current[index] = el)}
             >
               <h1
-                className={`font-bold text-2xl ${
+                className={`font-bold text-2xl transition-colors ${
                   index < 3
-                    ? "pb-1 text-white border-b-[3px] border-[#ffbade]"
-                    : "text-[#777682]"
+                    ? "text-white border-b-2 border-white pb-0.5"
+                    : "text-gray-600"
                 } max-[350px]:hidden`}
               >
                 {`${index + 1 < 10 ? "0" : ""}${index + 1}`}
@@ -92,16 +90,15 @@ function Topten({ data, className }) {
                 style={{
                   borderBottom:
                     index + 1 < 10
-                      ? "1px solid rgba(255, 255, 255, .075)"
+                      ? "1px solid rgba(255, 255, 255, .1)"
                       : "none",
                 }}
-                className="flex pb-4 relative container items-center"
+                className="flex pb-3 relative container items-center group-hover:bg-[#2a2a2a] transition-colors duration-200 rounded-lg p-1.5"
               >
-                {/* Image with tooltip behavior */}
                 <img
                   src={`${item.poster}`}
                   alt={item.title}
-                  className="w-[60px] h-[75px] rounded-md object-cover flex-shrink-0 cursor-pointer"
+                  className="w-[55px] h-[70px] rounded-lg object-cover flex-shrink-0 cursor-pointer shadow-md transition-transform duration-200 group-hover:scale-[1.02]"
                   onClick={() => navigate(`/watch/${item.id}`)}
                   onMouseEnter={() => handleMouseEnter(item, index)}
                   onMouseLeave={handleMouseLeave}
@@ -132,33 +129,33 @@ function Topten({ data, className }) {
                     </div>
                   )}
 
-                <div className="flex flex-col ml-4 space-y-2">
+                <div className="flex flex-col ml-3 space-y-1.5">
                   <Link
                     to={`/${item.id}`}
-                    className="text-[1em] font-[500] hover:cursor-pointer hover:text-[#ffbade] transform transition-all ease-out line-clamp-1 max-[478px]:line-clamp-2 max-[478px]:text-[14px]"
+                    className="text-[0.95em] font-medium text-gray-200 hover:text-white transform transition-all ease-out line-clamp-1 max-[478px]:line-clamp-2 max-[478px]:text-[14px]"
                     onClick={() => handleNavigate(item.id)}
                   >
                     {language === "EN" ? item.title : item.japanese_title}
                   </Link>
-                  <div className="flex flex-wrap items-center w-fit space-x-1 max-[350px]:gap-y-[3px]">
+                  <div className="flex flex-wrap items-center w-fit space-x-2 max-[350px]:gap-y-[3px]">
                     {item.tvInfo?.sub && (
-                      <div className="flex space-x-1 justify-center items-center bg-[#B0E3AF] rounded-[4px] px-[4px] text-black py-[2px]">
+                      <div className="flex space-x-1 justify-center items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-md px-1.5 py-0.5 transition-colors duration-200 hover:bg-opacity-20">
                         <FontAwesomeIcon
                           icon={faClosedCaptioning}
-                          className="text-[12px]"
+                          className="text-[11px] text-gray-300"
                         />
-                        <p className="text-[12px] font-bold">
+                        <p className="text-[11px] font-medium text-gray-300">
                           {item.tvInfo.sub}
                         </p>
                       </div>
                     )}
                     {item.tvInfo?.dub && (
-                      <div className="flex space-x-1 justify-center items-center bg-[#B9E7FF] rounded-[4px] px-[8px] text-black py-[2px]">
+                      <div className="flex space-x-1 justify-center items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-md px-1.5 py-0.5 transition-colors duration-200 hover:bg-opacity-20">
                         <FontAwesomeIcon
                           icon={faMicrophone}
-                          className="text-[12px]"
+                          className="text-[11px] text-gray-300"
                         />
-                        <p className="text-[12px] font-bold">
+                        <p className="text-[11px] font-medium text-gray-300">
                           {item.tvInfo.dub}
                         </p>
                       </div>
