@@ -20,7 +20,6 @@ const ContinueWatching = () => {
     setWatchList(data);
   }, []);
 
-  // Memoize watchList to avoid unnecessary re-renders
   const memoizedWatchList = useMemo(() => watchList, [watchList]);
 
   const removeFromWatchList = (episodeId) => {
@@ -36,37 +35,37 @@ const ContinueWatching = () => {
   if (memoizedWatchList.length === 0) return null;
 
   return (
-    <div className="mt-6 max-[1200px]:px-6 max-md:px-0">
-      <div className="flex items-center justify-between max-md:pl-4">
-        <div className="flex items-center gap-x-2 justify-center">
-          <FaHistory className="text-[#ffbade]" />
-          <h1 className="text-[#ffbade] text-2xl font-bold max-[450px]:text-xl max-[450px]:mb-1 max-[350px]:text-lg">
+    <div className="mt-8 max-[1200px]:px-6 max-md:px-0">
+      <div className="flex items-center justify-between max-md:pl-4 mb-6">
+        <div className="flex items-center gap-x-3 justify-center">
+          <FaHistory className="text-gray-200 text-xl" />
+          <h1 className="text-gray-200 text-2xl font-bold tracking-tight max-[450px]:text-xl max-[450px]:mb-1 max-[350px]:text-lg">
             Continue Watching
           </h1>
         </div>
 
-        <div className="flex gap-x-2 pr-2 max-[350px]:hidden">
-          <button className="continue-btn-prev bg-gray-700 text-white p-3 rounded-full hover:bg-gray-500 transition max-[768px]:p-2">
-            <FaChevronLeft className="text-xs" />
+        <div className="flex gap-x-3 pr-2 max-[350px]:hidden">
+          <button className="continue-btn-prev bg-gray-800 text-gray-300 p-3 rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-300 shadow-lg">
+            <FaChevronLeft className="text-sm" />
           </button>
-          <button className="continue-btn-next bg-gray-700 text-white p-3 rounded-full hover:bg-gray-500 transition max-[768px]:p-2">
-            <FaChevronRight className="text-xs" />
+          <button className="continue-btn-next bg-gray-800 text-gray-300 p-3 rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-300 shadow-lg">
+            <FaChevronRight className="text-sm" />
           </button>
         </div>
       </div>
 
-      <div className="relative mx-auto overflow-hidden z-[1] mt-6 max-[450px]:mt-3">
+      <div className="relative mx-auto overflow-hidden z-[1]">
         <Swiper
           ref={swiperRef}
           className="w-full h-full"
           slidesPerView={3}
-          spaceBetween={15}
+          spaceBetween={20}
           breakpoints={{
-            640: { slidesPerView: 4, spaceBetween: 15 },
-            768: { slidesPerView: 4, spaceBetween: 15 },
-            1024: { slidesPerView: 5, spaceBetween: 15 },
-            1300: { slidesPerView: 6, spaceBetween: 15 },
-            1600: { slidesPerView: 7, spaceBetween: 20 },
+            640: { slidesPerView: 4, spaceBetween: 20 },
+            768: { slidesPerView: 4, spaceBetween: 20 },
+            1024: { slidesPerView: 5, spaceBetween: 24 },
+            1300: { slidesPerView: 6, spaceBetween: 24 },
+            1600: { slidesPerView: 7, spaceBetween: 28 },
           }}
           modules={[Navigation]}
           navigation={{
@@ -79,9 +78,9 @@ const ContinueWatching = () => {
               key={index}
               className="text-center flex justify-center items-center"
             >
-              <div className="w-full h-auto pb-[140%] relative inline-block overflow-hidden">
+              <div className="w-full h-auto pb-[140%] relative inline-block overflow-hidden rounded-lg shadow-lg group">
                 <button
-                  className="absolute top-2 right-2 bg-black text-white px-3 py-2 bg-opacity-60 rounded-full text-sm z-10 font-extrabold hover:bg-white hover:text-black transition-all"
+                  className="absolute top-3 right-3 bg-black/70 text-gray-300 w-8 h-8 flex items-center justify-center rounded-lg text-sm z-10 font-medium hover:bg-white hover:text-black transition-all duration-300"
                   onClick={() => removeFromWatchList(item.episodeId)}
                 >
                   ✖
@@ -89,34 +88,36 @@ const ContinueWatching = () => {
 
                 <Link
                   to={`/watch/${item?.id}?ep=${item.episodeId}`}
-                  className="inline-block bg-[#2a2c31] absolute left-0 top-0 w-full h-full group"
+                  className="inline-block bg-gray-900 absolute left-0 top-0 w-full h-full group"
                 >
                   <img
                     src={`${item?.poster}`}
                     alt={item?.title}
-                    className="block w-full h-full object-cover transition-all duration-300 ease-in-out group-hover:blur-[4px]"
+                    className="block w-full h-full object-cover transition-all duration-500 ease-in-out group-hover:scale-105 group-hover:blur-sm"
                     title={item?.title}
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <FontAwesomeIcon
-                      icon={faPlay}
-                      className="text-[50px] text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10000] max-[450px]:text-[36px]"
-                    />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <FontAwesomeIcon
+                        icon={faPlay}
+                        className="text-[50px] text-white drop-shadow-lg max-[450px]:text-[36px]"
+                      />
+                    </div>
                   </div>
                 </Link>
                 {item?.adultContent === true && (
-                  <div className="text-white px-2 rounded-md bg-[#FF5700] absolute top-2 left-2 flex items-center justify-center text-[14px] font-bold">
+                  <div className="text-white px-3 py-1 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[14px] font-bold">
                     18+
                   </div>
                 )}
-                <div className="absolute bottom-0 left-0 flex flex-col gap-y-2 right-0 p-2 bg-gradient-to-t from-black via-black/80 to-transparent max-[450px]:gap-y-1">
-                  <p className="text-white text-md font-bold text-left truncate max-[450px]:text-sm">
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
+                  <p className="text-gray-100 text-md font-bold text-left truncate mb-2 max-[450px]:text-sm">
                     {language === "EN"
                       ? item?.title
                       : item?.japanese_title}
                   </p>
-                  <p className="text-gray-300 text-sm font-semibold text-left max-[450px]:text-[12px]">
+                  <p className="text-gray-400 text-sm font-medium text-left max-[450px]:text-[12px]">
                     Episode {item.episodeNum}
                   </p>
                 </div>
