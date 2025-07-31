@@ -9,8 +9,6 @@ import { FaChevronRight } from "react-icons/fa";
 import "./CategoryCard.css";
 import { useLanguage } from "@/src/context/LanguageContext";
 import { Link, useNavigate } from "react-router-dom";
-import Qtip from "../qtip/Qtip";
-import useToolTipPosition from "@/src/hooks/useToolTipPosition";
 
 const CategoryCard = React.memo(
   ({
@@ -25,7 +23,7 @@ const CategoryCard = React.memo(
   }) => {
     const { language } = useLanguage();
     const navigate = useNavigate();
-    const [showPlay, setShowPlay] = useState(false);
+    
     if (limit) {
       data = data.slice(0, limit);
     }
@@ -69,22 +67,7 @@ const CategoryCard = React.memo(
         window.removeEventListener("resize", handleResize);
       };
     }, [getItemsToRender]);
-    const [hoveredItem, setHoveredItem] = useState(null);
-    const [hoverTimeout, setHoverTimeout] = useState(null);
-    const { tooltipPosition, tooltipHorizontalPosition, cardRefs } =
-      useToolTipPosition(hoveredItem, data);
-    const handleMouseEnter = (item, index) => {
-      const timeout = setTimeout(() => {
-        setHoveredItem(item.id + index);
-        setShowPlay(true);
-      }, 400);
-      setHoverTimeout(timeout);
-    };
-    const handleMouseLeave = () => {
-      clearTimeout(hoverTimeout);
-      setHoveredItem(null);
-      setShowPlay(false);
-    };
+
     return (
       <div className={`w-full ${className}`}>
         <div className="flex items-center justify-between mb-8">
@@ -118,86 +101,69 @@ const CategoryCard = React.memo(
                   key={index}
                   className="flex flex-col category-card-container"
                   style={{ height: "fit-content" }}
-                  ref={(el) => (cardRefs.current[index] = el)}
                 >
-                  <div
-                    className="w-full relative group hover:cursor-pointer overflow-hidden rounded-xl"
-                    onClick={() =>
-                      navigate(
-                        `${
-                          path === "top-upcoming"
-                            ? `/${item.id}`
-                            : `/watch/${item.id}`
-                        }`
-                      )
-                    }
-                    onMouseEnter={() => handleMouseEnter(item, index)}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    {hoveredItem === item.id + index && showPlay && (
-                      <FontAwesomeIcon
-                        icon={faPlay}
-                        className="text-[40px] text-white absolute top-1/2 left-1/2 play-icon z-[10000]"
-                      />
-                    )}
-                    <div className="overlay"></div>
-                    <div className="overflow-hidden rounded-xl">
+                  <div className="w-full h-auto pb-[140%] relative inline-block overflow-hidden rounded-lg shadow-lg group">
+                    <div
+                      className="inline-block bg-gray-900 absolute left-0 top-0 w-full h-full group hover:cursor-pointer"
+                      onClick={() =>
+                        navigate(
+                          `${
+                            path === "top-upcoming"
+                              ? `/${item.id}`
+                              : `/watch/${item.id}`
+                          }`
+                        )
+                      }
+                    >
                       <img
                         src={`${item.poster}`}
                         alt={item.title}
-                        className={`w-full h-[320px] object-cover max-[1200px]:h-[35vw] max-[758px]:h-[45vw] max-[478px]:h-[60vw] transform transition-all duration-300 ease-in-out ultra-wide:h-[400px] ${cardStyle}`}
+                        className="block w-full h-full object-cover transition-all duration-500 ease-in-out group-hover:scale-105 group-hover:blur-sm"
                       />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                        <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          <FontAwesomeIcon
+                            icon={faPlay}
+                            className="text-[50px] text-white drop-shadow-lg max-[450px]:text-[36px]"
+                          />
+                        </div>
+                      </div>
                     </div>
                     {(item.tvInfo?.rating === "18+" ||
                       item?.adultContent === true) && (
-                      <div className="text-white px-3 py-1 rounded-lg bg-black/40 backdrop-blur-md border border-white/10 absolute top-3 left-3 flex items-center justify-center text-[12px] font-medium">
+                      <div className="text-white px-3 py-1 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[14px] font-bold">
                         18+
                       </div>
                     )}
-                    <div className="info-container">
-                      <div className="flex items-center justify-start w-fit space-x-2 z-[100] max-[270px]:flex-col max-[270px]:gap-y-[3px]">
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
+                      <div className="flex items-center justify-start w-full space-x-2 z-[100] flex-wrap gap-y-2">
                         {item.tvInfo?.sub && (
-                          <div className="category-badge flex space-x-1 justify-center items-center">
+                          <div className="flex space-x-1 justify-center items-center bg-white/20 rounded-[2px] px-[4px] text-white py-[2px]">
                             <FontAwesomeIcon
                               icon={faClosedCaptioning}
-                              className="text-[12px] text-white/90"
+                              className="text-[12px]"
                             />
-                            <p className="text-[12px] text-white/90">
+                            <p className="text-[12px] font-medium">
                               {item.tvInfo.sub}
                             </p>
                           </div>
                         )}
                         {item.tvInfo?.dub && (
-                          <div className="category-badge flex space-x-1 justify-center items-center">
+                          <div className="flex space-x-1 justify-center items-center bg-white/20 rounded-[2px] px-[4px] text-white py-[2px]">
                             <FontAwesomeIcon
                               icon={faMicrophone}
-                              className="text-[12px] text-white/90"
+                              className="text-[12px]"
                             />
-                            <p className="text-[12px] text-white/90">
+                            <p className="text-[12px] font-medium">
                               {item.tvInfo.dub}
                             </p>
                           </div>
                         )}
-                        {item.tvInfo?.eps && (
-                          <div className="category-badge flex space-x-1 justify-center items-center">
-                            <p className="text-[12px] text-white/90">
-                              {item.tvInfo.eps}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                      <Link
-                        to={`/${item.id}`}
-                        className="text-white font-medium mt-3 item-title hover:text-white hover:cursor-pointer line-clamp-1 block"
-                      >
-                        {language === "EN" ? item.title : item.japanese_title}
-                      </Link>
-                      <div className="flex items-center gap-x-2 w-full mt-2 overflow-hidden">
-                        <div className="text-gray-300 text-[13px] text-nowrap overflow-hidden text-ellipsis font-medium">
+                        <div className="text-white/60 text-[12px] font-medium">
                           {item.tvInfo.showType.split(" ").shift()}
                         </div>
-                        <div className="dot"></div>
-                        <div className="text-gray-300 text-[13px] text-nowrap overflow-hidden text-ellipsis font-medium">
+                        <div className="w-1 h-1 rounded-full bg-white/60"></div>
+                        <div className="text-white/60 text-[12px] font-medium">
                           {item.tvInfo?.duration === "m" ||
                           item.tvInfo?.duration === "?" ||
                           item.duration === "m" ||
@@ -207,19 +173,13 @@ const CategoryCard = React.memo(
                         </div>
                       </div>
                     </div>
-                    {hoveredItem === item.id + index &&
-                      window.innerWidth > 1024 && (
-                        <div
-                          className={`absolute ${tooltipPosition} ${tooltipHorizontalPosition} z-[100000] transform transition-all duration-300 ease-in-out ${
-                            hoveredItem === item.id + index
-                              ? "opacity-100 translate-y-0"
-                              : "opacity-0 translate-y-2"
-                          }`}
-                        >
-                          <Qtip id={item.id} />
-                        </div>
-                      )}
                   </div>
+                  <Link
+                    to={`/${item.id}`}
+                    className="text-white font-semibold mt-3 item-title hover:text-[#FFBADE] hover:cursor-pointer line-clamp-1"
+                  >
+                    {language === "EN" ? item.title : item.japanese_title}
+                  </Link>
                   {item.description && (
                     <div className="line-clamp-3 text-[13px] font-light text-gray-400 mt-3 max-[1200px]:hidden">
                       {item.description}
@@ -235,99 +195,85 @@ const CategoryCard = React.memo(
                 key={index}
                 className="flex flex-col transition-transform duration-300 ease-in-out"
                 style={{ height: "fit-content" }}
-                ref={(el) => (cardRefs.current[index] = el)}
               >
-                <div
-                  className="w-full relative group hover:cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      `${
-                        path === "top-upcoming"
-                          ? `/${item.id}`
-                          : `/watch/${item.id}`
-                      }`
-                    )
-                  }
-                  onMouseEnter={() => handleMouseEnter(item, index)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  {hoveredItem === item.id + index && showPlay && (
-                    <FontAwesomeIcon
-                      icon={faPlay}
-                      className="text-[40px] text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10000]"
-                    />
-                  )}
-                  <div className="overlay"></div>
-                  <div className="overflow-hidden">
+                <div className="w-full h-auto pb-[140%] relative inline-block overflow-hidden rounded-lg shadow-lg group">
+                  <div
+                    className="inline-block bg-gray-900 absolute left-0 top-0 w-full h-full group hover:cursor-pointer"
+                    onClick={() =>
+                      navigate(
+                        `${
+                          path === "top-upcoming"
+                            ? `/${item.id}`
+                            : `/watch/${item.id}`
+                        }`
+                      )
+                    }
+                  >
                     <img
                       src={`${item.poster}`}
                       alt={item.title}
-                      className={`w-full h-[250px] object-cover max-[1200px]:h-[35vw] max-[758px]:h-[45vw] max-[478px]:h-[60vw] ${cardStyle} group-hover:blur-[7px] transform transition-all duration-300 ease-in-out `}
+                      className="block w-full h-full object-cover transition-all duration-500 ease-in-out group-hover:scale-105 group-hover:blur-sm"
                     />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <FontAwesomeIcon
+                          icon={faPlay}
+                          className="text-[50px] text-white drop-shadow-lg max-[450px]:text-[36px]"
+                        />
+                      </div>
+                    </div>
                   </div>
                   {(item.tvInfo?.rating === "18+" ||
                     item?.adultContent === true) && (
-                    <div className="text-white px-2 rounded-md bg-[#FF5700] absolute top-2 left-2 flex items-center justify-center text-[14px] font-bold">
+                    <div className="text-white px-3 py-1 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[14px] font-bold">
                       18+
                     </div>
                   )}
-                  <div className="absolute left-2 bottom-4 flex items-center justify-center w-fit space-x-1 z-[100] max-[270px]:flex-col max-[270px]:gap-y-[3px]">
-                    {item.tvInfo?.sub && (
-                      <div className="flex space-x-1 justify-center items-center bg-[#B0E3AF] rounded-[2px] px-[4px] text-black py-[2px]">
-                        <FontAwesomeIcon
-                          icon={faClosedCaptioning}
-                          className="text-[12px]"
-                        />
-                        <p className="text-[12px] font-bold">
-                          {item.tvInfo.sub}
-                        </p>
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
+                    <div className="flex items-center justify-start w-full space-x-2 z-[100] flex-wrap gap-y-2">
+                      {item.tvInfo?.sub && (
+                        <div className="flex space-x-1 justify-center items-center bg-white/20 rounded-[2px] px-[4px] text-white py-[2px]">
+                          <FontAwesomeIcon
+                            icon={faClosedCaptioning}
+                            className="text-[12px]"
+                          />
+                          <p className="text-[12px] font-medium">
+                            {item.tvInfo.sub}
+                          </p>
+                        </div>
+                      )}
+                      {item.tvInfo?.dub && (
+                        <div className="flex space-x-1 justify-center items-center bg-white/20 rounded-[2px] px-[4px] text-white py-[2px]">
+                          <FontAwesomeIcon
+                            icon={faMicrophone}
+                            className="text-[12px]"
+                          />
+                          <p className="text-[12px] font-medium">
+                            {item.tvInfo.dub}
+                          </p>
+                        </div>
+                      )}
+                      <div className="text-white/60 text-[12px] font-medium">
+                        {item.tvInfo.showType.split(" ").shift()}
                       </div>
-                    )}
-                    {item.tvInfo?.dub && (
-                      <div className="flex space-x-1 justify-center items-center bg-[#B9E7FF] rounded-[2px] px-[8px] text-black py-[2px]">
-                        <FontAwesomeIcon
-                          icon={faMicrophone}
-                          className="text-[12px]"
-                        />
-                        <p className="text-[12px] font-bold">
-                          {item.tvInfo.dub}
-                        </p>
+                      <div className="w-1 h-1 rounded-full bg-white/60"></div>
+                      <div className="text-white/60 text-[12px] font-medium">
+                        {item.tvInfo?.duration === "m" ||
+                        item.tvInfo?.duration === "?" ||
+                        item.duration === "m" ||
+                        item.duration === "?"
+                          ? "N/A"
+                          : item.tvInfo?.duration || item.duration || "N/A"}
                       </div>
-                    )}
+                    </div>
                   </div>
-                  {hoveredItem === item.id + index &&
-                    window.innerWidth > 1024 && (
-                      <div
-                        className={`absolute ${tooltipPosition} ${tooltipHorizontalPosition} z-[100000] transform transition-all duration-300 ease-in-out ${
-                          hoveredItem === item.id + index
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-2"
-                        }`}
-                      >
-                        <Qtip id={item.id} />
-                      </div>
-                    )}
                 </div>
                 <Link
                   to={`/${item.id}`}
-                  className="text-white font-semibold mt-1 item-title hover:text-[#FFBADE] hover:cursor-pointer line-clamp-1"
+                  className="text-white font-semibold mt-3 item-title hover:text-[#FFBADE] hover:cursor-pointer line-clamp-1"
                 >
                   {language === "EN" ? item.title : item.japanese_title}
                 </Link>
-                <div className="flex items-center gap-x-2 w-full mt-2 overflow-hidden">
-                  <div className="text-gray-400 text-[14px] text-nowrap overflow-hidden text-ellipsis">
-                    {item.tvInfo.showType.split(" ").shift()}
-                  </div>
-                  <div className="dot"></div>
-                  <div className="text-gray-400 text-[14px] text-nowrap overflow-hidden text-ellipsis">
-                    {item.tvInfo?.duration === "m" ||
-                    item.tvInfo?.duration === "?" ||
-                    item.duration === "m" ||
-                    item.duration === "?"
-                      ? "N/A"
-                      : item.tvInfo?.duration || item.duration || "N/A"}
-                  </div>
-                </div>
               </div>
             ))}
           </div>
