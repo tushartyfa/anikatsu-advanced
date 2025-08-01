@@ -107,17 +107,17 @@ const ContinueWatching = () => {
                   </div>
                 </Link>
                 {item?.adultContent === true && (
-                  <div className="text-white px-3 py-1 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[14px] font-bold">
+                  <div className="text-white px-2 py-0.5 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[12px] font-bold">
                     18+
                   </div>
                 )}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
-                  <p className="text-gray-100 text-md font-bold text-left truncate mb-2 max-[450px]:text-sm">
+                <div className="absolute bottom-0 left-0 right-0 p-3 pb-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
+                  <p className="text-white text-[15px] font-bold text-left truncate mb-1.5 max-[450px]:text-sm drop-shadow-lg">
                     {language === "EN"
                       ? item?.title
                       : item?.japanese_title}
                   </p>
-                  <p className="text-gray-400 text-sm font-medium text-left max-[450px]:text-[12px]">
+                  <p className="text-gray-200 text-[13px] font-semibold text-left max-[450px]:text-[12px] drop-shadow-md">
                     Episode {item.episodeNum}
                   </p>
                 </div>

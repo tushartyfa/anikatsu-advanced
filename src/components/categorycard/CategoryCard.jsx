@@ -131,39 +131,39 @@ const CategoryCard = React.memo(
                     </div>
                     {(item.tvInfo?.rating === "18+" ||
                       item?.adultContent === true) && (
-                      <div className="text-white px-3 py-1 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[14px] font-bold">
+                      <div className="text-white px-2 py-0.5 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[12px] font-bold">
                         18+
                       </div>
                     )}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
+                    <div className="absolute bottom-0 left-0 right-0 p-3 pb-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
                       <div className="flex items-center justify-start w-full space-x-1.5 z-[100] flex-wrap gap-y-1.5">
                         {item.tvInfo?.sub && (
-                          <div className="flex space-x-0.5 justify-center items-center bg-[#2a2a2a] rounded-[2px] px-1.5 text-white py-0.5">
+                          <div className="flex space-x-0.5 justify-center items-center bg-[#2a2a2a] rounded-[2px] px-2 text-white py-1">
                             <FontAwesomeIcon
                               icon={faClosedCaptioning}
-                              className="text-[10px]"
+                              className="text-[11px]"
                             />
-                            <p className="text-[10px] font-medium">
+                            <p className="text-[11px] font-medium">
                               {item.tvInfo.sub}
                             </p>
                           </div>
                         )}
                         {item.tvInfo?.dub && (
-                          <div className="flex space-x-0.5 justify-center items-center bg-[#2a2a2a] rounded-[2px] px-1.5 text-white py-0.5">
+                          <div className="flex space-x-0.5 justify-center items-center bg-[#2a2a2a] rounded-[2px] px-2 text-white py-1">
                             <FontAwesomeIcon
                               icon={faMicrophone}
-                              className="text-[10px]"
+                              className="text-[11px]"
                             />
-                            <p className="text-[10px] font-medium">
+                            <p className="text-[11px] font-medium">
                               {item.tvInfo.dub}
                             </p>
                           </div>
                         )}
-                        <div className="bg-[#2a2a2a] text-white rounded-[2px] px-1.5 py-0.5 text-[10px] font-medium">
+                        <div className="bg-[#2a2a2a] text-white rounded-[2px] px-2 py-1 text-[11px] font-medium">
                           {item.tvInfo.showType.split(" ").shift()}
                         </div>
                         <div className="w-0.5 h-0.5 rounded-full bg-white/60"></div>
-                        <div className="bg-[#2a2a2a] text-white rounded-[2px] px-1.5 py-0.5 text-[10px] font-medium">
+                        <div className="bg-[#2a2a2a] text-white rounded-[2px] px-2 py-1 text-[11px] font-medium">
                           {item.tvInfo?.duration === "m" ||
                           item.tvInfo?.duration === "?" ||
                           item.duration === "m" ||
@@ -225,38 +225,38 @@ const CategoryCard = React.memo(
                   </div>
                   {(item.tvInfo?.rating === "18+" ||
                     item?.adultContent === true) && (
-                    <div className="text-white px-3 py-1 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[14px] font-bold">
+                    <div className="text-white px-2 py-0.5 rounded-lg bg-red-600 absolute top-3 left-3 flex items-center justify-center text-[12px] font-bold">
                       18+
                     </div>
                   )}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/90 to-transparent">
+                  <div className="absolute bottom-0 left-0 right-0 p-3 pb-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
                     <div className="flex items-center justify-start w-full space-x-1.5 z-[100] flex-wrap gap-y-1.5">
                       {item.tvInfo?.sub && (
-                        <div className="flex space-x-0.5 justify-center items-center bg-[#2a2a2a] rounded-[2px] px-1.5 text-white py-0.5">
+                        <div className="flex space-x-0.5 justify-center items-center bg-[#2a2a2a] rounded-[2px] px-2 text-white py-1">
                           <FontAwesomeIcon
                             icon={faClosedCaptioning}
-                            className="text-[10px]"
+                            className="text-[11px]"
                           />
-                          <p className="text-[10px] font-medium">
+                          <p className="text-[11px] font-medium">
                             {item.tvInfo.sub}
                           </p>
                         </div>
                       )}
                       {item.tvInfo?.dub && (
-                        <div className="flex space-x-0.5 justify-center items-center bg-[#2a2a2a] rounded-[2px] px-1.5 text-white py-0.5">
+                        <div className="flex space-x-0.5 justify-center items-center bg-[#2a2a2a] rounded-[2px] px-2 text-white py-1">
                           <FontAwesomeIcon
                             icon={faMicrophone}
-                            className="text-[10px]"
+                            className="text-[11px]"
                           />
-                          <p className="text-[10px] font-medium">
+                          <p className="text-[11px] font-medium">
                             {item.tvInfo.dub}
                           </p>
                         </div>
                       )}
-                      <div className="bg-[#2a2a2a] text-white rounded-[2px] px-1.5 py-0.5 text-[10px] font-medium">
+                      <div className="bg-[#2a2a2a] text-white rounded-[2px] px-2 py-1 text-[11px] font-medium">
                         {item.tvInfo.showType.split(" ").shift()}
                       </div>
-                      <div className="bg-[#2a2a2a] text-white rounded-[2px] px-1.5 py-0.5 text-[10px] font-medium">
+                      <div className="bg-[#2a2a2a] text-white rounded-[2px] px-2 py-1 text-[11px] font-medium">
                         {item.tvInfo?.duration === "m" ||
                         item.tvInfo?.duration === "?" ||
                         item.duration === "m" ||
