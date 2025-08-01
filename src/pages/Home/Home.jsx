@@ -25,7 +25,7 @@ function Home() {
         </div>
         <ContinueWatching />
         
-        <div className="w-full grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex flex-col max-[1200px]:px-4">
+        <div className="w-full grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex flex-col max-[1200px]:px-2">
           <div>
             <CategoryCard
               label="Latest Episode"
