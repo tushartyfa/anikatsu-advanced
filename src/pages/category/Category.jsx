@@ -52,7 +52,7 @@ function Category({ path, label }) {
   return (
     <div className="w-full flex flex-col gap-y-4 mt-[64px] max-md:mt-[50px]">
       {categoryInfo ? (
-        <div className="w-full px-4 grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex max-[1200px]:flex-col max-[1200px]:gap-y-10">
+        <div className="w-full px-4 grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex max-[1200px]:flex-col max-[1200px]:gap-y-10 max-[478px]:px-2">
           {page > totalPages ? (
             <p className="font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px] max-[300px]:leading-6">
               You came a long way, go back <br className="max-[300px]:hidden" />

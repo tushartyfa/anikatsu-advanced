@@ -6,7 +6,7 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
 function Contact() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 max-[478px]:px-2">
       <h1 className="text-2xl font-bold mb-6">Contact Us</h1>
       <div className="space-y-8 text-white/60">
         <p>

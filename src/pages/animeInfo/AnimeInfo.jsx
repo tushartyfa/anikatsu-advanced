@@ -156,7 +156,7 @@ function AnimeInfo({ random = false }) {
       <div className="relative w-full overflow-hidden mt-[74px] max-md:mt-[60px]">
 
         {/* Main Content */}
-        <div className="relative z-10 container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-12">
+        <div className="relative z-10 container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-12 max-[478px]:px-2">
           {/* Mobile Layout */}
           <div className="block md:hidden">
             <div className="flex flex-row gap-4">
@@ -447,7 +447,7 @@ function AnimeInfo({ random = false }) {
 
       {/* Seasons Section */}
       {seasons?.length > 0 && (
-        <div className="container mx-auto px-3 py-8 sm:px-4 sm:py-12">
+        <div className="container mx-auto px-3 py-8 sm:px-4 sm:py-12 max-[478px]:px-2">
           <h2 className="text-2xl font-bold mb-6 sm:mb-8 px-1">More Seasons</h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
             {seasons.map((season, index) => (
@@ -501,14 +501,14 @@ function AnimeInfo({ random = false }) {
 
       {/* Voice Actors Section */}
       {animeInfo?.charactersVoiceActors.length > 0 && (
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-12 max-[478px]:px-2">
           <Voiceactor animeInfo={animeInfo} />
         </div>
       )}
 
       {/* Recommendations Section */}
       {animeInfo.recommended_data.length > 0 && (
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-12 max-[478px]:px-2">
           <CategoryCard
             label="Recommended for you"
             data={animeInfo.recommended_data}
