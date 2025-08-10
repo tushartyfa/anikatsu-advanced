@@ -9,7 +9,7 @@ function AtoZLoader() {
   const gridClass = "grid-cols-8 max-[1600px]:grid-cols-6 max-[1200px]:grid-cols-4 max-[758px]:grid-cols-3 max-[478px]:grid-cols-3 max-[478px]:gap-x-2";
 
   return (
-    <div className="max-w-[1600px] mx-auto px-[15px] flex flex-col mt-[64px] max-md:mt-[50px]">
+    <div className="max-w-[1600px] mx-auto flex flex-col mt-[64px] max-md:mt-[50px]">
       <div className="flex flex-col gap-y-5 mt-6">
         <Skeleton className="w-[200px] h-8" />
         <div className="flex gap-x-[7px] flex-wrap justify-start gap-y-2 max-md:justify-start">

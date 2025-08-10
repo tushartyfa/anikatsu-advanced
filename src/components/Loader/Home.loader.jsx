@@ -5,7 +5,7 @@ import SpotlightLoader from "./Spotlight.loader";
 import TrendingLoader from "./Trending.loader";
 
 const GenreLoader = () => (
-  <div className="flex flex-wrap gap-3 px-4">
+  <div className="flex flex-wrap gap-3">
     {[...Array(8)].map((_, index) => (
       <Skeleton
         key={index}
@@ -16,7 +16,7 @@ const GenreLoader = () => (
 );
 
 const ContinueWatchingLoader = () => (
-  <div className="mt-6 px-4">
+  <div className="mt-6">
     <Skeleton className="w-[200px] h-7 mb-4" />
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
       {[...Array(6)].map((_, index) => (
@@ -30,7 +30,7 @@ const ContinueWatchingLoader = () => (
 );
 
 const ScheduleLoader = () => (
-  <div className="mt-8 px-4">
+  <div className="mt-8">
     <Skeleton className="w-[150px] h-7 mb-4" />
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {[...Array(6)].map((_, index) => (
@@ -48,7 +48,7 @@ const ScheduleLoader = () => (
 );
 
 const TabbedAnimeSectionLoader = () => (
-  <div className="mt-8 px-4">
+  <div className="mt-8">
     <div className="flex gap-4 mb-4">
       {[...Array(3)].map((_, index) => (
         <Skeleton key={index} className="w-[100px] h-8 rounded-full" />
@@ -67,14 +67,14 @@ const TabbedAnimeSectionLoader = () => (
 
 function HomeLoader() {
   return (
-    <div className="pt-16 px-4 w-full max-[1200px]:px-0 bg-[#0a0a0a]">
+    <div className="pt-16 w-full bg-[#0a0a0a]">
       <SpotlightLoader />
       <div className="mt-6">
         <GenreLoader />
       </div>
       <ContinueWatchingLoader />
       
-      <div className="w-full grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex flex-col max-[1200px]:px-2">
+      <div className="w-full grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex flex-col">
         <div>
           <CategoryCardLoader 
             className="mt-[60px]"

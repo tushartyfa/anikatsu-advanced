@@ -18,7 +18,7 @@ function TrendingLoader() {
         return () => window.removeEventListener("resize", updateCount);
     }, []);
     return (
-        <div className="flex flex-col w-full mt-10 max-[1200px]:px-4">
+        <div className="flex flex-col w-full mt-10">
             <Skeleton className="w-[180px] h-[28px] max-[400px]:w-[120px] max-[400px]:h-[24px]" />
             <div className="w-full h-[250px] overflow-hidden flex mt-6 justify-around max-[1300px]:h-fit gap-x-4">
                 {[...Array(count)].map((_, index) => (

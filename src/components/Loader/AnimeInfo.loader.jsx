@@ -12,7 +12,7 @@ function AnimeInfoLoader() {
             <div className="min-h-screen bg-[#0a0a0a] text-white">
                 <div className="relative w-full overflow-hidden mt-[74px] max-md:mt-[60px]">
                     {/* Main Content */}
-                    <div className="relative z-10 container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-12 max-[478px]:px-2">
+                    <div className="relative z-10 container mx-auto py-4 sm:py-6 lg:py-12">
                         {/* Mobile Layout */}
                         <div className="block md:hidden">
                             <div className="flex flex-row gap-4">
@@ -122,7 +122,7 @@ function AnimeInfoLoader() {
                 </div>
 
                 {/* Recommendations Section */}
-                <div className="container mx-auto px-4 py-12 max-[478px]:px-2">
+                <div className="container mx-auto py-12">
                     <CategoryCardLoader />
                 </div>
             </div>
