@@ -18,9 +18,9 @@ function Error({ error }) {
                 <p className="text-gray-400 text-lg mt-2">Oops! we couldn't find this page.</p>
                 <button 
                     onClick={() => navigate('/home')} 
-                    className="mt-8 bg-[#ffbade] hover:bg-[#ffcbe7] transition-colors text-black py-2 px-4 w-fit rounded-3xl flex items-center gap-x-2"
+                    className="mt-8 bg-gray-200 hover:bg-gray-300 transition-colors text-gray-800 py-2 px-4 w-fit rounded-3xl flex items-center gap-x-2"
                 >
-                    <FaChevronLeft className="text-black w-[20px] h-[20px] rounded-full p-1" />
+                    <FaChevronLeft className="text-gray-800 w-[20px] h-[20px] rounded-full p-1" />
                     <span className="text-[18px]">Back to homepage</span>
                 </button>
             </div>
