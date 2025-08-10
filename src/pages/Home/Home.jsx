@@ -18,14 +18,14 @@ function Home() {
   if (!homeInfo) return <Error error="404" />;
   return (
     <>
-      <div className="pt-16 px-4 w-full max-[1200px]:px-0">
+      <div className="pt-16 w-full">
         <Spotlight spotlights={homeInfo.spotlights} />
         <div className="mt-6">
           <Genre data={homeInfo.genres} />
         </div>
         <ContinueWatching />
         
-        <div className="w-full grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex flex-col max-[1200px]:px-2">
+        <div className="w-full grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex flex-col">
           <div>
             <CategoryCard
               label="Latest Episode"

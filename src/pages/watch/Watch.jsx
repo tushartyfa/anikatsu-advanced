@@ -223,10 +223,10 @@ export default function Watch() {
   }, [animeId, animeInfo]);
   return (
     <div className="w-full min-h-screen bg-[#0a0a0a]">
-      <div className="w-full max-w-[1920px] mx-auto pt-16 px-4 pb-6 w-full max-[1200px]:px-0 max-[1200px]:pt-12">
+      <div className="w-full max-w-[1920px] mx-auto pt-16 pb-6 w-full max-[1200px]:pt-12">
         <div className="grid grid-cols-[minmax(0,70%),minmax(0,30%)] gap-6 w-full h-full max-[1200px]:flex max-[1200px]:flex-col">
           {/* Left Column - Player, Controls, Servers */}
-          <div className="flex flex-col w-full gap-6 max-[1200px]:px-2">
+          <div className="flex flex-col w-full gap-6">
             <div ref={playerRef} className="player w-full h-fit bg-black flex flex-col rounded-xl overflow-hidden">
               {/* Video Container */}
               <div ref={videoContainerRef} className="w-full relative aspect-video bg-black">
@@ -354,7 +354,7 @@ export default function Watch() {
 
             {/* Mobile-only Seasons Section */}
             {seasons?.length > 0 && (
-              <div className="hidden max-[1200px]:block p-6 bg-[#141414] rounded-lg">
+              <div className="hidden max-[1200px]:block bg-[#141414] rounded-lg p-4">
                 <h2 className="text-xl font-semibold mb-4 text-white">More Seasons</h2>
                 <div className="grid grid-cols-2 gap-2">
                   {seasons.map((season, index) => (
@@ -425,7 +425,7 @@ export default function Watch() {
             </div>
 
             {/* Anime Info Section */}
-            <div className="p-6 bg-[#141414] rounded-lg max-[600px]:p-4">
+            <div className="bg-[#141414] rounded-lg p-4">
               <div className="flex gap-x-6 max-[600px]:flex-row max-[600px]:gap-4">
                 {animeInfo && animeInfo?.poster ? (
                   <img
@@ -495,7 +495,7 @@ export default function Watch() {
 
             {/* Desktop-only Seasons Section */}
             {seasons?.length > 0 && (
-              <div className="p-6 bg-[#141414] rounded-lg max-[1200px]:hidden">
+              <div className="bg-[#141414] rounded-lg p-4 max-[1200px]:hidden">
                 <h2 className="text-xl font-semibold mb-4 text-white">More Seasons</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                   {seasons.map((season, index) => (
@@ -568,7 +568,7 @@ export default function Watch() {
 
             {/* Related Anime Section */}
             {animeInfo && animeInfo.related_data ? (
-              <div className="bg-[#141414] rounded-lg p-6">
+              <div className="bg-[#141414] rounded-lg p-4">
                 <h2 className="text-xl font-semibold mb-4 text-white">Related Anime</h2>
                 <Sidecard
                   data={animeInfo.related_data}
@@ -584,7 +584,7 @@ export default function Watch() {
 
           {/* Mobile-only Related Section */}
           {animeInfo && animeInfo.related_data && (
-            <div className="hidden max-[1200px]:block bg-[#141414] rounded-lg p-6">
+            <div className="hidden max-[1200px]:block bg-[#141414] rounded-lg p-4">
               <h2 className="text-xl font-semibold mb-4 text-white">Related Anime</h2>
               <Sidecard
                 data={animeInfo.related_data}

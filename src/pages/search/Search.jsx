@@ -39,7 +39,7 @@ function Search() {
     const searchGridClass = "grid-cols-8 max-[1600px]:grid-cols-6 max-[1200px]:grid-cols-4 max-[758px]:grid-cols-3 max-[478px]:grid-cols-3 max-[478px]:gap-x-2";
 
     return (
-        <div className="max-w-[1600px] mx-auto px-[15px] flex flex-col mt-[64px] max-md:mt-[50px]">
+        <div className="max-w-[1600px] mx-auto flex flex-col mt-[64px] max-md:mt-[50px]">
             <div className="w-full flex flex-col gap-y-8 mt-6">
                 {loading ? (
                     <CategoryCardLoader className={"max-[478px]:mt-2"} gridClass={searchGridClass} />
@@ -53,7 +53,7 @@ function Search() {
                         </p>
                     </div>
                 ) : searchData && searchData.length > 0 ? (
-                    <div className="flex flex-col gap-y-2">
+                    <div className="flex flex-col gap-y-2 max-[478px]:gap-y-0">
                         <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
                             Search Results for: {keyword}
                         </h1>

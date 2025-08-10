@@ -35,7 +35,7 @@ const ContinueWatching = () => {
   if (memoizedWatchList.length === 0) return null;
 
   return (
-    <div className="mt-8 max-[1200px]:px-6 max-md:px-0">
+    <div className="mt-8">
       <div className="flex items-center justify-between max-md:pl-4 mb-6">
         <div className="flex items-center gap-x-3 justify-center">
           <FaHistory className="text-gray-200 text-xl" />
