@@ -71,7 +71,7 @@ function Producer() {
             <CategoryCard
               data={producerInfo}
               showViewMore={false}
-              className="mt-4"
+              className="mt-0"
               cardStyle="grid-cols-8 max-[1600px]:grid-cols-6 max-[1200px]:grid-cols-4 max-[758px]:grid-cols-3 max-[478px]:grid-cols-3 max-[478px]:gap-x-2"
             />
             <div className="flex justify-center w-full mt-8">

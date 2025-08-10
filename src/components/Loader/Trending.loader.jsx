@@ -19,11 +19,13 @@ function TrendingLoader() {
     }, []);
     return (
         <div className="flex flex-col w-full mt-10 max-[1200px]:px-4">
-            <Skeleton className="w-[150px] h-[20px] max-[400px]:w-[100px]" />
-            <div className="w-full h-[250px] overflow-hidden flex mt-6 justify-around max-[1300px]:h-fit">
+            <Skeleton className="w-[180px] h-[28px] max-[400px]:w-[120px] max-[400px]:h-[24px]" />
+            <div className="w-full h-[250px] overflow-hidden flex mt-6 justify-around max-[1300px]:h-fit gap-x-4">
                 {[...Array(count)].map((_, index) => (
-                    <div key={index}>
-                        <Skeleton className="w-[200px] h-full rounded-none max-[1300px]:w-[22vw] max-[1300px]:h-[30vw] max-[720px]:w-[25vw] max-[720px]:h-[35vw]" />
+                    <div key={index} className="flex flex-col gap-y-2">
+                        <Skeleton className="w-[200px] h-[250px] rounded-md max-[1300px]:w-[22vw] max-[1300px]:h-[30vw] max-[720px]:w-[25vw] max-[720px]:h-[35vw]" />
+                        <Skeleton className="w-[180px] h-[20px] max-[1300px]:w-[20vw] max-[720px]:w-[22vw]" />
+                        <Skeleton className="w-[140px] h-[16px] max-[1300px]:w-[15vw] max-[720px]:w-[18vw]" />
                     </div>
                 ))}
             </div>
