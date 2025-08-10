@@ -1,15 +1,11 @@
 import CategoryCard from '@/src/components/categorycard/CategoryCard';
 import CategoryCardLoader from '@/src/components/Loader/CategoryCard.loader';
-import SidecardLoader from '@/src/components/Loader/Sidecard.loader';
 import PageSlider from '@/src/components/pageslider/PageSlider';
-import Sidecard from '@/src/components/sidecard/Sidecard';
-import { useHomeInfo } from '@/src/context/HomeInfoContext';
 import getSearch from '@/src/utils/getSearch.utils';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 function Search() {
-    const { homeInfo, homeInfoLoading } = useHomeInfo();
     const [searchParams, setSearchParams] = useSearchParams();
     const keyword = searchParams.get("keyword");
     const page = parseInt(searchParams.get("page"), 10) || 1;
@@ -39,38 +35,58 @@ function Search() {
     const handlePageChange = (newPage) => {
         setSearchParams({ keyword, page: newPage });
     };
+
     return (
-        <div className='w-full px-4 mt-[128px] grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex max-[1200px]:flex-col max-[1200px]:gap-y-10 max-custom-md:mt-[80px] max-[478px]:mt-[60px]'>
-            {loading ? (
-                <CategoryCardLoader className={"max-[478px]:mt-2"} />
-            ) : page > totalPages ? <p className='font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px] max-[300px]:leading-6'>You came a long way, go back <br className='max-[300px]:hidden' />nothing is here</p> : searchData && searchData.length > 0 ? (
-                <div>
-                    <CategoryCard
-                        label={`Search results for: ${keyword}`}
-                        data={searchData}
-                        showViewMore={false}
-                        className={"mt-0"}
-                    />
-                    <PageSlider page={page} totalPages={totalPages} handlePageChange={handlePageChange} />
-                </div>
-            ) : error ? <p className='font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px]'>Couldn&apos;t get search result please try again</p> : (
-                <h1 className='font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px]'>{`Search results for: ${keyword}`}</h1>
-            )}
-            <div className="w-full flex flex-col gap-y-10">
-                {homeInfoLoading ? (
-                    <SidecardLoader />
+        <div className="max-w-[1260px] mx-auto px-[15px] flex flex-col mt-[64px] max-md:mt-[50px]">
+            <div className="w-full flex flex-col gap-y-8 mt-6">
+                {loading ? (
+                    <CategoryCardLoader className={"max-[478px]:mt-2"} />
+                ) : page > totalPages ? (
+                    <div className="flex flex-col gap-y-4">
+                        <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
+                            Search Results
+                        </h1>
+                        <p className='text-white text-lg max-[478px]:text-[16px] max-[300px]:leading-6'>
+                            You came a long way, go back <br className='max-[300px]:hidden' />nothing is here
+                        </p>
+                    </div>
+                ) : searchData && searchData.length > 0 ? (
+                    <div className="flex flex-col gap-y-2">
+                        <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
+                            Search Results for: {keyword}
+                        </h1>
+                        <CategoryCard
+                            data={searchData}
+                            showViewMore={false}
+                            className="mt-0"
+                            cardStyle="max-[1400px]:h-[35vw]"
+                        />
+                        <div className="flex justify-center w-full mt-8">
+                            <PageSlider 
+                                page={page} 
+                                totalPages={totalPages} 
+                                handlePageChange={handlePageChange} 
+                            />
+                        </div>
+                    </div>
+                ) : error ? (
+                    <div className="flex flex-col gap-y-4">
+                        <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
+                            Search Results
+                        </h1>
+                        <p className='text-white text-lg max-[478px]:text-[16px]'>
+                            Couldn't get search results, please try again
+                        </p>
+                    </div>
                 ) : (
-                    <>
-                        {homeInfo?.most_popular && (
-                            <div className="bg-[#141414] rounded-lg p-6">
-                                <h2 className="text-xl font-semibold mb-4 text-white">Most Popular</h2>
-                                <Sidecard
-                                    data={homeInfo.most_popular}
-                                    className="!mt-0"
-                                />
-                            </div>
-                        )}
-                    </>
+                    <div className="flex flex-col gap-y-4">
+                        <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
+                            Search Results
+                        </h1>
+                        <p className='text-white text-lg max-[478px]:text-[16px]'>
+                            No results found for: {keyword}
+                        </p>
+                    </div>
                 )}
             </div>
         </div>

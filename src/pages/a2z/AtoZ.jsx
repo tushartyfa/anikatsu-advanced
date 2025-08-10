@@ -46,17 +46,8 @@ function AtoZ({ path }) {
 
   return (
     <div className="max-w-[1260px] mx-auto px-[15px] flex flex-col mt-[64px] max-md:mt-[50px]">
-      <ul className="flex gap-x-2 mt-[50px] items-center w-fit max-[1200px]:hidden">
-        <li className="flex gap-x-3 items-center">
-          <Link to="/home" className="text-white hover:text-[#FFBADE] text-[17px]">
-            Home
-          </Link>
-          <div className="dot mt-[1px] bg-white"></div>
-        </li>
-        <li className="font-light">A-Z List</li>
-      </ul>
       <div className="flex flex-col gap-y-5 mt-6">
-        <h1 className="font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px]">
+        <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
           Sort By Letters
         </h1>
         <div className="flex gap-x-[7px] flex-wrap justify-start gap-y-2 max-md:justify-start">
@@ -83,8 +74,8 @@ function AtoZ({ path }) {
               <Link
                 to={`/az-list/${linkPath}`}
                 key={index}
-                className={`text-md bg-[#373646] py-1 px-4 rounded-md font-bold hover:text-black hover:bg-[#FFBADE] hover:cursor-pointer transition-all ease-out ${
-                  isActive ? "text-black bg-[#FFBADE]" : ""
+                className={`text-md bg-[#373646] py-1 px-4 rounded-md font-bold hover:text-black hover:bg-white hover:cursor-pointer transition-all ease-out ${
+                  isActive ? "text-black bg-white" : ""
                 }`}
               >
                 {item}
@@ -104,11 +95,13 @@ function AtoZ({ path }) {
               cardStyle="max-[1400px]:h-[35vw]"
             />
           )}
-          <PageSlider
-            page={page}
-            totalPages={totalPages}
-            handlePageChange={handlePageChange}
-          />
+          <div className="flex justify-center w-full mt-8">
+            <PageSlider
+              page={page}
+              totalPages={totalPages}
+              handlePageChange={handlePageChange}
+            />
+          </div>
         </div>
       </div>
     </div>
