@@ -1,12 +1,28 @@
+import { Skeleton } from "../ui/Skeleton/Skeleton";
 import CategoryCardLoader from "./CategoryCard.loader";
-import SidecardLoader from "./Sidecard.loader";
 
 function ProducerLoader() {
+  const gridClass = "grid-cols-8 max-[1600px]:grid-cols-6 max-[1200px]:grid-cols-4 max-[758px]:grid-cols-3 max-[478px]:grid-cols-3 max-[478px]:gap-x-2";
+
   return (
-    <div className="w-full mt-[100px] flex flex-col gap-y-4 max-md:mt-[50px]">
-      <div className="w-full px-4 grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex max-[1200px]:flex-col max-[1200px]:gap-y-10">
-        <CategoryCardLoader className={"mt-[0px]"} />
-        <SidecardLoader />
+    <div className="max-w-[1600px] mx-auto px-[15px] flex flex-col mt-[64px] max-md:mt-[50px]">
+      <div className="w-full flex flex-col gap-y-8 mt-6">
+        <div className="flex flex-col gap-y-2">
+          <Skeleton className="w-[250px] h-8" />
+          <CategoryCardLoader 
+            showLabelSkeleton={false}
+            className="mt-4"
+            gridClass={gridClass}
+          />
+          <div className="flex justify-center items-center gap-2 mt-8">
+            {[...Array(5)].map((_, index) => (
+              <Skeleton
+                key={index}
+                className="w-10 h-10 rounded-lg"
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

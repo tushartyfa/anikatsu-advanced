@@ -9,50 +9,125 @@ const SkeletonItems = ({ count, className }) => (
 function AnimeInfoLoader() {
     return (
         <>
-            <div className="relative grid grid-cols-[minmax(0,75%),minmax(0,25%)] h-fit w-full overflow-hidden mt-[64px] max-[1200px]:flex max-[1200px]:flex-col max-md:mt-[50px]">
-                <Skeleton className="absolute inset-0 w-full h-full blur-lg z-[-900] bg-gray-500" animation={false} />
-                <div className="flex items-start z-10 px-14 py-[70px] bg-[#252434] bg-opacity-70 gap-x-8 max-[1024px]:px-6 max-[1024px]:py-10 max-[1024px]:gap-x-4 max-[575px]:flex-col max-[575px]:items-center max-[575px]:justify-center">
-                    <Skeleton className="w-[200px] h-[270px] rounded-none" />
-                    <div className="flex flex-col ml-4 gap-y-5 w-full max-[575px]:items-center max-[575px]:justify-center max-[575px]:mt-0">
-                        <ul className="flex gap-x-2 items-center w-fit max-[1200px]:hidden">
-                            <SkeletonItems count={3} className="w-[40px] h-[15px] rounded-xl " />
-                        </ul>
-                        <div className="flex flex-col gap-y-2">
-                            <SkeletonItems count={2} className="w-[50%] h-[20px] rounded-xl " />
+            <div className="min-h-screen bg-[#0a0a0a] text-white">
+                <div className="relative w-full overflow-hidden mt-[74px] max-md:mt-[60px]">
+                    {/* Main Content */}
+                    <div className="relative z-10 container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-12 max-[478px]:px-2">
+                        {/* Mobile Layout */}
+                        <div className="block md:hidden">
+                            <div className="flex flex-row gap-4">
+                                {/* Poster Section */}
+                                <div className="flex-shrink-0">
+                                    <Skeleton className="w-[130px] xs:w-[150px] aspect-[2/3] rounded-xl" />
+                                </div>
+
+                                {/* Basic Info Section */}
+                                <div className="flex-1 min-w-0 space-y-2">
+                                    {/* Title */}
+                                    <div className="space-y-1">
+                                        <Skeleton className="h-6 w-[80%]" />
+                                        <Skeleton className="h-3 w-[60%]" />
+                                    </div>
+
+                                    {/* Tags */}
+                                    <div className="flex flex-wrap gap-1.5">
+                                        <SkeletonItems count={4} className="w-[40px] h-[20px] rounded-md" />
+                                    </div>
+
+                                    {/* Overview */}
+                                    <div className="space-y-1">
+                                        <SkeletonItems count={3} className="h-3 w-full" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Watch Button */}
+                            <div className="mt-6">
+                                <Skeleton className="w-full h-12 rounded-lg" />
+                            </div>
+
+                            {/* Details Section */}
+                            <div className="mt-6 space-y-3 py-3 backdrop-blur-md bg-white/5 rounded-lg px-3">
+                                <div className="grid grid-cols-2 gap-2">
+                                    <SkeletonItems count={6} className="h-4 w-[90%]" />
+                                </div>
+
+                                {/* Genres */}
+                                <div className="pt-2 border-t border-white/10">
+                                    <Skeleton className="h-4 w-[60px] mb-2" />
+                                    <div className="flex flex-wrap gap-1">
+                                        <SkeletonItems count={6} className="w-[60px] h-[22px] rounded-md" />
+                                    </div>
+                                </div>
+
+                                {/* Studios & Producers */}
+                                <div className="space-y-2 pt-2 border-t border-white/10">
+                                    <SkeletonItems count={2} className="h-4 w-[80%]" />
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex gap-x-[3px]">
-                            <SkeletonItems count={6} className="w-[30px] h-[20px] rounded-sm" />
-                        </div>
-                        <Skeleton className="w-[150px] h-[40px] rounded-3xl mt-4" />
-                        <div className="flex flex-col gap-y-2 mt-5 max-[575px]:hidden">
-                            <SkeletonItems count={3} className="w-[80%] h-[15px] rounded-3xl " />
-                        </div>
-                        <div className="flex gap-x-4 items-center mt-4">
-                            <Skeleton className="w-[60px] h-[60px] rounded-full bg-gray-500 max-[575px]:hidden" />
-                            <div className="flex flex-col w-fit gap-y-2">
-                                <SkeletonItems count={2} className="w-[150px] h-[10px] rounded-xl " />
+
+                        {/* Desktop Layout */}
+                        <div className="hidden md:block">
+                            <div className="flex flex-row gap-6 lg:gap-10">
+                                {/* Poster Section */}
+                                <div className="flex-shrink-0">
+                                    <Skeleton className="w-[220px] lg:w-[260px] aspect-[2/3] rounded-2xl" />
+                                </div>
+
+                                {/* Info Section */}
+                                <div className="flex-1 space-y-4 lg:space-y-5 min-w-0">
+                                    {/* Title */}
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-10 w-[70%]" />
+                                        <Skeleton className="h-5 w-[50%]" />
+                                    </div>
+
+                                    {/* Tags */}
+                                    <div className="flex flex-wrap gap-2">
+                                        <SkeletonItems count={4} className="w-[60px] h-[30px] rounded-xl" />
+                                    </div>
+
+                                    {/* Overview */}
+                                    <div className="space-y-2">
+                                        <SkeletonItems count={3} className="h-5 w-full max-w-3xl" />
+                                    </div>
+
+                                    {/* Watch Button */}
+                                    <Skeleton className="w-[150px] h-[42px] rounded-xl" />
+
+                                    {/* Details Section */}
+                                    <div className="space-y-4 py-4 backdrop-blur-md bg-white/5 rounded-xl px-5">
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <SkeletonItems count={6} className="h-5 w-[90%]" />
+                                        </div>
+
+                                        {/* Genres */}
+                                        <div className="pt-3 border-t border-white/10">
+                                            <Skeleton className="h-5 w-[80px] mb-2" />
+                                            <div className="flex flex-wrap gap-1.5">
+                                                <SkeletonItems count={8} className="w-[80px] h-[30px] rounded-lg" />
+                                            </div>
+                                        </div>
+
+                                        {/* Studios & Producers */}
+                                        <div className="space-y-3 pt-3 border-t border-white/10">
+                                            <SkeletonItems count={2} className="h-5 w-[80%]" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="bg-[#4c4b57c3] flex items-center px-8 max-[1200px]:py-10 max-[1200px]:bg-[#363544e0] max-[575px]:p-4">
-                    <div className="w-full flex flex-col h-fit gap-y-4">
-                        <SkeletonItems count={6} className="w-full h-[15px] rounded-xl" />
-                        <div className="flex gap-x-4 py-2 mt-4">
-                            <Skeleton className="w-[50px] h-[20px] " />
-                            <div className="flex flex-wrap gap-1">
-                                <SkeletonItems count={4} className="w-[30px] h-[20px] rounded-sm bg-gray-500" />
-                            </div>
-                        </div>
-                        <SkeletonItems count={2} className="w-[90%] h-[15px] rounded-xl  " />
-                    </div>
+
+                {/* Recommendations Section */}
+                <div className="container mx-auto px-4 py-12 max-[478px]:px-2">
+                    <CategoryCardLoader />
                 </div>
-            </div>
-            <div className="w-full grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex flex-col px-4">
-                <CategoryCardLoader className="mt-[60px]"/>
-                <SidecardLoader className="mt-[60px]" />
             </div>
         </>
     );
 }
+
 export default AnimeInfoLoader;

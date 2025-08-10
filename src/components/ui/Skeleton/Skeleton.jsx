@@ -4,7 +4,8 @@ import './Skeleton.css';
 function Skeleton({ className, animation=true, ...props }) {
   return (
     <div
-      className={cn("bg-gray-400 rounded-3xl",
+      className={cn(
+        "bg-white/5 backdrop-blur-sm rounded-lg",
         animation ? "shimmer-effect" : "",
         className
       )}

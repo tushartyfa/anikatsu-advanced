@@ -50,7 +50,7 @@ function Producer() {
   const producerName = (id.charAt(0).toUpperCase() + id.slice(1)).split("-").join(" ");
 
   return (
-    <div className="max-w-[1260px] mx-auto px-[15px] flex flex-col mt-[64px] max-md:mt-[50px]">
+    <div className="max-w-[1600px] mx-auto px-[15px] flex flex-col mt-[64px] max-md:mt-[50px]">
       <div className="w-full flex flex-col gap-y-8 mt-6">
         {loading ? (
           <Loader type="producer" />
@@ -71,8 +71,8 @@ function Producer() {
             <CategoryCard
               data={producerInfo}
               showViewMore={false}
-              className="mt-0"
-              cardStyle="max-[1400px]:h-[35vw]"
+              className="mt-4"
+              cardStyle="grid-cols-8 max-[1600px]:grid-cols-6 max-[1200px]:grid-cols-4 max-[758px]:grid-cols-3 max-[478px]:grid-cols-3 max-[478px]:gap-x-2"
             />
             <div className="flex justify-center w-full mt-8">
               <PageSlider 
