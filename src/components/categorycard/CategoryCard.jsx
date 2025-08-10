@@ -176,7 +176,7 @@ const CategoryCard = React.memo(
                   </div>
                   <Link
                     to={`/${item.id}`}
-                    className="text-white font-semibold mt-3 item-title hover:text-[#FFBADE] hover:cursor-pointer line-clamp-1"
+                    className="text-white font-semibold mt-3 item-title hover:text-white hover:cursor-pointer line-clamp-1"
                   >
                     {language === "EN" ? item.title : item.japanese_title}
                   </Link>
@@ -269,7 +269,7 @@ const CategoryCard = React.memo(
                 </div>
                 <Link
                   to={`/${item.id}`}
-                  className="text-white font-semibold mt-3 item-title hover:text-[#FFBADE] hover:cursor-pointer line-clamp-1"
+                  className="text-white font-semibold mt-3 item-title hover:text-white hover:cursor-pointer line-clamp-1"
                 >
                   {language === "EN" ? item.title : item.japanese_title}
                 </Link>

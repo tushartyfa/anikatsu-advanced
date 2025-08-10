@@ -1,14 +1,10 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Error from "../error/Error";
-import Topten from "../topten/Topten";
-import Genre from "../genres/Genre";
-import SidecardLoader from "../Loader/Sidecard.loader";
-import PageSlider from "../pageslider/PageSlider";
 import CategoryCard from "../categorycard/CategoryCard";
 import { useEffect, useState } from "react";
-import { useHomeInfo } from "@/src/context/HomeInfoContext";
 import getProducer from "@/src/utils/getProducer.utils";
 import Loader from "../Loader/Loader";
+import PageSlider from "../pageslider/PageSlider";
 
 function Producer() {
   const { id } = useParams();
@@ -18,8 +14,8 @@ function Producer() {
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const page = parseInt(searchParams.get("page")) || 1;
-  const { homeInfo, homeInfoLoading } = useHomeInfo();
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProducerInfo = async () => {
       setLoading(true);
@@ -34,8 +30,9 @@ function Producer() {
       }
     };
     fetchProducerInfo();
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [id, page]);
+
   if (loading) return <Loader type="producer" />;
   if (error) {
     navigate("/error-page");
@@ -45,58 +42,68 @@ function Producer() {
     navigate("/404-not-found-page");
     return null;
   }
+
   const handlePageChange = (newPage) => {
     setSearchParams({ page: newPage });
   };
 
+  const producerName = (id.charAt(0).toUpperCase() + id.slice(1)).split("-").join(" ");
+
   return (
-    <div className="w-full flex flex-col gap-y-4 mt-[100px] max-md:mt-[50px]">
-      {producerInfo ? (
-        <div className="w-full px-4 grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex max-[1200px]:flex-col max-[1200px]:gap-y-10">
-          {page > totalPages ? (
-            <p className="font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px] max-[300px]:leading-6">
-              You came a long way, go back <br className="max-[300px]:hidden" />
-              nothing is here
+    <div className="max-w-[1260px] mx-auto px-[15px] flex flex-col mt-[64px] max-md:mt-[50px]">
+      <div className="w-full flex flex-col gap-y-8 mt-6">
+        {loading ? (
+          <Loader type="producer" />
+        ) : page > totalPages ? (
+          <div className="flex flex-col gap-y-4">
+            <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
+              {producerName} Anime
+            </h1>
+            <p className='text-white text-lg max-[478px]:text-[16px] max-[300px]:leading-6'>
+              You came a long way, go back <br className='max-[300px]:hidden' />nothing is here
             </p>
-          ) : (
-            <div>
-              {producerInfo && (
-                <CategoryCard
-                  label={
-                    (id.charAt(0).toUpperCase() + id.slice(1))
-                      .split("-")
-                      .join(" ") + " Anime"
-                  }
-                  data={producerInfo}
-                  showViewMore={false}
-                  className={"mt-0"}
-                  categoryPage={true}
-                />
-              )}
-              <PageSlider
-                page={page}
-                totalPages={totalPages}
-                handlePageChange={handlePageChange}
+          </div>
+        ) : producerInfo && producerInfo.length > 0 ? (
+          <div className="flex flex-col gap-y-2">
+            <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
+              {producerName} Anime
+            </h1>
+            <CategoryCard
+              data={producerInfo}
+              showViewMore={false}
+              className="mt-0"
+              cardStyle="max-[1400px]:h-[35vw]"
+            />
+            <div className="flex justify-center w-full mt-8">
+              <PageSlider 
+                page={page} 
+                totalPages={totalPages} 
+                handlePageChange={handlePageChange} 
               />
             </div>
-          )}
-          <div className="w-full flex flex-col gap-y-10">
-            {homeInfoLoading ? (
-              <SidecardLoader />
-            ) : (
-              <>
-                {homeInfo && homeInfo.topten && (
-                  <Topten data={homeInfo.topten} className="mt-0" />
-                )}
-                {homeInfo?.genres && <Genre data={homeInfo.genres} />}
-              </>
-            )}
           </div>
-        </div>
-      ) : (
-        <Error />
-      )}
+        ) : error ? (
+          <div className="flex flex-col gap-y-4">
+            <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
+              {producerName} Anime
+            </h1>
+            <p className='text-white text-lg max-[478px]:text-[16px]'>
+              Couldn't get results, please try again
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-y-4">
+            <h1 className="font-bold text-2xl text-white max-[478px]:text-[18px]">
+              {producerName} Anime
+            </h1>
+            <p className='text-white text-lg max-[478px]:text-[16px]'>
+              No results found
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
 export default Producer;
