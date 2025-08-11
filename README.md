@@ -1,6 +1,6 @@
 <p align="center">
   <div align="center">
-    <a href="https://justanime.vercel.app">
+    <a href="https://justanime.to">
       <img alt="JustAnime" src="https://github.com/tejaspanchall/JustAnime/blob/main/public/footer.png" width="220"/>
     </a>
   </div>
@@ -16,7 +16,7 @@
 </p>
 </p>
 <p align="center">
-    <a href="https://justanime.vercel.app">JustAnime</a> is an open-source anime streaming service that uses <a href="https://github.com/itzzzme/anime-api">ANIME</a> API, built using ReactJS with javascript and Tailwind CSS. It lets you easily find any anime with intuitive search & suggestion feature and stream without any ads.
+    <a href="https://justanime.to">JustAnime</a> is an open-source anime streaming service that uses <a href="https://github.com/itzzzme/anime-api">ANIME</a> API, built using ReactJS with javascript and Tailwind CSS. It lets you easily find any anime with intuitive search & suggestion feature and stream without any ads.
  </p>
 
 <details>
@@ -47,21 +47,18 @@
 ## Previews
 
 <div style="text-align: left;">
-  <img src="" alt="Home Page" style="max-width: 80%;" >
+  <img src="https://github.com/tejaspanchall/JustAnime/blob/main/public/home.PNG" alt="Home Page" style="max-width: 80%;" >
   <details>
   <summary style="margin-top:10px">View more screenshots</summary>
   <br/>
   AnimeInfo Page
-  <img style="margin-top:10px" src="" alt="AnimeInfo Page" style="max-width: 80%;">
-  <br/>
-  Searchbar
-  <img style="margin-top:10px" src="" alt="Searchbar" style="max-width: 50%;">
+  <img src="https://github.com/tejaspanchall/JustAnime/blob/main/public/info.PNG" style="margin-top:10px" src="" alt="AnimeInfo Page" style="max-width: 80%;">
   <br/>
   Character & Voice Actors
-  <img style="margin-top:10px" src="" alt="Character & Voice Actors" style="max-width: 80%;">
+  <img src="https://github.com/tejaspanchall/JustAnime/blob/main/public/char.PNG" style="margin-top:10px" src="" alt="Character & Voice Actors" style="max-width: 80%;">
   <br/>
   Watch Page
-  <img style="margin-top:10px" src="" alt="Watch Page" style="max-width: 80%;">
+  <img src="https://github.com/tejaspanchall/JustAnime/blob/main/public/watch.PNG" style="margin-top:10px" src="" alt="Watch Page" style="max-width: 80%;">
   <br/>
   </details>
 </div>
@@ -89,13 +86,13 @@ npm start # or npm run dev (to run develepment server)
 
 ### Vercel
 
-Host your own instance of <a href="https://justanime.vercel.app">JustAnime</a>  on vercel
+Host your own instance of <a href="https://justanime.to">JustAnime</a>  on vercel
 
 [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tejaspanchall/JustAnime)
 
 ### Render
 
-Host your own instance of <a href="https://justanime.vercel.app">JustAnime</a> on Render.
+Host your own instance of <a href="https://justanime.to">JustAnime</a> on Render.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/tejaspanchall/JustAnime)
 
