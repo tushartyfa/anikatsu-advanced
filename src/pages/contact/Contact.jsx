@@ -24,7 +24,7 @@ function Contact() {
           </a>
           <a
             href="#"
-            target="_blank"
+            target="https://discord.gg/RTkpGYDgCR"
             rel="noopener noreferrer"
             className="flex items-center gap-3 px-4 py-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
           >
