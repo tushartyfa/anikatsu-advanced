@@ -1,10 +1,10 @@
 <p align="center">
   <div align="center">
-    <a href="https://justanime.to">
-      <img alt="JustAnime" src="https://github.com/tejaspanchall/JustAnime/blob/main/public/footer.png" width="220"/>
+    <a href="https://anikatsu.fun">
+      <img alt="Anikatsu" src="https://github.com/tejaspanchall/JustAnime/blob/main/public/footer.png" width="220"/>
     </a>
   </div>
-    <h3 align="center">JustAnime - Clean & ad free anime streaming</h3>
+    <h3 align="center">Anikatsu - Clean & ad free anime streaming</h3>
     <p align="center">
   <a href="https://github.com/tejaspanchall/JustAnime">
       <img src="https://img.shields.io/github/stars/tejaspanchall/JustAnime" alt="Github Stars">
