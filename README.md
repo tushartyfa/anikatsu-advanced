@@ -88,7 +88,7 @@ npm start # or npm run dev (to run develepment server)
 
 Host your own instance of <a href="https://justanime.to">JustAnime</a>  on vercel
 
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tejaspanchall/JustAnime)
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tushartyfa/anikatsu-advanced.git)
 
 ### Render
 
