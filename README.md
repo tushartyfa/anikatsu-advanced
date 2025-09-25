@@ -94,7 +94,7 @@ Host your own instance of <a href="https://justanime.to">JustAnime</a>  on verce
 
 Host your own instance of <a href="https://justanime.to">JustAnime</a> on Render.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/tejaspanchall/JustAnime)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=[https://github.com/tushartyfa/anikatsu-advanced.git])
 
 ## Pull Requests
 
