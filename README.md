@@ -1,7 +1,7 @@
 <p align="center">
   <div align="center">
     <a href="https://anikatsu.fun">
-      <img alt="Anikatsu" src="https://github.com/tejaspanchall/JustAnime/blob/main/public/footer.png" width="220"/>
+      <img alt="Anikatsu" src="" width="220"/>
     </a>
   </div>
     <h3 align="center">Anikatsu - Clean & ad free anime streaming</h3>
